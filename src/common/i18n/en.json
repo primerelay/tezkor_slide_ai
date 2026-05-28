@@ -1,0 +1,68 @@
+{
+  "welcome": "Hello, {name}! 👋\n\nWelcome to Tezkor Slide AI!\n\nWith this bot, you can create professional presentations in just a few minutes.",
+  "mainMenuText": "Main menu",
+  "selectLanguage": "Tilni tanlang / Выберите язык / Select language:",
+  "languageChanged": "Language changed",
+  "languageSet": "✅ Language changed to English",
+  "help": "<b>Tezkor Slide AI - Help</b>\n\n📝 <b>Creating a presentation:</b>\n1. Click \"New presentation\"\n2. Enter the topic\n3. Select number of slides\n4. Choose a design\n5. Confirm creation\n\n💰 <b>Balance:</b>\nEach presentation costs 1 credit.\nStarting balance: 3 free credits.\n\n🔧 <b>Commands:</b>\n/start - Restart the bot\n/new - New presentation\n/balance - Check balance\n/language - Change language\n/help - Help",
+  "balance": "💰 <b>Your balance:</b> {credits} credits",
+  "enterTopic": "📝 <b>Enter the presentation topic</b>\n\nExample: \"Ecology and Environmental Protection\"\n\nTopic must be between 5 and 500 characters.",
+  "topicTooShort": "❌ Topic is too short. Enter at least 5 characters.",
+  "topicTooLong": "❌ Topic is too long. Maximum 500 characters.",
+  "topicReceived": "✅ Topic received:\n<i>{topic}</i>",
+  "selectSlideCount": "📊 Select number of slides:",
+  "slides": "slides",
+  "slideCountSelected": "✅ Selected: {count} slides",
+  "selectTheme": "🎨 Select a design:",
+  "themeSelected": "✅ Design selected: {theme}",
+  "confirmGeneration": "📋 <b>Presentation details:</b>\n\nConfirm creation?\n\n💡 1 credit will be deducted.",
+  "generationStarted": "🚀 Presentation generation started!",
+  "generationQueued": "⏳ <b>Added to queue</b>\n\nID: <code>{id}</code>\n\nWe'll notify you when it's ready.",
+  "generationCancelled": "❌ Generation cancelled.",
+  "insufficientCredits": "❌ Insufficient credits! Please top up your balance.",
+  "missingData": "❌ Data is incomplete. Please start over.",
+  "noPresentations": "📭 You don't have any presentations yet.",
+  "yourPresentations": "📑 <b>Your presentations:</b>",
+  "buttons": {
+    "newPresentation": "📝 New presentation",
+    "myPresentations": "📑 My presentations",
+    "balance": "💰 Balance",
+    "language": "🌐 Language",
+    "confirm": "✅ Confirm",
+    "cancel": "❌ Cancel",
+    "downloadPptx": "📥 Download PPTX",
+    "downloadPdf": "📥 Download PDF",
+    "backToMenu": "🔙 Back to menu"
+  },
+  "themes": {
+    "academic_blue": "🎓 Academic Blue",
+    "minimal_white": "⚪ Minimal White",
+    "modern_dark": "🌙 Modern Dark"
+  },
+  "status": {
+    "pending": "⏳ Pending",
+    "processing": "⚙️ Processing",
+    "completed": "✅ Completed",
+    "failed": "❌ Failed"
+  },
+  "admin": {
+    "pendingPayments": "💳 Pending payments",
+    "stats": "📊 Statistics",
+    "broadcast": "📢 Broadcast"
+  },
+  "progress": {
+    "outline": "📋 Creating outline...",
+    "content": "✍️ Writing content...",
+    "layout": "🎨 Preparing design...",
+    "assets": "🖼️ Selecting images...",
+    "rendering": "🔧 Creating PPTX...",
+    "uploading": "📤 Uploading...",
+    "done": "✅ Done!"
+  },
+  "errors": {
+    "unknown": "An unknown error occurred",
+    "aiError": "Error connecting to AI service",
+    "renderError": "Error creating presentation",
+    "storageError": "Error saving file"
+  }
+}

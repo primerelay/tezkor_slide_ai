@@ -1,0 +1,107 @@
+import { Injectable, Logger } from '@nestjs/common';
+import PptxGenJS from 'pptxgenjs';
+import { PipelineOutput } from '../ai/pipeline/presentation.pipeline';
+import { SlideWithAssets } from '../ai/agents/asset.agent';
+import { ThemeConfig } from './themes/theme.interface';
+import { AcademicBlueTheme } from './themes/academic-blue.theme';
+import { MinimalWhiteTheme } from './themes/minimal-white.theme';
+import { ModernDarkTheme } from './themes/modern-dark.theme';
+import { HeroLayout } from './layouts/hero.layout';
+import { BulletsLayout } from './layouts/bullets.layout';
+import { TimelineLayout } from './layouts/timeline.layout';
+import { ComparisonLayout } from './layouts/comparison.layout';
+import { StatisticsLayout } from './layouts/statistics.layout';
+import { QuoteLayout } from './layouts/quote.layout';
+import { ConclusionLayout } from './layouts/conclusion.layout';
+import { LayoutRenderer } from './layouts/layout.interface';
+
+@Injectable()
+export class RendererService {
+  private readonly logger = new Logger(RendererService.name);
+  private readonly themes: Map<string, ThemeConfig>;
+  private readonly layouts: Map<string, LayoutRenderer>;
+
+  constructor(
+    private readonly academicBlueTheme: AcademicBlueTheme,
+    private readonly minimalWhiteTheme: MinimalWhiteTheme,
+    private readonly modernDarkTheme: ModernDarkTheme,
+    private readonly heroLayout: HeroLayout,
+    private readonly bulletsLayout: BulletsLayout,
+    private readonly timelineLayout: TimelineLayout,
+    private readonly comparisonLayout: ComparisonLayout,
+    private readonly statisticsLayout: StatisticsLayout,
+    private readonly quoteLayout: QuoteLayout,
+    private readonly conclusionLayout: ConclusionLayout,
+  ) {
+    this.themes = new Map([
+      ['academic_blue', this.academicBlueTheme.getConfig()],
+      ['minimal_white', this.minimalWhiteTheme.getConfig()],
+      ['modern_dark', this.modernDarkTheme.getConfig()],
+    ]);
+
+    this.layouts = new Map<string, LayoutRenderer>([
+      ['hero', this.heroLayout],
+      ['bullets', this.bulletsLayout],
+      ['timeline', this.timelineLayout],
+      ['comparison', this.comparisonLayout],
+      ['statistics', this.statisticsLayout],
+      ['quote', this.quoteLayout],
+      ['conclusion', this.conclusionLayout],
+    ]);
+  }
+
+  async renderPresentation(pipelineOutput: PipelineOutput): Promise<Buffer> {
+    this.logger.log(`Rendering presentation: ${pipelineOutput.title}`);
+
+    const theme = this.themes.get(pipelineOutput.theme);
+    if (!theme) {
+      throw new Error(`Unknown theme: ${pipelineOutput.theme}`);
+    }
+
+    const pptx = new PptxGenJS();
+
+    pptx.layout = 'LAYOUT_16x9';
+    pptx.title = pipelineOutput.title;
+    pptx.subject = pipelineOutput.subtitle;
+    pptx.author = 'Tezkor Slide AI';
+    pptx.company = 'Tezkor';
+
+    for (const slideData of pipelineOutput.slides) {
+      this.renderSlide(pptx, slideData, theme);
+    }
+
+    this.logger.log(`Rendered ${pipelineOutput.slides.length} slides`);
+
+    const uint8Array = (await pptx.write({ outputType: 'uint8array' })) as Uint8Array;
+    return Buffer.from(uint8Array);
+  }
+
+  private renderSlide(
+    pptx: PptxGenJS,
+    slideData: SlideWithAssets,
+    theme: ThemeConfig,
+  ): void {
+    const layoutRenderer = this.layouts.get(slideData.type);
+
+    if (layoutRenderer) {
+      layoutRenderer.render(pptx, slideData, theme);
+    } else {
+      this.logger.warn(
+        `Unknown slide type: ${slideData.type}, using bullets layout`,
+      );
+      this.bulletsLayout.render(pptx, slideData, theme);
+    }
+  }
+
+  async renderToBuffer(pipelineOutput: PipelineOutput): Promise<Buffer> {
+    return this.renderPresentation(pipelineOutput);
+  }
+
+  getAvailableThemes(): string[] {
+    return Array.from(this.themes.keys());
+  }
+
+  getAvailableLayouts(): string[] {
+    return Array.from(this.layouts.keys());
+  }
+}

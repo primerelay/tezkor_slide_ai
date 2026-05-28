@@ -1,0 +1,69 @@
+{
+  "welcome": "Assalomu alaykum, {name}! 👋\n\nTezkor Slide AI ga xush kelibsiz!\n\nBu bot yordamida siz bir necha daqiqada professional prezentatsiyalar yaratishingiz mumkin.",
+  "mainMenuText": "Asosiy menyu",
+  "selectLanguage": "Tilni tanlang / Выберите язык / Select language:",
+  "languageChanged": "Til o'zgartirildi",
+  "languageSet": "✅ Til o'zbek tiliga o'zgartirildi",
+  "help": "<b>Tezkor Slide AI - Yordam</b>\n\n📝 <b>Prezentatsiya yaratish:</b>\n1. \"Yangi prezentatsiya\" tugmasini bosing\n2. Mavzuni kiriting\n3. Slaydlar sonini tanlang\n4. Dizayn turini tanlang\n5. Yaratishni tasdiqlang\n\n💰 <b>Balans:</b>\nHar bir prezentatsiya 1 kredit turadi.\nBoshlang'ich: 3 ta bepul kredit.\n\n🔧 <b>Buyruqlar:</b>\n/start - Botni qayta ishga tushirish\n/new - Yangi prezentatsiya\n/balance - Balansni tekshirish\n/language - Tilni o'zgartirish\n/help - Yordam",
+  "balance": "💰 <b>Sizning balansingiz:</b> {credits} kredit",
+  "enterTopic": "📝 <b>Prezentatsiya mavzusini kiriting</b>\n\nMisol: \"Ekologiya va atrof-muhit muhofazasi\"\n\nMavzu 5 dan 500 gacha belgidan iborat bo'lishi kerak.",
+  "topicTooShort": "❌ Mavzu juda qisqa. Kamida 5 ta belgi kiriting.",
+  "topicTooLong": "❌ Mavzu juda uzun. Maksimum 500 ta belgi.",
+  "topicReceived": "✅ Mavzu qabul qilindi:\n<i>{topic}</i>",
+  "selectSlideCount": "📊 Slaydlar sonini tanlang:",
+  "slides": "slayd",
+  "slideCountSelected": "✅ Tanlandi: {count} slayd",
+  "selectTheme": "🎨 Dizayn turini tanlang:",
+  "themeSelected": "✅ Dizayn tanlandi: {theme}",
+  "confirmGeneration": "📋 <b>Prezentatsiya ma'lumotlari:</b>\n\nYaratishni tasdiqlaysizmi?\n\n💡 1 kredit sarflanadi.",
+  "generationStarted": "🚀 Prezentatsiya yaratish boshlandi!",
+  "generationQueued": "⏳ <b>Navbatga qo'shildi</b>\n\nID: <code>{id}</code>\n\nTayyor bo'lganda xabar beramiz.",
+  "generationCancelled": "❌ Yaratish bekor qilindi.",
+  "presentationReady": "✅ <b>Prezentatsiya tayyor!</b>\n\n📝 Mavzu: {topic}\n\nYuqoridagi faylni yuklab oling.",
+  "insufficientCredits": "❌ Kredit yetarli emas! Balansni to'ldiring.",
+  "missingData": "❌ Ma'lumotlar to'liq emas. Qaytadan boshlang.",
+  "noPresentations": "📭 Sizda hali prezentatsiyalar yo'q.",
+  "yourPresentations": "📑 <b>Sizning prezentatsiyalaringiz:</b>",
+  "buttons": {
+    "newPresentation": "📝 Yangi prezentatsiya",
+    "myPresentations": "📑 Mening prezentatsiyalarim",
+    "balance": "💰 Balans",
+    "language": "🌐 Til",
+    "confirm": "✅ Tasdiqlash",
+    "cancel": "❌ Bekor qilish",
+    "downloadPptx": "📥 PPTX yuklash",
+    "downloadPdf": "📥 PDF yuklash",
+    "backToMenu": "🔙 Menyuga qaytish"
+  },
+  "themes": {
+    "academic_blue": "🎓 Akademik ko'k",
+    "minimal_white": "⚪ Minimal oq",
+    "modern_dark": "🌙 Zamonaviy qorong'i"
+  },
+  "status": {
+    "pending": "⏳ Kutilmoqda",
+    "processing": "⚙️ Yaratilmoqda",
+    "completed": "✅ Tayyor",
+    "failed": "❌ Xatolik"
+  },
+  "admin": {
+    "pendingPayments": "💳 Kutilayotgan to'lovlar",
+    "stats": "📊 Statistika",
+    "broadcast": "📢 Xabar yuborish"
+  },
+  "progress": {
+    "outline": "📋 Tuzilma yaratilmoqda...",
+    "content": "✍️ Kontent yozilmoqda...",
+    "layout": "🎨 Dizayn tayyorlanmoqda...",
+    "assets": "🖼️ Rasmlar tanlanmoqda...",
+    "rendering": "🔧 PPTX yaratilmoqda...",
+    "uploading": "📤 Yuklanmoqda...",
+    "done": "✅ Tayyor!"
+  },
+  "errors": {
+    "unknown": "Noma'lum xatolik yuz berdi",
+    "aiError": "AI xizmati bilan bog'lanishda xatolik",
+    "renderError": "Prezentatsiya yaratishda xatolik",
+    "storageError": "Faylni saqlashda xatolik"
+  }
+}
