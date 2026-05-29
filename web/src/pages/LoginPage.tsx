@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { Sparkles, Phone, Lock, LogIn, AlertCircle } from 'lucide-react';
+import { Phone, Lock, LogIn, AlertCircle } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 
 export default function LoginPage() {
@@ -56,9 +56,7 @@ export default function LoginPage() {
         <div className="bg-white rounded-3xl shadow-2xl p-8">
           {/* Logo */}
           <div className="text-center mb-8">
-            <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center mx-auto mb-4 shadow-lg">
-              <Sparkles className="w-8 h-8 text-white" />
-            </div>
+            <img src="/logo.png" alt="SliderAI" className="w-16 h-16 rounded-2xl mx-auto mb-4 shadow-lg" />
             <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
             <p className="text-gray-500 mt-1">SliderAI UZ boshqaruv paneli</p>
           </div>

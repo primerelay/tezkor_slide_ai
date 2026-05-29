@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
-  Sparkles, Users, FileText, DollarSign, TrendingUp, TrendingDown,
+  Users, FileText, DollarSign, TrendingUp, TrendingDown,
   LogOut, BarChart3, Bot, RefreshCw
 } from 'lucide-react';
 import {
@@ -84,9 +84,7 @@ export default function DashboardPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center">
-                <Sparkles className="w-5 h-5 text-white" />
-              </div>
+              <img src="/logo.png" alt="SliderAI" className="w-10 h-10 rounded-xl" />
               <div>
                 <h1 className="font-bold text-gray-900">Admin Panel</h1>
                 <p className="text-xs text-gray-500">{admin?.name}</p>
