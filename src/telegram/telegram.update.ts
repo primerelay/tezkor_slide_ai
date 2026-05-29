@@ -97,6 +97,65 @@ export class TelegramUpdate {
     });
   }
 
+  @Command('add_balance')
+  async onAddBalanceCommand(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    // Check if admin
+    if (!this.telegramService.isAdmin(telegramUser.id.toString())) {
+      await ctx.reply('❌ Sizda ruxsat yo\'q!');
+      return;
+    }
+
+    const message = ctx.message;
+    if (!message || !('text' in message)) return;
+
+    // Parse command: /add_balance @username 5000 or /add_balance 1234567890 5000
+    const parts = message.text.split(' ').filter(p => p.trim());
+
+    if (parts.length < 3) {
+      await ctx.reply(
+        '📝 <b>Foydalanish:</b>\n\n' +
+        '<code>/add_balance @username 5000</code>\n' +
+        '<code>/add_balance telegram_id 5000</code>\n\n' +
+        'Misol:\n' +
+        '<code>/add_balance @joe_devv 5000</code>\n' +
+        '<code>/add_balance 1357290180 10000</code>',
+        { parse_mode: 'HTML' }
+      );
+      return;
+    }
+
+    const identifier = parts[1].replace('@', '');
+    const amount = parseInt(parts[2], 10);
+
+    if (isNaN(amount) || amount <= 0) {
+      await ctx.reply('❌ Noto\'g\'ri summa. Musbat raqam kiriting.');
+      return;
+    }
+
+    // Try to find user by username or telegram ID
+    const user = await this.telegramService.findUserByUsernameOrTelegramId(identifier);
+
+    if (!user) {
+      await ctx.reply(`❌ User topilmadi: ${identifier}`);
+      return;
+    }
+
+    // Add balance
+    await this.telegramService.addCreditsById(user.id, amount);
+
+    await ctx.reply(
+      `✅ <b>Balans to'ldirildi!</b>\n\n` +
+      `👤 User: ${user.firstName || 'N/A'} (@${user.username || 'N/A'})\n` +
+      `🆔 ID: ${user.telegramId}\n` +
+      `💰 Qo'shildi: +${amount.toLocaleString()} so'm\n` +
+      `💳 Yangi balans: ${user.credits + amount} so'm`,
+      { parse_mode: 'HTML' }
+    );
+  }
+
   @Command('help')
   async onHelp(@Ctx() ctx: BotContext) {
     const i18n = this.telegramService.getI18n(ctx.session.language || 'uz');

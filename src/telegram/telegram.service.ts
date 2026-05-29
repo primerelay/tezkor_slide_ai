@@ -219,4 +219,20 @@ export class TelegramService {
   isAdmin(telegramId: string): boolean {
     return this.adminTelegramIds.includes(parseInt(telegramId, 10));
   }
+
+  async findUserByUsernameOrTelegramId(identifier: string): Promise<User | null> {
+    // First try to find by username
+    let user = await this.userRepository.findOne({
+      where: { username: identifier },
+    });
+
+    if (user) return user;
+
+    // Try to find by telegram ID
+    user = await this.userRepository.findOne({
+      where: { telegramId: identifier },
+    });
+
+    return user;
+  }
 }
