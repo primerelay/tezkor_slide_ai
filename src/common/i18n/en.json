@@ -15,7 +15,7 @@
   "askReja": "📋 <b>Do you need an outline page?</b>\n\nThe outline shows the main topics on page 2.",
   "rejaYes": "✅ Outline will be included",
   "rejaNo": "📝 Continue without outline",
-  "paymentInstructions": "💳 <b>Top up balance</b>\n\n📱 Card number:\n<code>8600 1234 5678 9012</code>\n\n👤 Owner: Tezkor Slide AI\n\n✅ After payment, send a screenshot.\n\nAdmin will verify and top up your balance.",
+  "paymentInstructions": "💳 <b>Top up balance</b>\n\n📱 Card number:\n<code>{cardNumber}</code>\n\n👤 Owner: {cardOwner}\n\n✅ After payment, send a screenshot.\n\nAdmin will verify and top up your balance.",
   "paymentReceived": "✅ <b>Screenshot received!</b>\n\nAdmin will verify and top up your balance soon.\n\nThank you for your patience! 🙏",
   "topicTooShort": "❌ Topic is too short. Enter at least 5 characters.",
   "topicTooLong": "❌ Topic is too long. Maximum 500 characters.",

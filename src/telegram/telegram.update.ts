@@ -276,8 +276,11 @@ export class TelegramUpdate {
     const i18n = this.telegramService.getI18n(user.language);
     ctx.session.awaitingPaymentScreenshot = true;
 
+    const cardNumber = this.configService.get<string>('payment.cardNumber') || '8600 1234 5678 9012';
+    const cardOwner = this.configService.get<string>('payment.cardOwner') || 'Tezkor Slide AI';
+
     await ctx.answerCbQuery();
-    await ctx.reply(i18n.t('paymentInstructions'), { parse_mode: 'HTML' });
+    await ctx.reply(i18n.t('paymentInstructions', { cardNumber, cardOwner }), { parse_mode: 'HTML' });
   }
 
   @Action(/^reja_(yes|no)$/)

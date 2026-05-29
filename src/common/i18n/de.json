@@ -15,7 +15,7 @@
   "askReja": "📋 <b>Benötigen Sie eine Gliederungsseite?</b>\n\nDie Gliederung zeigt die Hauptthemen auf Seite 2.",
   "rejaYes": "✅ Gliederung wird hinzugefügt",
   "rejaNo": "📝 Ohne Gliederung fortfahren",
-  "paymentInstructions": "💳 <b>Guthaben aufladen</b>\n\n📱 Kartennummer:\n<code>8600 1234 5678 9012</code>\n\n👤 Inhaber: Tezkor Slide AI\n\n✅ Nach der Zahlung senden Sie einen Screenshot.\n\nDer Admin wird prüfen und Ihr Guthaben aufladen.",
+  "paymentInstructions": "💳 <b>Guthaben aufladen</b>\n\n📱 Kartennummer:\n<code>{cardNumber}</code>\n\n👤 Inhaber: {cardOwner}\n\n✅ Nach der Zahlung senden Sie einen Screenshot.\n\nDer Admin wird prüfen und Ihr Guthaben aufladen.",
   "paymentReceived": "✅ <b>Screenshot erhalten!</b>\n\nDer Admin wird prüfen und Ihr Guthaben bald aufladen.\n\nVielen Dank für Ihre Geduld! 🙏",
   "topicTooShort": "❌ Thema ist zu kurz. Geben Sie mindestens 5 Zeichen ein.",
   "topicTooLong": "❌ Thema ist zu lang. Maximal 500 Zeichen.",

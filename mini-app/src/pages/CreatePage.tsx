@@ -6,49 +6,63 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Sparkles, Check } from 'lucide-react';
 import { Translations } from '../i18n/translations';
 
-// Template type
+// Template type - matches backend theme-registry.ts
 interface Template {
   id: string;
-  nameKey: keyof Pick<Translations, 'modern' | 'academic' | 'minimalist' | 'nature' | 'sunset' | 'elegant'>;
+  nameKey: string;
+  emoji: string;
   preview: string;
   textColor: string;
 }
 
-// Professional templates with background images
+// Professional templates matching backend themes
 const templates: Template[] = [
   {
-    id: 'modern-purple',
-    nameKey: 'modern',
-    preview: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-    textColor: '#ffffff',
-  },
-  {
-    id: 'academic-blue',
-    nameKey: 'academic',
+    id: 'academic_blue',
+    nameKey: 'academicBlue',
+    emoji: '🎓',
     preview: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
     textColor: '#ffffff',
   },
   {
-    id: 'minimal-light',
-    nameKey: 'minimalist',
-    preview: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-    textColor: '#1e293b',
+    id: 'editorial_serif',
+    nameKey: 'editorialSerif',
+    emoji: '📰',
+    preview: 'linear-gradient(135deg, #1c1917 0%, #44403c 100%)',
+    textColor: '#ffffff',
   },
   {
-    id: 'nature-green',
-    nameKey: 'nature',
+    id: 'gradient_violet',
+    nameKey: 'gradientViolet',
+    emoji: '🌌',
+    preview: 'linear-gradient(135deg, #7c3aed 0%, #db2777 100%)',
+    textColor: '#ffffff',
+  },
+  {
+    id: 'scholar_green',
+    nameKey: 'scholarGreen',
+    emoji: '🌿',
     preview: 'linear-gradient(135deg, #065f46 0%, #10b981 100%)',
     textColor: '#ffffff',
   },
   {
-    id: 'sunset-orange',
-    nameKey: 'sunset',
-    preview: 'linear-gradient(135deg, #ea580c 0%, #fbbf24 100%)',
-    textColor: '#ffffff',
+    id: 'warm_sand',
+    nameKey: 'warmSand',
+    emoji: '🏛️',
+    preview: 'linear-gradient(135deg, #78716c 0%, #d6d3d1 100%)',
+    textColor: '#1c1917',
   },
   {
-    id: 'dark-elegant',
-    nameKey: 'elegant',
+    id: 'minimal_white',
+    nameKey: 'minimalWhite',
+    emoji: '⚪',
+    preview: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
+    textColor: '#1e293b',
+  },
+  {
+    id: 'modern_dark',
+    nameKey: 'modernDark',
+    emoji: '🌙',
     preview: 'linear-gradient(135deg, #0f172a 0%, #334155 100%)',
     textColor: '#ffffff',
   },
@@ -389,7 +403,10 @@ function TemplateStep({
 
             {/* Template name */}
             <div className="absolute bottom-0 left-0 right-0 p-3 z-20">
-              <div className="text-white text-sm font-medium">{t[template.nameKey]}</div>
+              <div className="text-sm font-medium flex items-center gap-1" style={{ color: template.textColor }}>
+                <span>{template.emoji}</span>
+                <span>{(t as any)[template.nameKey] || template.nameKey}</span>
+              </div>
             </div>
 
             {/* Selected indicator */}

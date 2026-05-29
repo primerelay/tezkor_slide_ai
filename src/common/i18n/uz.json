@@ -15,7 +15,7 @@
   "askReja": "📋 <b>Reja (mundarija) sahifasi kerakmi?</b>\n\nReja - mavzu bo'yicha asosiy bandlarni ko'rsatuvchi 2-sahifa.",
   "rejaYes": "✅ Reja qo'shiladi",
   "rejaNo": "📝 Rejasiz davom etiladi",
-  "paymentInstructions": "💳 <b>Balans to'ldirish</b>\n\n📱 Karta raqami:\n<code>8600 1234 5678 9012</code>\n\n👤 Egasi: Tezkor Slide AI\n\n✅ To'lov qilganingizdan so'ng screenshot yuboring.\n\nAdmin tekshirib, balansingizni to'ldiradi.",
+  "paymentInstructions": "💳 <b>Balans to'ldirish</b>\n\n📱 Karta raqami:\n<code>{cardNumber}</code>\n\n👤 Egasi: {cardOwner}\n\n✅ To'lov qilganingizdan so'ng screenshot yuboring.\n\nAdmin tekshirib, balansingizni to'ldiradi.",
   "paymentReceived": "✅ <b>Screenshot qabul qilindi!</b>\n\nAdmin tekshirib, tez orada balansingizni to'ldiradi.\n\nKutganingiz uchun rahmat! 🙏",
   "topicTooShort": "❌ Mavzu juda qisqa. Kamida 5 ta belgi kiriting.",
   "topicTooLong": "❌ Mavzu juda uzun. Maksimum 500 ta belgi.",

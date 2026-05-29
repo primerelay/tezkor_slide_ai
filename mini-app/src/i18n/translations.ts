@@ -49,7 +49,15 @@ export interface Translations {
   teacherNameOptional: string;
   namePlaceholder: string;
 
-  // Templates
+  // Templates (new - matching backend)
+  academicBlue: string;
+  editorialSerif: string;
+  gradientViolet: string;
+  scholarGreen: string;
+  warmSand: string;
+  minimalWhite: string;
+  modernDark: string;
+  // Legacy
   modern: string;
   academic: string;
   minimalist: string;
@@ -120,6 +128,15 @@ const uz: Translations = {
   teacherNameOptional: "O'qituvchi ismi (ixtiyoriy)",
   namePlaceholder: 'Ism familiya',
 
+  // New templates
+  academicBlue: "Akademik ko'k",
+  editorialSerif: 'Editorial (serif)',
+  gradientViolet: 'Gradient binafsha',
+  scholarGreen: 'Ilmiy yashil',
+  warmSand: 'Iliq qum',
+  minimalWhite: 'Minimal oq',
+  modernDark: "Zamonaviy qorong'i",
+  // Legacy
   modern: 'Zamonaviy',
   academic: 'Akademik',
   minimalist: 'Minimalist',
@@ -188,6 +205,15 @@ const ru: Translations = {
   teacherNameOptional: 'Имя преподавателя (необязательно)',
   namePlaceholder: 'Имя фамилия',
 
+  // New templates
+  academicBlue: 'Академический синий',
+  editorialSerif: 'Редакционный (serif)',
+  gradientViolet: 'Градиент фиолетовый',
+  scholarGreen: 'Научный зелёный',
+  warmSand: 'Тёплый песок',
+  minimalWhite: 'Минимал белый',
+  modernDark: 'Современный тёмный',
+  // Legacy
   modern: 'Современный',
   academic: 'Академический',
   minimalist: 'Минималистичный',
@@ -256,6 +282,15 @@ const en: Translations = {
   teacherNameOptional: 'Teacher name (optional)',
   namePlaceholder: 'Full name',
 
+  // New templates
+  academicBlue: 'Academic Blue',
+  editorialSerif: 'Editorial (serif)',
+  gradientViolet: 'Gradient Violet',
+  scholarGreen: 'Scholar Green',
+  warmSand: 'Warm Sand',
+  minimalWhite: 'Minimal White',
+  modernDark: 'Modern Dark',
+  // Legacy
   modern: 'Modern',
   academic: 'Academic',
   minimalist: 'Minimalist',
@@ -324,6 +359,15 @@ const de: Translations = {
   teacherNameOptional: 'Lehrername (optional)',
   namePlaceholder: 'Vollständiger Name',
 
+  // New templates
+  academicBlue: 'Akademisch Blau',
+  editorialSerif: 'Editorial (Serif)',
+  gradientViolet: 'Gradient Violett',
+  scholarGreen: 'Wissenschaft Grün',
+  warmSand: 'Warmer Sand',
+  minimalWhite: 'Minimal Weiß',
+  modernDark: 'Modern Dunkel',
+  // Legacy
   modern: 'Modern',
   academic: 'Akademisch',
   minimalist: 'Minimalistisch',
