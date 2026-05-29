@@ -141,7 +141,7 @@ export class RejaLayout implements LayoutRenderer {
           valign: 'middle',
         });
 
-        // Item text with subtle background
+        // Item text with subtle background (theme-aware so dark themes stay readable)
         slide.addShape(pptx.ShapeType.rect, {
           x: 1.1,
           y: y,
@@ -149,10 +149,10 @@ export class RejaLayout implements LayoutRenderer {
           h: 0.5,
           fill: {
             type: 'solid',
-            color: i % 2 === 0 ? 'F8FAFC' : 'FFFFFF',
+            color: i % 2 === 0 ? theme.colors.backgroundAlt : theme.colors.background,
           },
           line: {
-            color: 'E2E8F0',
+            color: theme.colors.border,
             width: 0.5,
           },
         });

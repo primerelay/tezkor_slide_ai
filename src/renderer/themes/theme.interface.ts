@@ -46,6 +46,14 @@ export interface ThemeFonts {
   };
 }
 
+/** Optional linear-gradient definition used for premium full-bleed backgrounds. */
+export interface ThemeGradient {
+  from: string;
+  to: string;
+  /** Gradient angle in degrees (0 = left→right, 90 = top→bottom). */
+  angle?: number;
+}
+
 export interface ThemeConfig {
   name: string;
   colors: ThemeColors;
@@ -59,6 +67,18 @@ export interface ThemeConfig {
     left: number;
   };
   gridUnit: number;
+
+  /**
+   * Premium presentation fields (all optional so legacy themes keep working).
+   */
+  /** Light themes use dark text on white; dark themes invert. Defaults to 'light'. */
+  mode?: 'light' | 'dark';
+  /** Decoration language used by layouts: bold geometry, editorial rules, or sparse. */
+  decor?: 'geometric' | 'editorial' | 'minimal';
+  /** Gradient for hero/conclusion full-bleed slides. Falls back to solid primary. */
+  gradient?: ThemeGradient;
+  /** Whether title/closing slides should use the gradient (vs. flat primary). */
+  heroGradient?: boolean;
 }
 
 export interface Theme {

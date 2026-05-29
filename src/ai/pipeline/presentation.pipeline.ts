@@ -4,6 +4,7 @@ import { ContentAgent, FullPresentationContent } from '../agents/content.agent';
 import { LayoutAgent, SlideLayout } from '../agents/layout.agent';
 import { AssetAgent, SlideWithAssets } from '../agents/asset.agent';
 import { SupportedLanguage } from '../../common/i18n/i18n.service';
+import { PresentationTheme } from '../../renderer/themes/theme-registry';
 
 export interface PipelineInput {
   topic: string;
@@ -11,7 +12,7 @@ export interface PipelineInput {
   teacherName?: string;
   includeReja?: boolean;
   slideCount: number;
-  theme: 'academic_blue' | 'minimal_white' | 'modern_dark';
+  theme: PresentationTheme;
   language: SupportedLanguage;
 }
 

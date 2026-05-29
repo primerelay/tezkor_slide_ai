@@ -63,6 +63,10 @@ export class AcademicBlueTheme implements Theme {
         left: 0.5,
       },
       gridUnit: 0.125,
+      mode: 'light',
+      decor: 'geometric',
+      gradient: { from: '1e40af', to: '3b82f6', angle: 135 },
+      heroGradient: true,
     };
   }
 }

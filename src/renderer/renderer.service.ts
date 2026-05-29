@@ -6,6 +6,10 @@ import { ThemeConfig } from './themes/theme.interface';
 import { AcademicBlueTheme } from './themes/academic-blue.theme';
 import { MinimalWhiteTheme } from './themes/minimal-white.theme';
 import { ModernDarkTheme } from './themes/modern-dark.theme';
+import { EditorialSerifTheme } from './themes/editorial-serif.theme';
+import { GradientVioletTheme } from './themes/gradient-violet.theme';
+import { ScholarGreenTheme } from './themes/scholar-green.theme';
+import { WarmSandTheme } from './themes/warm-sand.theme';
 import { HeroLayout } from './layouts/hero.layout';
 import { BulletsLayout } from './layouts/bullets.layout';
 import { TimelineLayout } from './layouts/timeline.layout';
@@ -27,6 +31,10 @@ export class RendererService {
     private readonly academicBlueTheme: AcademicBlueTheme,
     private readonly minimalWhiteTheme: MinimalWhiteTheme,
     private readonly modernDarkTheme: ModernDarkTheme,
+    private readonly editorialSerifTheme: EditorialSerifTheme,
+    private readonly gradientVioletTheme: GradientVioletTheme,
+    private readonly scholarGreenTheme: ScholarGreenTheme,
+    private readonly warmSandTheme: WarmSandTheme,
     private readonly heroLayout: HeroLayout,
     private readonly bulletsLayout: BulletsLayout,
     private readonly timelineLayout: TimelineLayout,
@@ -40,6 +48,10 @@ export class RendererService {
       ['academic_blue', this.academicBlueTheme.getConfig()],
       ['minimal_white', this.minimalWhiteTheme.getConfig()],
       ['modern_dark', this.modernDarkTheme.getConfig()],
+      ['editorial_serif', this.editorialSerifTheme.getConfig()],
+      ['gradient_violet', this.gradientVioletTheme.getConfig()],
+      ['scholar_green', this.scholarGreenTheme.getConfig()],
+      ['warm_sand', this.warmSandTheme.getConfig()],
     ]);
 
     this.layouts = new Map<string, LayoutRenderer>([
@@ -60,9 +72,12 @@ export class RendererService {
   ): Promise<Buffer> {
     this.logger.log(`Rendering presentation: ${pipelineOutput.title} (lang: ${language})`);
 
-    const theme = this.themes.get(pipelineOutput.theme);
+    let theme = this.themes.get(pipelineOutput.theme);
     if (!theme) {
-      throw new Error(`Unknown theme: ${pipelineOutput.theme}`);
+      this.logger.warn(
+        `Unknown theme "${pipelineOutput.theme}", falling back to academic_blue`,
+      );
+      theme = this.themes.get('academic_blue')!;
     }
 
     // Create i18n service for this language

@@ -9,6 +9,7 @@ import { Transaction } from '../database/entities/transaction.entity';
 import { I18nService, SupportedLanguage } from '../common/i18n/i18n.service';
 import { InlineKeyboards } from './keyboards/inline.keyboards';
 import { ConfigService } from '@nestjs/config';
+import { PresentationTheme } from '../renderer/themes/theme-registry';
 
 // Pricing in so'm
 const SLIDE_PRICES: Record<number, number> = {
@@ -130,7 +131,7 @@ export class TelegramService {
     teacherName?: string;
     includeReja?: boolean;
     slideCount: number;
-    theme: 'academic_blue' | 'minimal_white' | 'modern_dark';
+    theme: PresentationTheme;
     language: SupportedLanguage;
   }): Promise<Presentation> {
     const presentation = this.presentationRepository.create({

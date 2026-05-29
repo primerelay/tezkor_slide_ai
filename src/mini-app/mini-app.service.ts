@@ -8,6 +8,7 @@ import { Presentation } from '../database/entities/presentation.entity';
 import { TelegramService } from '../telegram/telegram.service';
 import { CreatePresentationDto, TemplateDto } from './dto/mini-app.dto';
 import { PRESENTATION_QUEUE } from '../queue/constants';
+import { PresentationTheme } from '../renderer/themes/theme-registry';
 
 @Injectable()
 export class MiniAppService {
@@ -132,13 +133,14 @@ export class MiniAppService {
     }
 
     // Map template ID to theme
-    const themeMap: Record<string, 'academic_blue' | 'minimal_white' | 'modern_dark'> = {
+    const themeMap: Record<string, PresentationTheme> = {
       'academic-blue': 'academic_blue',
       'minimal-white': 'minimal_white',
       'modern-dark': 'modern_dark',
-      'gradient-purple': 'modern_dark',
-      'professional-green': 'academic_blue',
-      'warm-orange': 'minimal_white',
+      'gradient-purple': 'gradient_violet',
+      'professional-green': 'scholar_green',
+      'warm-orange': 'warm_sand',
+      editorial: 'editorial_serif',
     };
 
     const theme = themeMap[dto.presentation.template?.id || 'academic-blue'] || 'academic_blue';

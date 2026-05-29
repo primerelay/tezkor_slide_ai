@@ -50,6 +50,10 @@
   },
   "themes": {
     "academic_blue": "🎓 Академический синий",
+    "editorial_serif": "📰 Editorial (serif)",
+    "gradient_violet": "🌌 Градиент фиолетовый",
+    "scholar_green": "🌿 Научный зелёный",
+    "warm_sand": "🏛️ Тёплый песок",
     "minimal_white": "⚪ Минимальный белый",
     "modern_dark": "🌙 Современный темный"
   },

@@ -5,6 +5,10 @@ import { TelegramService } from './telegram.service';
 import { InlineKeyboards } from './keyboards/inline.keyboards';
 import { JobEventsService } from '../queue/events/job.events';
 import { SupportedLanguage } from '../common/i18n/i18n.service';
+import {
+  PresentationTheme,
+  normalizeTheme,
+} from '../renderer/themes/theme-registry';
 
 interface SessionData extends Scenes.SceneSession {
   language?: SupportedLanguage;
@@ -13,7 +17,7 @@ interface SessionData extends Scenes.SceneSession {
   teacherName?: string;
   includeReja?: boolean;
   slideCount?: number;
-  theme?: 'academic_blue' | 'minimal_white' | 'modern_dark';
+  theme?: PresentationTheme;
   userId?: number;
   step?: 'topic' | 'student_name' | 'teacher_name' | 'reja' | 'slides' | 'theme' | 'confirm';
   awaitingPaymentScreenshot?: boolean;
@@ -366,10 +370,7 @@ export class TelegramUpdate {
     const callbackQuery = ctx.callbackQuery;
     if (!callbackQuery || !('data' in callbackQuery)) return;
 
-    const theme = callbackQuery.data.replace('theme_', '') as
-      | 'academic_blue'
-      | 'minimal_white'
-      | 'modern_dark';
+    const theme = normalizeTheme(callbackQuery.data.replace('theme_', ''));
     ctx.session.theme = theme;
 
     const i18n = this.telegramService.getI18n(ctx.session.language || 'uz');

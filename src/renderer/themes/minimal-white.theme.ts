@@ -63,6 +63,10 @@ export class MinimalWhiteTheme implements Theme {
         left: 0.5,
       },
       gridUnit: 0.125,
+      mode: 'light',
+      decor: 'minimal',
+      gradient: { from: '111827', to: '374151', angle: 135 },
+      heroGradient: false,
     };
   }
 }

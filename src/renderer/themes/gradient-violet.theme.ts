@@ -1,57 +1,62 @@
 import { Injectable } from '@nestjs/common';
 import { Theme, ThemeConfig } from './theme.interface';
 
+/**
+ * Gradient Violet — a modern, vibrant theme inspired by contemporary
+ * product decks. Light, readable content slides with violet headers and
+ * a bold violet→fuchsia gradient on title/closing slides.
+ */
 @Injectable()
-export class ModernDarkTheme implements Theme {
-  readonly name = 'modern_dark';
+export class GradientVioletTheme implements Theme {
+  readonly name = 'gradient_violet';
 
   getConfig(): ThemeConfig {
     return {
       name: this.name,
       colors: {
-        primary: '818cf8',
-        secondary: '6366f1',
-        accent: 'a5b4fc',
-        background: '0f172a',
-        backgroundAlt: '1e293b',
-        text: 'f1f5f9',
-        textMuted: '94a3b8',
-        textInverse: '0f172a',
-        border: '334155',
-        success: '34d399',
-        warning: 'fbbf24',
-        error: 'f87171',
+        primary: '7c3aed',
+        secondary: 'a78bfa',
+        accent: 'db2777',
+        background: 'ffffff',
+        backgroundAlt: 'f5f3ff',
+        text: '1e1b2e',
+        textMuted: '6b7280',
+        textInverse: 'ffffff',
+        border: 'ede9fe',
+        success: '16a34a',
+        warning: 'f59e0b',
+        error: 'e11d48',
       },
       fonts: {
         title: {
           face: 'Arial',
-          size: 44,
+          size: 48,
           bold: true,
-          color: 'f1f5f9',
+          color: '7c3aed',
         },
         subtitle: {
           face: 'Arial',
           size: 24,
           bold: false,
-          color: '94a3b8',
+          color: '6b7280',
         },
         heading: {
           face: 'Arial',
           size: 32,
           bold: true,
-          color: 'f1f5f9',
+          color: '7c3aed',
         },
         body: {
           face: 'Arial',
           size: 18,
           bold: false,
-          color: 'e2e8f0',
+          color: '1e1b2e',
         },
         caption: {
           face: 'Arial',
           size: 14,
           bold: false,
-          color: '94a3b8',
+          color: '6b7280',
         },
       },
       slideWidth: 10,
@@ -63,9 +68,9 @@ export class ModernDarkTheme implements Theme {
         left: 0.5,
       },
       gridUnit: 0.125,
-      mode: 'dark',
+      mode: 'light',
       decor: 'geometric',
-      gradient: { from: '4f46e5', to: '818cf8', angle: 135 },
+      gradient: { from: '7c3aed', to: 'db2777', angle: 135 },
       heroGradient: true,
     };
   }

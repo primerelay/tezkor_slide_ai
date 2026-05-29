@@ -1,5 +1,6 @@
 import { Markup } from 'telegraf';
 import { I18nService } from '../../common/i18n/i18n.service';
+import { THEME_META } from '../../renderer/themes/theme-registry';
 
 export class InlineKeyboards {
   static languageSelection() {
@@ -67,11 +68,15 @@ export class InlineKeyboards {
   }
 
   static themeSelection(i18n: I18nService) {
-    return Markup.inlineKeyboard([
-      [Markup.button.callback(i18n.t('themes.academic_blue'), 'theme_academic_blue')],
-      [Markup.button.callback(i18n.t('themes.minimal_white'), 'theme_minimal_white')],
-      [Markup.button.callback(i18n.t('themes.modern_dark'), 'theme_modern_dark')],
-    ]).reply_markup;
+    const rows = THEME_META.map((meta) => {
+      const label = i18n.t(`themes.${meta.key}`);
+      // Fall back to emoji + hard-coded label if the i18n key is missing.
+      const text = label === `themes.${meta.key}`
+        ? `${meta.emoji} ${meta.fallbackLabel}`
+        : label;
+      return [Markup.button.callback(text, `theme_${meta.key}`)];
+    });
+    return Markup.inlineKeyboard(rows).reply_markup;
   }
 
   static confirmGeneration(i18n: I18nService) {

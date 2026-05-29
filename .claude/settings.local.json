@@ -46,7 +46,16 @@
       "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicGhvbmUiOiI5OTg5MDEyMzQ1NjciLCJpYXQiOjE3ODAwNTU4MDIsImV4cCI6MTc4MDY2MDYwMn0.wqo0fjTmTV9bxg9kosmOaNEhUk4-JDRmgA95CdrQ7Rg\")",
       "Bash(python3:*)",
       "Bash(psql:*)",
-      "Bash(pgrep:*)"
+      "Bash(pgrep:*)",
+      "mcp__Claude_in_Chrome__computer",
+      "Bash(npx tsc *)",
+      "Bash(npx nest *)",
+      "Bash(which soffice *)",
+      "Bash(awk '{print $5, $9}')",
+      "Bash(ls MEMORY.md)",
+      "Bash(cat MEMORY.md)",
+      "WebFetch(domain:openrouter.ai)",
+      "WebSearch"
     ]
   }
 }

@@ -3,6 +3,13 @@ import PptxGenJS from 'pptxgenjs';
 import { LayoutRenderer, PresentationMeta } from './layout.interface';
 import { ThemeConfig } from '../themes/theme.interface';
 import { SlideWithAssets } from '../../ai/agents/asset.agent';
+import {
+  SLIDE_W,
+  SLIDE_H,
+  applyHeroBackground,
+  darkenColor,
+  lightenColor,
+} from './layout.helpers';
 
 @Injectable()
 export class ConclusionLayout implements LayoutRenderer {
@@ -16,133 +23,82 @@ export class ConclusionLayout implements LayoutRenderer {
   ): PptxGenJS.Slide {
     const slide = pptx.addSlide();
     const i18n = presentationMeta?.i18n;
+    const editorial = theme.decor === 'editorial';
 
-    // Get translated thank you message
-    const thankYouText = i18n?.t('presentation.thankYou') || "E'tiboringiz uchun rahmat!";
+    const thankYouText =
+      i18n?.t('presentation.thankYou') || "E'tiboringiz uchun rahmat!";
 
-    // Full background with primary color
-    slide.background = { color: theme.colors.primary };
+    // Full-bleed premium background (gradient or solid).
+    applyHeroBackground(slide, pptx, theme);
 
-    // Decorative corner shapes (matching hero layout style)
+    if (!editorial) {
+      slide.addShape(pptx.ShapeType.ellipse, {
+        x: 7.6,
+        y: -0.8,
+        w: 3.4,
+        h: 3.4,
+        fill: { type: 'solid', color: lightenColor(theme.colors.primary, 12), transparency: 55 },
+        line: { type: 'none' },
+      });
+    }
+
+    // Top-left accent marker.
     slide.addShape(pptx.ShapeType.rect, {
-      x: 0,
-      y: 0,
-      w: 0.15,
-      h: 2.5,
-      fill: {
-        type: 'solid',
-        color: theme.colors.accent,
-      },
+      x: 0.6,
+      y: 0.55,
+      w: editorial ? 1.4 : 0.7,
+      h: editorial ? 0.04 : 0.12,
+      fill: { type: 'solid', color: editorial ? theme.colors.accent : theme.colors.textInverse },
+      line: { type: 'none' },
     });
 
-    slide.addShape(pptx.ShapeType.rect, {
-      x: 0,
-      y: 0,
-      w: 3,
-      h: 0.08,
-      fill: {
-        type: 'solid',
-        color: theme.colors.accent,
-      },
-    });
-
-    // Right side decorative circles
-    slide.addShape(pptx.ShapeType.ellipse, {
-      x: 7.5,
-      y: -0.5,
-      w: 3,
-      h: 3,
-      fill: {
-        type: 'solid',
-        color: theme.colors.secondary,
-      },
-    });
-
-    slide.addShape(pptx.ShapeType.ellipse, {
-      x: 8.5,
-      y: 3,
-      w: 2,
-      h: 2,
-      fill: {
-        type: 'solid',
-        color: theme.colors.accent,
-      },
-    });
-
-    // Title with icon
-    slide.addText('📝', {
-      x: 3.5,
-      y: 0.4,
-      w: 0.8,
-      h: 0.8,
-      fontSize: 28,
-      align: 'center',
-      valign: 'middle',
-    });
-
-    slide.addText(slideData.title.toUpperCase(), {
-      x: 0.5,
-      y: 1.1,
-      w: 9,
-      h: 0.8,
-      fontSize: theme.fonts.heading.size + 2,
+    // Title.
+    slide.addText(editorial ? slideData.title : slideData.title.toUpperCase(), {
+      x: 0.6,
+      y: 1.0,
+      w: SLIDE_W - 1.2,
+      h: 0.9,
+      fontSize: theme.fonts.heading.size + 4,
       fontFace: theme.fonts.heading.face,
       color: theme.colors.textInverse,
       bold: true,
-      align: 'center',
+      align: editorial ? 'left' : 'center',
       valign: 'middle',
     });
 
-    // Decorative line under title
-    slide.addShape(pptx.ShapeType.rect, {
-      x: 3,
-      y: 1.95,
-      w: 4,
-      h: 0.04,
-      fill: {
-        type: 'solid',
-        color: theme.colors.textInverse,
-      },
-    });
-
-    // Conclusion bullets with checkmark style
+    // Checkmark takeaways.
     if (slideData.bullets && slideData.bullets.length > 0) {
-      const startY = 2.3;
-      const itemHeight = 0.65;
+      const items = slideData.bullets.slice(0, 4);
+      const startY = 2.25;
+      const itemHeight = 0.62;
 
-      slideData.bullets.forEach((bullet, index) => {
+      items.forEach((bullet, index) => {
         const y = startY + index * itemHeight;
 
-        // Checkmark circle
         slide.addShape(pptx.ShapeType.ellipse, {
-          x: 1.3,
-          y: y + 0.05,
-          w: 0.35,
-          h: 0.35,
-          fill: {
-            type: 'solid',
-            color: theme.colors.accent,
-          },
+          x: editorial ? 0.62 : 1.3,
+          y: y + 0.04,
+          w: 0.36,
+          h: 0.36,
+          fill: { type: 'solid', color: theme.colors.accent },
+          line: { type: 'none' },
         });
-
         slide.addText('✓', {
-          x: 1.3,
-          y: y + 0.05,
-          w: 0.35,
-          h: 0.35,
+          x: editorial ? 0.62 : 1.3,
+          y: y + 0.04,
+          w: 0.36,
+          h: 0.36,
           fontSize: 14,
           color: theme.colors.textInverse,
           align: 'center',
           valign: 'middle',
           bold: true,
         });
-
-        // Bullet text
         slide.addText(bullet, {
-          x: 1.8,
+          x: editorial ? 1.15 : 1.85,
           y: y,
-          w: 6.5,
-          h: 0.5,
+          w: 7.2,
+          h: 0.46,
           fontSize: theme.fonts.body.size,
           fontFace: theme.fonts.body.face,
           color: theme.colors.textInverse,
@@ -152,23 +108,25 @@ export class ConclusionLayout implements LayoutRenderer {
       });
     }
 
-    // Bottom section with darker background
+    // Bottom thank-you bar.
+    const barColor =
+      theme.heroGradient && theme.gradient
+        ? darkenColor(theme.gradient.to, 30)
+        : darkenColor(theme.colors.primary, 25);
+
     slide.addShape(pptx.ShapeType.rect, {
       x: 0,
-      y: 4.5,
-      w: '100%',
+      y: SLIDE_H - 1,
+      w: SLIDE_W,
       h: 1,
-      fill: {
-        type: 'solid',
-        color: this.darkenColor(theme.colors.primary, 25),
-      },
+      fill: { type: 'solid', color: barColor },
+      line: { type: 'none' },
     });
 
-    // Thank you message with decorative elements
     slide.addText(thankYouText, {
       x: 0.5,
-      y: 4.7,
-      w: 9,
+      y: SLIDE_H - 0.85,
+      w: SLIDE_W - 1,
       h: 0.6,
       fontSize: theme.fonts.subtitle.size + 2,
       fontFace: theme.fonts.subtitle.face,
@@ -179,18 +137,5 @@ export class ConclusionLayout implements LayoutRenderer {
     });
 
     return slide;
-  }
-
-  private darkenColor(hex: string, percent: number): string {
-    const color = hex.replace('#', '');
-    const r = parseInt(color.substring(0, 2), 16);
-    const g = parseInt(color.substring(2, 4), 16);
-    const b = parseInt(color.substring(4, 6), 16);
-
-    const darkenedR = Math.max(0, Math.floor(r * (1 - percent / 100)));
-    const darkenedG = Math.max(0, Math.floor(g * (1 - percent / 100)));
-    const darkenedB = Math.max(0, Math.floor(b * (1 - percent / 100)));
-
-    return `${darkenedR.toString(16).padStart(2, '0')}${darkenedG.toString(16).padStart(2, '0')}${darkenedB.toString(16).padStart(2, '0')}`;
   }
 }

@@ -20,10 +20,11 @@ export type SlideType =
   | 'quote'
   | 'conclusion';
 
-export type PresentationTheme =
-  | 'academic_blue'
-  | 'minimal_white'
-  | 'modern_dark';
+export type { PresentationTheme } from '../../renderer/themes/theme-registry';
+import {
+  PRESENTATION_THEMES,
+  PresentationTheme,
+} from '../../renderer/themes/theme-registry';
 
 export type PresentationLanguage = 'uz' | 'ru' | 'en';
 
@@ -131,7 +132,7 @@ export class CreatePresentationDto {
   @Max(20)
   slideCount: number;
 
-  @IsEnum(['academic_blue', 'minimal_white', 'modern_dark'])
+  @IsEnum([...PRESENTATION_THEMES])
   theme: PresentationTheme;
 
   @IsEnum(['uz', 'ru', 'en'])
@@ -148,7 +149,7 @@ export class PresentationOutputDto {
   @IsString()
   subtitle: string;
 
-  @IsEnum(['academic_blue', 'minimal_white', 'modern_dark'])
+  @IsEnum([...PRESENTATION_THEMES])
   theme: PresentationTheme;
 
   @IsEnum(['uz', 'ru', 'en'])

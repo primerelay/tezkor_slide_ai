@@ -50,6 +50,10 @@
   },
   "themes": {
     "academic_blue": "🎓 Akademisches Blau",
+    "editorial_serif": "📰 Editorial (Serif)",
+    "gradient_violet": "🌌 Verlauf Violett",
+    "scholar_green": "🌿 Wissenschaftsgrün",
+    "warm_sand": "🏛️ Warmer Sand",
     "minimal_white": "⚪ Minimales Weiß",
     "modern_dark": "🌙 Modern Dunkel"
   },

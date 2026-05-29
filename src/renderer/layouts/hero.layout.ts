@@ -3,6 +3,13 @@ import PptxGenJS from 'pptxgenjs';
 import { LayoutRenderer, PresentationMeta } from './layout.interface';
 import { ThemeConfig } from '../themes/theme.interface';
 import { SlideWithAssets } from '../../ai/agents/asset.agent';
+import {
+  SLIDE_W,
+  SLIDE_H,
+  applyHeroBackground,
+  darkenColor,
+  lightenColor,
+} from './layout.helpers';
 
 @Injectable()
 export class HeroLayout implements LayoutRenderer {
@@ -16,140 +23,97 @@ export class HeroLayout implements LayoutRenderer {
   ): PptxGenJS.Slide {
     const slide = pptx.addSlide();
     const i18n = presentationMeta?.i18n;
+    const editorial = theme.decor === 'editorial';
 
-    // Get translated labels
     const preparedByLabel = i18n?.t('presentation.preparedBy') || 'Tayyorladi';
     const checkedByLabel = i18n?.t('presentation.checkedBy') || 'Tekshirdi';
 
-    // Full background with primary color
-    slide.background = { color: theme.colors.primary };
+    // Full-bleed premium background (gradient or solid).
+    applyHeroBackground(slide, pptx, theme);
 
-    // Decorative top-left corner shape
+    // Soft decorative circles for geometric themes (skipped for editorial).
+    if (!editorial) {
+      slide.addShape(pptx.ShapeType.ellipse, {
+        x: 6.7,
+        y: -1.4,
+        w: 4.6,
+        h: 4.6,
+        fill: { type: 'solid', color: lightenColor(theme.colors.primary, 14), transparency: 55 },
+        line: { type: 'none' },
+      });
+      slide.addShape(pptx.ShapeType.ellipse, {
+        x: 8.2,
+        y: 2.6,
+        w: 2.6,
+        h: 2.6,
+        fill: { type: 'solid', color: lightenColor(theme.colors.accent, 10), transparency: 45 },
+        line: { type: 'none' },
+      });
+    }
+
+    // Top-left accent marker.
     slide.addShape(pptx.ShapeType.rect, {
-      x: 0,
-      y: 0,
-      w: 0.15,
-      h: 2.5,
-      fill: {
-        type: 'solid',
-        color: theme.colors.accent,
-      },
+      x: 0.6,
+      y: 0.55,
+      w: editorial ? 1.4 : 0.7,
+      h: editorial ? 0.04 : 0.12,
+      fill: { type: 'solid', color: editorial ? theme.colors.accent : theme.colors.textInverse },
+      line: { type: 'none' },
     });
 
-    // Decorative horizontal line at top
-    slide.addShape(pptx.ShapeType.rect, {
-      x: 0,
-      y: 0,
-      w: 3,
-      h: 0.08,
-      fill: {
-        type: 'solid',
-        color: theme.colors.accent,
-      },
-    });
-
-    // Large decorative circle (semi-transparent effect via lighter color)
-    slide.addShape(pptx.ShapeType.ellipse, {
-      x: 6.5,
-      y: -1,
-      w: 4,
-      h: 4,
-      fill: {
-        type: 'solid',
-        color: theme.colors.secondary,
-      },
-      line: { color: theme.colors.secondary, width: 0 },
-    });
-
-    // Smaller decorative circle
-    slide.addShape(pptx.ShapeType.ellipse, {
-      x: 8,
-      y: 2.5,
-      w: 2.5,
-      h: 2.5,
-      fill: {
-        type: 'solid',
-        color: theme.colors.accent,
-      },
-      line: { color: theme.colors.accent, width: 0 },
-    });
-
-    // Main title - centered with emphasis (positioned higher)
-    slide.addText(slideData.title.toUpperCase(), {
-      x: 0.5,
-      y: 0.8,
-      w: 9,
-      h: 1.5,
-      fontSize: theme.fonts.title.size + 4,
+    // Main title — large, high-impact.
+    const titleText = editorial ? slideData.title : slideData.title.toUpperCase();
+    slide.addText(titleText, {
+      x: 0.6,
+      y: 1.5,
+      w: SLIDE_W - 1.2,
+      h: 1.9,
+      fontSize: theme.fonts.title.size + 8,
       fontFace: theme.fonts.title.face,
       color: theme.colors.textInverse,
       bold: true,
-      align: 'center',
+      align: editorial ? 'left' : 'center',
       valign: 'middle',
+      lineSpacingMultiple: 0.95,
     });
 
-    // Subtitle with decorative lines (positioned below title with gap)
+    // Subtitle.
     if (slideData.subtitle) {
-      // Left decorative line
-      slide.addShape(pptx.ShapeType.rect, {
-        x: 1.5,
-        y: 2.7,
-        w: 1.2,
-        h: 0.03,
-        fill: {
-          type: 'solid',
-          color: theme.colors.textInverse,
-        },
-      });
-
-      // Subtitle text - wider area for longer text
       slide.addText(slideData.subtitle, {
-        x: 2.7,
-        y: 2.4,
-        w: 4.6,
-        h: 0.8,
+        x: editorial ? 0.62 : 1.5,
+        y: 3.5,
+        w: editorial ? SLIDE_W - 2.4 : SLIDE_W - 3,
+        h: 0.7,
         fontSize: theme.fonts.subtitle.size,
         fontFace: theme.fonts.subtitle.face,
         color: theme.colors.textInverse,
         bold: false,
-        align: 'center',
+        align: editorial ? 'left' : 'center',
         valign: 'middle',
-      });
-
-      // Right decorative line
-      slide.addShape(pptx.ShapeType.rect, {
-        x: 7.3,
-        y: 2.7,
-        w: 1.2,
-        h: 0.03,
-        fill: {
-          type: 'solid',
-          color: theme.colors.textInverse,
-        },
       });
     }
 
-    // Bottom info section - right aligned
-    // Background bar for info section
+    // Bottom info bar.
+    const barColor = theme.heroGradient && theme.gradient
+      ? darkenColor(theme.gradient.to, 28)
+      : darkenColor(theme.colors.primary, 22);
+
     slide.addShape(pptx.ShapeType.rect, {
       x: 0,
-      y: 4.5,
-      w: '100%',
+      y: SLIDE_H - 1,
+      w: SLIDE_W,
       h: 1,
-      fill: {
-        type: 'solid',
-        color: this.darkenColor(theme.colors.primary, 20),
-      },
+      fill: { type: 'solid', color: barColor },
+      line: { type: 'none' },
     });
 
-    // Student and Teacher info - RIGHT BOTTOM aligned
-    const infoY = 4.65;
+    const infoY = SLIDE_H - 0.86;
 
     if (presentationMeta?.studentName) {
       slide.addText(`${preparedByLabel}:`, {
-        x: 5.5,
+        x: 5.3,
         y: infoY,
-        w: 1.5,
+        w: 1.7,
         h: 0.35,
         fontSize: 11,
         fontFace: theme.fonts.body.face,
@@ -158,16 +122,14 @@ export class HeroLayout implements LayoutRenderer {
         align: 'right',
         valign: 'middle',
       });
-
       slide.addText(presentationMeta.studentName, {
-        x: 7,
+        x: 7.1,
         y: infoY,
-        w: 2.5,
+        w: 2.4,
         h: 0.35,
         fontSize: 12,
         fontFace: theme.fonts.body.face,
         color: theme.colors.textInverse,
-        bold: false,
         align: 'left',
         valign: 'middle',
       });
@@ -175,9 +137,9 @@ export class HeroLayout implements LayoutRenderer {
 
     if (presentationMeta?.teacherName) {
       slide.addText(`${checkedByLabel}:`, {
-        x: 5.5,
+        x: 5.3,
         y: infoY + 0.35,
-        w: 1.5,
+        w: 1.7,
         h: 0.35,
         fontSize: 11,
         fontFace: theme.fonts.body.face,
@@ -186,26 +148,24 @@ export class HeroLayout implements LayoutRenderer {
         align: 'right',
         valign: 'middle',
       });
-
       slide.addText(presentationMeta.teacherName, {
-        x: 7,
+        x: 7.1,
         y: infoY + 0.35,
-        w: 2.5,
+        w: 2.4,
         h: 0.35,
         fontSize: 12,
         fontFace: theme.fonts.body.face,
         color: theme.colors.textInverse,
-        bold: false,
         align: 'left',
         valign: 'middle',
       });
     }
 
-    // Year - left bottom
+    // Year — bottom left.
     slide.addText(new Date().getFullYear().toString(), {
-      x: 0.5,
+      x: 0.6,
       y: infoY + 0.15,
-      w: 1,
+      w: 1.2,
       h: 0.4,
       fontSize: 14,
       fontFace: theme.fonts.body.face,
@@ -216,20 +176,5 @@ export class HeroLayout implements LayoutRenderer {
     });
 
     return slide;
-  }
-
-  private darkenColor(hex: string, percent: number): string {
-    // Remove # if present
-    const color = hex.replace('#', '');
-
-    const r = parseInt(color.substring(0, 2), 16);
-    const g = parseInt(color.substring(2, 4), 16);
-    const b = parseInt(color.substring(4, 6), 16);
-
-    const darkenedR = Math.max(0, Math.floor(r * (1 - percent / 100)));
-    const darkenedG = Math.max(0, Math.floor(g * (1 - percent / 100)));
-    const darkenedB = Math.max(0, Math.floor(b * (1 - percent / 100)));
-
-    return `${darkenedR.toString(16).padStart(2, '0')}${darkenedG.toString(16).padStart(2, '0')}${darkenedB.toString(16).padStart(2, '0')}`;
   }
 }

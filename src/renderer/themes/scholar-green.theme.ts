@@ -1,57 +1,62 @@
 import { Injectable } from '@nestjs/common';
 import { Theme, ThemeConfig } from './theme.interface';
 
+/**
+ * Scholar Green — a calm, academic emerald theme. Great for natural
+ * sciences (biology, ecology, chemistry) and general study decks that
+ * want a fresher alternative to blue.
+ */
 @Injectable()
-export class ModernDarkTheme implements Theme {
-  readonly name = 'modern_dark';
+export class ScholarGreenTheme implements Theme {
+  readonly name = 'scholar_green';
 
   getConfig(): ThemeConfig {
     return {
       name: this.name,
       colors: {
-        primary: '818cf8',
-        secondary: '6366f1',
-        accent: 'a5b4fc',
-        background: '0f172a',
-        backgroundAlt: '1e293b',
-        text: 'f1f5f9',
-        textMuted: '94a3b8',
-        textInverse: '0f172a',
-        border: '334155',
-        success: '34d399',
-        warning: 'fbbf24',
-        error: 'f87171',
+        primary: '047857',
+        secondary: '0d9488',
+        accent: '10b981',
+        background: 'ffffff',
+        backgroundAlt: 'f0fdf4',
+        text: '14342b',
+        textMuted: '5f6b64',
+        textInverse: 'ffffff',
+        border: 'd1fae5',
+        success: '16a34a',
+        warning: 'd97706',
+        error: 'dc2626',
       },
       fonts: {
         title: {
           face: 'Arial',
-          size: 44,
+          size: 46,
           bold: true,
-          color: 'f1f5f9',
+          color: '047857',
         },
         subtitle: {
           face: 'Arial',
           size: 24,
           bold: false,
-          color: '94a3b8',
+          color: '5f6b64',
         },
         heading: {
           face: 'Arial',
           size: 32,
           bold: true,
-          color: 'f1f5f9',
+          color: '047857',
         },
         body: {
           face: 'Arial',
           size: 18,
           bold: false,
-          color: 'e2e8f0',
+          color: '14342b',
         },
         caption: {
           face: 'Arial',
           size: 14,
           bold: false,
-          color: '94a3b8',
+          color: '5f6b64',
         },
       },
       slideWidth: 10,
@@ -63,9 +68,9 @@ export class ModernDarkTheme implements Theme {
         left: 0.5,
       },
       gridUnit: 0.125,
-      mode: 'dark',
+      mode: 'light',
       decor: 'geometric',
-      gradient: { from: '4f46e5', to: '818cf8', angle: 135 },
+      gradient: { from: '047857', to: '0d9488', angle: 135 },
       heroGradient: true,
     };
   }

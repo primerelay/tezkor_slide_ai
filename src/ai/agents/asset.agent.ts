@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { SlideContent } from './content.agent';
 import { SlideLayout } from './layout.agent';
 import { ImageService, ImageResult } from '../services/image.service';
+import { PresentationTheme } from '../../renderer/themes/theme-registry';
 
 export interface SlideWithAssets extends SlideContent {
   layout: SlideLayout;
@@ -22,6 +23,12 @@ export class AssetAgent {
 
   private readonly iconMap: Record<string, string[]> = {
     education: ['book', 'graduation-cap', 'school', 'pencil'],
+    literature: ['book', 'feather', 'scroll', 'quote'],
+    language: ['language', 'book', 'globe', 'chat'],
+    mathematics: ['calculator', 'function', 'ruler', 'compass'],
+    geography: ['globe', 'map', 'mountain', 'compass'],
+    art: ['palette', 'brush', 'image', 'music'],
+    economics: ['chart', 'money', 'bank', 'scale'],
     technology: ['laptop', 'code', 'database', 'cloud'],
     business: ['briefcase', 'chart', 'money', 'building'],
     science: ['flask', 'atom', 'microscope', 'dna'],
@@ -29,13 +36,13 @@ export class AssetAgent {
     environment: ['leaf', 'globe', 'tree', 'water'],
     social: ['users', 'handshake', 'community', 'network'],
     history: ['scroll', 'castle', 'monument', 'crown'],
-    default: ['star', 'lightbulb', 'target', 'rocket'],
+    default: ['book', 'graduation-cap', 'lightbulb', 'pencil'],
   };
 
   async selectAssets(
     slides: SlideContent[],
     layouts: SlideLayout[],
-    theme: 'academic_blue' | 'minimal_white' | 'modern_dark',
+    theme: PresentationTheme,
     topic: string,
   ): Promise<SlideWithAssets[]> {
     this.logger.log(`Selecting assets for ${slides.length} slides`);
@@ -86,12 +93,18 @@ export class AssetAgent {
 
     // Limit to 5 images to avoid rate limiting
     const slidesToProcess = slides.slice(0, 5);
+    // Shared across the deck so each slide gets a DISTINCT image.
+    const usedImageKeys = new Set<string>();
 
     this.logger.log(`Fetching ${slidesToProcess.length} images from free sources...`);
 
     for (const slide of slidesToProcess) {
       try {
-        const image = await this.imageService.getImageForTopic(topic, slide.title);
+        const image = await this.imageService.getImageForTopic(
+          topic,
+          slide.title,
+          usedImageKeys,
+        );
 
         if (image) {
           imageMap.set(slide.slideNumber, image);
@@ -124,15 +137,23 @@ export class AssetAgent {
       .join(' ')
       .toLowerCase();
 
+    // Order matters: more specific academic subjects are checked before
+    // the broad "education" catch-all so school decks get the right icons.
     const categories: Record<string, string[]> = {
-      education: ['education', 'learning', 'student', 'university', 'school', "ta'lim", 'talim', 'maktab', 'образование'],
+      literature: ['literature', 'poem', 'poetry', 'novel', 'adabiyot', "she'r", 'roman', 'литература', 'yozuvchi', 'shoir'],
+      language: ['grammar', 'language', 'linguistics', 'til', 'grammatika', 'lingvistika', 'язык', 'tilshunoslik'],
+      mathematics: ['mathematics', 'algebra', 'geometry', 'matematika', 'algebra', 'geometriya', 'математика', 'tenglama'],
+      geography: ['geography', 'climate zone', 'continent', 'geografiya', 'iqlim', 'qitʻa', 'география', 'materik'],
+      art: ['art', 'painting', 'music', 'culture', "san'at", 'rassom', 'musiqa', 'madaniyat', 'искусство'],
+      economics: ['economics', 'market', 'finance', 'iqtisod', 'moliya', 'bozor', 'экономика', 'savdo'],
+      history: ['tarix', 'history', 'qadimgi', 'temur', 'история', 'ancient', 'civilization', 'amir temur'],
+      science: ['science', 'research', 'experiment', 'fan', 'наука', 'tadqiqot', 'fizika', 'kimyo', 'biologiya'],
       technology: ['technology', 'software', 'computer', 'digital', 'texnologiya', 'технология', 'kompyuter', 'dastur'],
-      business: ['business', 'company', 'market', 'finance', 'biznes', 'бизнес', 'moliya', 'iqtisod'],
-      science: ['science', 'research', 'experiment', 'fan', 'наука', 'tadqiqot', 'fizika', 'kimyo'],
       health: ["health", "medicine", "medical", "sog'liq", "здоровье", "tibbiyot", "shifoxona"],
       environment: ['environment', 'climate', 'nature', 'atrof-muhit', 'экология', 'tabiat', 'ekologiya'],
-      history: ['tarix', 'history', 'qadimgi', 'temur', 'история', 'ancient', 'civilization'],
       social: ['social', 'society', 'community', 'ijtimoiy', 'социальный', 'jamiyat'],
+      business: ['business', 'company', 'corporate', 'biznes', 'бизнес', 'kompaniya'],
+      education: ['education', 'learning', 'student', 'university', 'school', "ta'lim", 'talim', 'maktab', 'образование', 'dars'],
     };
 
     for (const [category, keywords] of Object.entries(categories)) {

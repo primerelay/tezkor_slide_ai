@@ -2,6 +2,7 @@ import { Scene, SceneEnter, Ctx, Action } from 'nestjs-telegraf';
 import { BotContext } from '../telegram.update';
 import { TelegramService } from '../telegram.service';
 import { InlineKeyboards } from '../keyboards/inline.keyboards';
+import { normalizeTheme } from '../../renderer/themes/theme-registry';
 
 @Scene('options')
 export class OptionsScene {
@@ -40,10 +41,7 @@ export class OptionsScene {
     const callbackQuery = ctx.callbackQuery;
     if (!callbackQuery || !('data' in callbackQuery)) return;
 
-    const theme = callbackQuery.data.replace('theme_', '') as
-      | 'academic_blue'
-      | 'minimal_white'
-      | 'modern_dark';
+    const theme = normalizeTheme(callbackQuery.data.replace('theme_', ''));
     ctx.session.theme = theme;
 
     const i18n = this.telegramService.getI18n(ctx.session.language || 'uz');

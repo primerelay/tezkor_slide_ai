@@ -50,6 +50,10 @@
   },
   "themes": {
     "academic_blue": "🎓 Akademik ko'k",
+    "editorial_serif": "📰 Editorial (serif)",
+    "gradient_violet": "🌌 Gradient binafsha",
+    "scholar_green": "🌿 Ilmiy yashil",
+    "warm_sand": "🏛️ Iliq qum",
     "minimal_white": "⚪ Minimal oq",
     "modern_dark": "🌙 Zamonaviy qorong'i"
   },

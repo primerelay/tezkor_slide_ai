@@ -7,17 +7,15 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { User } from './user.entity';
+import type { PresentationTheme } from '../../renderer/themes/theme-registry';
+
+export type { PresentationTheme };
 
 export type PresentationStatus =
   | 'pending'
   | 'processing'
   | 'completed'
   | 'failed';
-
-export type PresentationTheme =
-  | 'academic_blue'
-  | 'minimal_white'
-  | 'modern_dark';
 
 export type PresentationLanguage = 'uz' | 'ru' | 'en' | 'de';
 

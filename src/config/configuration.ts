@@ -25,6 +25,18 @@ export default () => ({
     anthropicApiKey: process.env.ANTHROPIC_API_KEY,
   },
 
+  images: {
+    unsplashAccessKey: process.env.UNSPLASH_ACCESS_KEY,
+    pexelsApiKey: process.env.PEXELS_API_KEY,
+    // Hybrid fallback: when no stock key matches, optionally generate an
+    // image via OpenRouter (reuses the existing OpenRouter key).
+    openrouterApiKey: process.env.OPENROUTER_API_KEY,
+    // Set to 'false' to disable the paid OpenRouter image fallback.
+    openrouterEnabled: (process.env.IMAGE_OPENROUTER_ENABLED || 'true') !== 'false',
+    generateModel:
+      process.env.IMAGE_GENERATION_MODEL || 'google/gemini-2.5-flash-image',
+  },
+
   storage: {
     path: process.env.STORAGE_PATH || './storage',
   },
