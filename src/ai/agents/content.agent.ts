@@ -3,6 +3,7 @@ import { OpenRouterProvider } from '../providers/openrouter.provider';
 import { GeminiProvider } from '../providers/gemini.provider';
 import { AiProvider } from '../providers/ai-provider.interface';
 import { PresentationOutline } from './outline.agent';
+import { SupportedLanguage } from '../../common/i18n/i18n.service';
 
 export interface SlideContent {
   slideNumber: number;
@@ -57,12 +58,13 @@ export class ContentAgent {
 
   async generateContent(
     outline: PresentationOutline,
-    language: 'uz' | 'ru' | 'en',
+    language: SupportedLanguage,
   ): Promise<FullPresentationContent> {
     const languageNames: Record<string, string> = {
       uz: "O'zbek tili",
       ru: 'Русский язык',
       en: 'English',
+      de: 'Deutsch',
     };
 
     const systemPrompt = `You are an expert academic content writer creating PROFESSIONAL university-level presentations.

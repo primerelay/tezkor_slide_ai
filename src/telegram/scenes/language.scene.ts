@@ -2,6 +2,7 @@ import { Scene, SceneEnter, Ctx, Action } from 'nestjs-telegraf';
 import { BotContext } from '../telegram.update';
 import { TelegramService } from '../telegram.service';
 import { InlineKeyboards } from '../keyboards/inline.keyboards';
+import { SupportedLanguage } from '../../common/i18n/i18n.service';
 
 @Scene('language')
 export class LanguageScene {
@@ -20,10 +21,7 @@ export class LanguageScene {
     const callbackQuery = ctx.callbackQuery;
     if (!callbackQuery || !('data' in callbackQuery)) return;
 
-    const language = callbackQuery.data.replace('lang_', '') as
-      | 'uz'
-      | 'ru'
-      | 'en';
+    const language = callbackQuery.data.replace('lang_', '') as SupportedLanguage;
     const telegramUser = ctx.from;
     if (!telegramUser) return;
 

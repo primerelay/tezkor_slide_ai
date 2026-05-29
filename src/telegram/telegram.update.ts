@@ -4,9 +4,10 @@ import { ConfigService } from '@nestjs/config';
 import { TelegramService } from './telegram.service';
 import { InlineKeyboards } from './keyboards/inline.keyboards';
 import { JobEventsService } from '../queue/events/job.events';
+import { SupportedLanguage } from '../common/i18n/i18n.service';
 
 interface SessionData extends Scenes.SceneSession {
-  language?: 'uz' | 'ru' | 'en';
+  language?: SupportedLanguage;
   topic?: string;
   studentName?: string;
   teacherName?: string;

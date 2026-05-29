@@ -24,7 +24,10 @@
       "Bash(curl:*)",
       "WebFetch(domain:pitch.com)",
       "Bash(redis-cli ping:*)",
-      "Bash(redis-cli llen:*)"
+      "Bash(redis-cli llen:*)",
+      "Bash(brew services:*)",
+      "Bash(docker compose:*)",
+      "Bash(open:*)"
     ]
   }
 }

@@ -19,7 +19,7 @@ export type PresentationTheme =
   | 'minimal_white'
   | 'modern_dark';
 
-export type PresentationLanguage = 'uz' | 'ru' | 'en';
+export type PresentationLanguage = 'uz' | 'ru' | 'en' | 'de';
 
 @Entity('presentations')
 export class Presentation {

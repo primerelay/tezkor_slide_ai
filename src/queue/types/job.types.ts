@@ -1,3 +1,5 @@
+import { SupportedLanguage } from '../../common/i18n/i18n.service';
+
 export interface PresentationJobData {
   presentationId: string;
   userId: number;
@@ -7,6 +9,6 @@ export interface PresentationJobData {
   includeReja?: boolean;
   slideCount: number;
   theme: 'academic_blue' | 'minimal_white' | 'modern_dark';
-  language: 'uz' | 'ru' | 'en';
+  language: SupportedLanguage;
   telegramChatId?: string;
 }

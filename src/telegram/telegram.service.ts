@@ -5,7 +5,7 @@ import { InjectBot } from 'nestjs-telegraf';
 import { Telegraf, Context } from 'telegraf';
 import { User, UserLanguage } from '../database/entities/user.entity';
 import { Presentation } from '../database/entities/presentation.entity';
-import { I18nService } from '../common/i18n/i18n.service';
+import { I18nService, SupportedLanguage } from '../common/i18n/i18n.service';
 import { InlineKeyboards } from './keyboards/inline.keyboards';
 import { ConfigService } from '@nestjs/config';
 
@@ -128,7 +128,7 @@ export class TelegramService {
     includeReja?: boolean;
     slideCount: number;
     theme: 'academic_blue' | 'minimal_white' | 'modern_dark';
-    language: 'uz' | 'ru' | 'en';
+    language: SupportedLanguage;
   }): Promise<Presentation> {
     const presentation = this.presentationRepository.create({
       userId: data.userId,

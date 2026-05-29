@@ -1,12 +1,14 @@
 import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useTelegram } from './hooks/useTelegram';
+import { useLanguage } from './contexts/LanguageContext';
 import DashboardPage from './pages/DashboardPage';
 import CreatePage from './pages/CreatePage';
 import PreviewPage from './pages/PreviewPage';
 
 function App() {
   const { webApp, ready } = useTelegram();
+  const { t, isLoading: langLoading } = useLanguage();
 
   useEffect(() => {
     if (webApp) {
@@ -19,7 +21,7 @@ function App() {
     }
   }, [webApp]);
 
-  if (!ready) {
+  if (!ready || langLoading) {
     return (
       <div className="flex items-center justify-center h-screen bg-gray-50">
         <div className="text-center animate-fade-in">
@@ -28,7 +30,7 @@ function App() {
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
             </svg>
           </div>
-          <p className="text-gray-400 text-sm">Yuklanmoqda...</p>
+          <p className="text-gray-400 text-sm">{t.loading}</p>
         </div>
       </div>
     );

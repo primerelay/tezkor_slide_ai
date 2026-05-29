@@ -3,7 +3,7 @@ const API_BASE = '/api/mini-app';
 export interface User {
   id: number;
   credits: number;
-  language: 'uz' | 'ru' | 'en';
+  language: 'uz' | 'ru' | 'en' | 'de';
   firstName: string;
 }
 
@@ -29,7 +29,7 @@ export interface Presentation {
   includeReja?: boolean;
   template?: Template;
   slides?: any[];
-  language?: 'uz' | 'ru' | 'en';
+  language?: 'uz' | 'ru' | 'en' | 'de';
 }
 
 export interface GenerateResponse {

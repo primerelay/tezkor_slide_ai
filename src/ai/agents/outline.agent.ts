@@ -2,6 +2,7 @@ import { Injectable, Logger } from '@nestjs/common';
 import { OpenRouterProvider } from '../providers/openrouter.provider';
 import { GeminiProvider } from '../providers/gemini.provider';
 import { AiProvider } from '../providers/ai-provider.interface';
+import { SupportedLanguage } from '../../common/i18n/i18n.service';
 
 export interface OutlineSlide {
   slideNumber: number;
@@ -41,13 +42,14 @@ export class OutlineAgent {
   async generateOutline(
     topic: string,
     slideCount: number,
-    language: 'uz' | 'ru' | 'en',
+    language: SupportedLanguage,
     studentName?: string,
     teacherName?: string,
     includeReja?: boolean,
   ): Promise<PresentationOutline> {
     const languageNames: Record<string, string> = {
       uz: "O'zbek tili",
+      de: "Deutsch",
       ru: 'Русский язык',
       en: 'English',
     };

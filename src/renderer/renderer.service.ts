@@ -15,6 +15,7 @@ import { QuoteLayout } from './layouts/quote.layout';
 import { ConclusionLayout } from './layouts/conclusion.layout';
 import { RejaLayout } from './layouts/reja.layout';
 import { LayoutRenderer, PresentationMeta } from './layouts/layout.interface';
+import { I18nService, SupportedLanguage } from '../common/i18n/i18n.service';
 
 @Injectable()
 export class RendererService {
@@ -53,13 +54,19 @@ export class RendererService {
     ]);
   }
 
-  async renderPresentation(pipelineOutput: PipelineOutput): Promise<Buffer> {
-    this.logger.log(`Rendering presentation: ${pipelineOutput.title}`);
+  async renderPresentation(
+    pipelineOutput: PipelineOutput,
+    language: SupportedLanguage = 'uz',
+  ): Promise<Buffer> {
+    this.logger.log(`Rendering presentation: ${pipelineOutput.title} (lang: ${language})`);
 
     const theme = this.themes.get(pipelineOutput.theme);
     if (!theme) {
       throw new Error(`Unknown theme: ${pipelineOutput.theme}`);
     }
+
+    // Create i18n service for this language
+    const i18n = I18nService.create(language);
 
     const pptx = new PptxGenJS();
 
@@ -73,6 +80,8 @@ export class RendererService {
     const presentationMeta: PresentationMeta = {
       studentName: pipelineOutput.studentName,
       teacherName: pipelineOutput.teacherName,
+      language,
+      i18n,
     };
 
     for (const slideData of pipelineOutput.slides) {
@@ -103,8 +112,11 @@ export class RendererService {
     }
   }
 
-  async renderToBuffer(pipelineOutput: PipelineOutput): Promise<Buffer> {
-    return this.renderPresentation(pipelineOutput);
+  async renderToBuffer(
+    pipelineOutput: PipelineOutput,
+    language: SupportedLanguage = 'uz',
+  ): Promise<Buffer> {
+    return this.renderPresentation(pipelineOutput, language);
   }
 
   getAvailableThemes(): string[] {

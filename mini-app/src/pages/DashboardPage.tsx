@@ -1,21 +1,37 @@
 import { useNavigate } from 'react-router-dom';
 import { useTelegram } from '../hooks/useTelegram';
+import { useLanguage } from '../contexts/LanguageContext';
 import { Plus, FileText, Clock, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 // Mock recent presentations
-const recentPresentations = [
-  { id: '1', title: "O'zbekiston tarixi", slides: 8, createdAt: '2 soat oldin', status: 'completed' },
-  { id: '2', title: 'Matematika asoslari', slides: 10, createdAt: 'Kecha', status: 'completed' },
+const recentPresentations: Array<{
+  id: string;
+  title: string;
+  slides: number;
+  createdAtKey: 'hoursAgo' | 'yesterday';
+  hoursValue?: number;
+  status: string;
+}> = [
+  { id: '1', title: "O'zbekiston tarixi", slides: 8, createdAtKey: 'hoursAgo', hoursValue: 2, status: 'completed' },
+  { id: '2', title: 'Matematika asoslari', slides: 10, createdAtKey: 'yesterday', status: 'completed' },
 ];
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user, haptic } = useTelegram();
+  const { t } = useLanguage();
 
   const handleCreate = () => {
     haptic('light');
     navigate('/create');
+  };
+
+  const formatCreatedAt = (pres: typeof recentPresentations[0]) => {
+    if (pres.createdAtKey === 'hoursAgo' && pres.hoursValue) {
+      return `${pres.hoursValue} ${t.hoursAgo}`;
+    }
+    return t.yesterday;
   };
 
   return (
@@ -29,10 +45,10 @@ export default function DashboardPage() {
         >
           <div>
             <h1 className="text-2xl font-bold text-gray-900">
-              Salom{user?.first_name ? `, ${user.first_name}` : ''}!
+              {t.greeting}{user?.first_name ? `, ${user.first_name}` : ''}!
             </h1>
             <p className="text-gray-500 text-sm mt-0.5">
-              Professional prezentatsiyalar yarating
+              {t.createProfessional}
             </p>
           </div>
           <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
@@ -58,8 +74,8 @@ export default function DashboardPage() {
               <Plus className="w-6 h-6" />
             </div>
             <div className="text-left flex-1">
-              <div className="font-semibold text-lg">Yangi prezentatsiya</div>
-              <div className="text-purple-200 text-sm">AI yordamida yarating</div>
+              <div className="font-semibold text-lg">{t.newPresentation}</div>
+              <div className="text-purple-200 text-sm">{t.createWithAI}</div>
             </div>
             <ChevronRight className="w-5 h-5 text-purple-200" />
           </div>
@@ -74,7 +90,7 @@ export default function DashboardPage() {
           <div className="flex items-center justify-between mb-3">
             <h2 className="font-semibold text-gray-900 flex items-center gap-2">
               <Clock className="w-4 h-4 text-gray-400" />
-              So'nggi ishlar
+              {t.recentWorks}
             </h2>
           </div>
 
@@ -97,7 +113,9 @@ export default function DashboardPage() {
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="font-medium text-gray-900 truncate">{pres.title}</div>
-                    <div className="text-sm text-gray-400">{pres.slides} slayd • {pres.createdAt}</div>
+                    <div className="text-sm text-gray-400">
+                      {pres.slides} {t.slides} • {formatCreatedAt(pres)}
+                    </div>
                   </div>
                   <ChevronRight className="w-5 h-5 text-gray-300" />
                 </motion.div>
@@ -108,8 +126,8 @@ export default function DashboardPage() {
               <div className="empty-state-icon">
                 <FileText className="w-7 h-7 text-gray-400" />
               </div>
-              <p className="text-gray-500 font-medium">Hali prezentatsiya yo'q</p>
-              <p className="text-gray-400 text-sm mt-1">Yangi prezentatsiya yarating</p>
+              <p className="text-gray-500 font-medium">{t.noPresentation}</p>
+              <p className="text-gray-400 text-sm mt-1">{t.createNew}</p>
             </div>
           )}
         </motion.div>
@@ -122,12 +140,12 @@ export default function DashboardPage() {
           className="mt-8"
         >
           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-            Imkoniyatlar
+            {t.features}
           </h3>
           <div className="grid grid-cols-3 gap-3">
-            <FeatureCard emoji="🎨" title="Shablonlar" subtitle="10+" />
-            <FeatureCard emoji="⚡" title="Tezkor" subtitle="AI" />
-            <FeatureCard emoji="📱" title="Qulay" subtitle="Mobil" />
+            <FeatureCard emoji="🎨" title={t.templates} subtitle="10+" />
+            <FeatureCard emoji="⚡" title={t.fast} subtitle="AI" />
+            <FeatureCard emoji="📱" title={t.convenient} subtitle={t.mobile} />
           </div>
         </motion.div>
       </div>

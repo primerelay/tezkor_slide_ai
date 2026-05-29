@@ -7,6 +7,7 @@ export class InlineKeyboards {
       [Markup.button.callback("🇺🇿 O'zbekcha", 'lang_uz')],
       [Markup.button.callback('🇷🇺 Русский', 'lang_ru')],
       [Markup.button.callback('🇬🇧 English', 'lang_en')],
+      [Markup.button.callback('🇩🇪 Deutsch', 'lang_de')],
     ]).reply_markup;
   }
 
@@ -44,22 +45,23 @@ export class InlineKeyboards {
   }
 
   static slideCountSelection(i18n: I18nService) {
+    const slidesWord = i18n.t('slides');
     // Prices: 6=1000, 8=1500, 10=1700, 12=2000, 14=2200, 16=2400, 18=2500
     return Markup.inlineKeyboard([
       [
-        Markup.button.callback('6 bet - 1,000 so\'m', 'slides_6'),
-        Markup.button.callback('8 bet - 1,500 so\'m', 'slides_8'),
+        Markup.button.callback(`6 ${slidesWord} - 1,000`, 'slides_6'),
+        Markup.button.callback(`8 ${slidesWord} - 1,500`, 'slides_8'),
       ],
       [
-        Markup.button.callback('10 bet - 1,700 so\'m', 'slides_10'),
-        Markup.button.callback('12 bet - 2,000 so\'m', 'slides_12'),
+        Markup.button.callback(`10 ${slidesWord} - 1,700`, 'slides_10'),
+        Markup.button.callback(`12 ${slidesWord} - 2,000`, 'slides_12'),
       ],
       [
-        Markup.button.callback('14 bet - 2,200 so\'m', 'slides_14'),
-        Markup.button.callback('16 bet - 2,400 so\'m', 'slides_16'),
+        Markup.button.callback(`14 ${slidesWord} - 2,200`, 'slides_14'),
+        Markup.button.callback(`16 ${slidesWord} - 2,400`, 'slides_16'),
       ],
       [
-        Markup.button.callback('18 bet - 2,500 so\'m', 'slides_18'),
+        Markup.button.callback(`18 ${slidesWord} - 2,500`, 'slides_18'),
       ],
     ]).reply_markup;
   }
@@ -121,12 +123,12 @@ export class InlineKeyboards {
   static paymentAmountSelection() {
     return Markup.inlineKeyboard([
       [
-        Markup.button.callback('1,000 so\'m', 'pay_amount_1000'),
-        Markup.button.callback('2,000 so\'m', 'pay_amount_2000'),
+        Markup.button.callback('1,000', 'pay_amount_1000'),
+        Markup.button.callback('2,000', 'pay_amount_2000'),
       ],
       [
-        Markup.button.callback('5,000 so\'m', 'pay_amount_5000'),
-        Markup.button.callback('10,000 so\'m', 'pay_amount_10000'),
+        Markup.button.callback('5,000', 'pay_amount_5000'),
+        Markup.button.callback('10,000', 'pay_amount_10000'),
       ],
     ]).reply_markup;
   }

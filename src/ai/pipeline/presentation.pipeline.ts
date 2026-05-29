@@ -3,6 +3,7 @@ import { OutlineAgent, PresentationOutline } from '../agents/outline.agent';
 import { ContentAgent, FullPresentationContent } from '../agents/content.agent';
 import { LayoutAgent, SlideLayout } from '../agents/layout.agent';
 import { AssetAgent, SlideWithAssets } from '../agents/asset.agent';
+import { SupportedLanguage } from '../../common/i18n/i18n.service';
 
 export interface PipelineInput {
   topic: string;
@@ -11,7 +12,7 @@ export interface PipelineInput {
   includeReja?: boolean;
   slideCount: number;
   theme: 'academic_blue' | 'minimal_white' | 'modern_dark';
-  language: 'uz' | 'ru' | 'en';
+  language: SupportedLanguage;
 }
 
 export interface PipelineOutput {
@@ -124,18 +125,19 @@ export class PresentationPipeline {
       onProgress?.({
         stage: 'assets',
         progress: 85,
-        message: 'Selecting visual assets...',
+        message: 'Selecting visual assets and images...',
       });
 
       const assetsStart = Date.now();
-      const slidesWithAssets = this.assetAgent.selectAssets(
+      const slidesWithAssets = await this.assetAgent.selectAssets(
         content.slides,
         layouts,
         input.theme,
+        input.topic,
       );
       stages.assets.durationMs = Date.now() - assetsStart;
 
-      this.logger.log(`Assets selected in ${stages.assets.durationMs}ms`);
+      this.logger.log(`Assets and images selected in ${stages.assets.durationMs}ms`);
 
       onProgress?.({
         stage: 'complete',

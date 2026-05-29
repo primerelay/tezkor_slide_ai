@@ -1,44 +1,54 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTelegram } from '../hooks/useTelegram';
+import { useLanguage } from '../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, Sparkles, Check } from 'lucide-react';
+import { Translations } from '../i18n/translations';
+
+// Template type
+interface Template {
+  id: string;
+  nameKey: keyof Pick<Translations, 'modern' | 'academic' | 'minimalist' | 'nature' | 'sunset' | 'elegant'>;
+  preview: string;
+  textColor: string;
+}
 
 // Professional templates with background images
-const templates = [
+const templates: Template[] = [
   {
     id: 'modern-purple',
-    name: 'Zamonaviy',
+    nameKey: 'modern',
     preview: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
     textColor: '#ffffff',
   },
   {
     id: 'academic-blue',
-    name: 'Akademik',
+    nameKey: 'academic',
     preview: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
     textColor: '#ffffff',
   },
   {
     id: 'minimal-light',
-    name: 'Minimalist',
+    nameKey: 'minimalist',
     preview: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
     textColor: '#1e293b',
   },
   {
     id: 'nature-green',
-    name: 'Tabiat',
+    nameKey: 'nature',
     preview: 'linear-gradient(135deg, #065f46 0%, #10b981 100%)',
     textColor: '#ffffff',
   },
   {
     id: 'sunset-orange',
-    name: 'Quyosh',
+    nameKey: 'sunset',
     preview: 'linear-gradient(135deg, #ea580c 0%, #fbbf24 100%)',
     textColor: '#ffffff',
   },
   {
     id: 'dark-elegant',
-    name: 'Elegant',
+    nameKey: 'elegant',
     preview: 'linear-gradient(135deg, #0f172a 0%, #334155 100%)',
     textColor: '#ffffff',
   },
@@ -51,6 +61,7 @@ type Step = 'topic' | 'template' | 'options' | 'generating';
 export default function CreatePage() {
   const navigate = useNavigate();
   const { haptic, showBackButton, hideBackButton, webApp } = useTelegram();
+  const { t, language } = useLanguage();
 
   const [step, setStep] = useState<Step>('topic');
   const [topic, setTopic] = useState('');
@@ -112,8 +123,8 @@ export default function CreatePage() {
             title: topic,
             studentName: studentName || undefined,
             teacherName: teacherName || undefined,
-            template: templates.find(t => t.id === selectedTemplate),
-            language: 'uz',
+            template: templates.find(tmpl => tmpl.id === selectedTemplate),
+            language: language, // Use the user's selected language
             slides: [],
           },
         }),
@@ -128,7 +139,7 @@ export default function CreatePage() {
         setTimeout(() => {
           if (webApp?.showAlert) {
             webApp.showAlert(
-              '✅ Prezentatsiya yaratilmoqda!\n\nTelegram chatga yuboriladi.',
+              `✅ ${t.presentationCreating}\n\n${t.willBeSentToChat}`,
               () => {
                 // Close app after user dismisses alert
                 webApp?.close();
@@ -136,7 +147,7 @@ export default function CreatePage() {
             );
           } else {
             // Fallback for development
-            alert('Prezentatsiya yaratilmoqda! Telegram chatga yuboriladi.');
+            alert(`${t.presentationCreating} ${t.willBeSentToChat}`);
             window.close();
           }
         }, 800);
@@ -147,9 +158,9 @@ export default function CreatePage() {
     } catch (error: any) {
       clearInterval(progressInterval);
       haptic('error');
-      const errorMessage = error?.message || 'Xatolik yuz berdi';
+      const errorMessage = error?.message || t.errorOccurred;
       if (webApp?.showAlert) {
-        webApp.showAlert(`❌ ${errorMessage}\n\nQaytadan urinib ko'ring.`, () => {
+        webApp.showAlert(`❌ ${errorMessage}\n\n${t.tryAgain}`, () => {
           setStep('options');
           setIsGenerating(false);
         });
@@ -196,6 +207,7 @@ export default function CreatePage() {
               key="topic"
               topic={topic}
               setTopic={setTopic}
+              t={t}
             />
           )}
 
@@ -205,6 +217,7 @@ export default function CreatePage() {
               selectedTemplate={selectedTemplate}
               setSelectedTemplate={setSelectedTemplate}
               haptic={haptic}
+              t={t}
             />
           )}
 
@@ -218,6 +231,7 @@ export default function CreatePage() {
               teacherName={teacherName}
               setTeacherName={setTeacherName}
               haptic={haptic}
+              t={t}
             />
           )}
 
@@ -226,6 +240,7 @@ export default function CreatePage() {
               key="generating"
               progress={progress}
               topic={topic}
+              t={t}
             />
           )}
         </AnimatePresence>
@@ -242,11 +257,11 @@ export default function CreatePage() {
             {step === 'options' ? (
               <>
                 <Sparkles className="w-5 h-5" />
-                Yaratish
+                {t.create}
               </>
             ) : (
               <>
-                Davom etish
+                {t.continue}
                 <ArrowRight className="w-5 h-5" />
               </>
             )}
@@ -257,7 +272,9 @@ export default function CreatePage() {
   );
 }
 
-function TopicStep({ topic, setTopic }: { topic: string; setTopic: (v: string) => void }) {
+function TopicStep({ topic, setTopic, t }: { topic: string; setTopic: (v: string) => void; t: Translations }) {
+  const suggestions = [t.ecology, t.health, t.technology, t.art];
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -267,23 +284,23 @@ function TopicStep({ topic, setTopic }: { topic: string; setTopic: (v: string) =
     >
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Mavzuni kiriting
+          {t.enterTopic}
         </h1>
         <p className="text-gray-500">
-          AI sizning mavzuingiz bo'yicha professional prezentatsiya yaratadi
+          {t.aiWillCreate}
         </p>
       </div>
 
       <div className="space-y-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Prezentatsiya mavzusi
+            {t.presentationTopic}
           </label>
           <input
             type="text"
             value={topic}
             onChange={(e) => setTopic(e.target.value)}
-            placeholder="Masalan: O'zbekiston tarixi"
+            placeholder={t.topicPlaceholder}
             className="input"
             autoFocus
           />
@@ -291,9 +308,9 @@ function TopicStep({ topic, setTopic }: { topic: string; setTopic: (v: string) =
 
         {/* Topic suggestions */}
         <div>
-          <p className="text-xs text-gray-400 mb-2">Maslahatlar:</p>
+          <p className="text-xs text-gray-400 mb-2">{t.suggestions}</p>
           <div className="flex flex-wrap gap-2">
-            {['Ekologiya', 'Sog\'liq', 'Texnologiya', 'San\'at'].map((suggestion) => (
+            {suggestions.map((suggestion) => (
               <button
                 key={suggestion}
                 onClick={() => setTopic(suggestion)}
@@ -315,10 +332,12 @@ function TemplateStep({
   selectedTemplate,
   setSelectedTemplate,
   haptic,
+  t,
 }: {
   selectedTemplate: string | null;
   setSelectedTemplate: (v: string) => void;
   haptic: (type: HapticType) => void;
+  t: Translations;
 }) {
   return (
     <motion.div
@@ -329,10 +348,10 @@ function TemplateStep({
     >
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Shablon tanlang
+          {t.selectTemplate}
         </h1>
         <p className="text-gray-500">
-          Professional dizaynlar orasidan tanlang
+          {t.chooseFromProfessional}
         </p>
       </div>
 
@@ -354,7 +373,7 @@ function TemplateStep({
                 className="text-sm font-bold mb-1"
                 style={{ color: template.textColor }}
               >
-                Sarlavha
+                {t.title}
               </div>
               <div className="flex gap-1">
                 <div
@@ -370,7 +389,7 @@ function TemplateStep({
 
             {/* Template name */}
             <div className="absolute bottom-0 left-0 right-0 p-3 z-20">
-              <div className="text-white text-sm font-medium">{template.name}</div>
+              <div className="text-white text-sm font-medium">{t[template.nameKey]}</div>
             </div>
 
             {/* Selected indicator */}
@@ -394,6 +413,7 @@ function OptionsStep({
   teacherName,
   setTeacherName,
   haptic,
+  t,
 }: {
   slideCount: number;
   setSlideCount: (v: number) => void;
@@ -402,6 +422,7 @@ function OptionsStep({
   teacherName: string;
   setTeacherName: (v: string) => void;
   haptic: (type: HapticType) => void;
+  t: Translations;
 }) {
   return (
     <motion.div
@@ -412,10 +433,10 @@ function OptionsStep({
     >
       <div className="mb-6">
         <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          Sozlamalar
+          {t.settings}
         </h1>
         <p className="text-gray-500">
-          Prezentatsiya tafsilotlarini kiriting
+          {t.enterDetails}
         </p>
       </div>
 
@@ -423,7 +444,7 @@ function OptionsStep({
         {/* Slide count */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-3">
-            Slaydlar soni
+            {t.slideCount}
           </label>
           <div className="grid grid-cols-4 gap-2">
             {slideCountOptions.map((count) => (
@@ -448,13 +469,13 @@ function OptionsStep({
         {/* Student name */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            Talaba ismi (ixtiyoriy)
+            {t.studentNameOptional}
           </label>
           <input
             type="text"
             value={studentName}
             onChange={(e) => setStudentName(e.target.value)}
-            placeholder="Ism familiya"
+            placeholder={t.namePlaceholder}
             className="input"
           />
         </div>
@@ -462,13 +483,13 @@ function OptionsStep({
         {/* Teacher name */}
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">
-            O'qituvchi ismi (ixtiyoriy)
+            {t.teacherNameOptional}
           </label>
           <input
             type="text"
             value={teacherName}
             onChange={(e) => setTeacherName(e.target.value)}
-            placeholder="Ism familiya"
+            placeholder={t.namePlaceholder}
             className="input"
           />
         </div>
@@ -477,16 +498,22 @@ function OptionsStep({
   );
 }
 
-const progressSteps = [
-  { threshold: 0, label: 'Boshlanmoqda...', icon: '🚀' },
-  { threshold: 20, label: 'Mavzu tahlil qilinmoqda', icon: '🔍' },
-  { threshold: 40, label: 'Kontent yaratilmoqda', icon: '✍️' },
-  { threshold: 60, label: 'Slaydlar tayyorlanmoqda', icon: '📊' },
-  { threshold: 80, label: 'Dizayn qo\'llanmoqda', icon: '🎨' },
-  { threshold: 100, label: 'Tayyor!', icon: '✅' },
+interface ProgressStep {
+  threshold: number;
+  labelKey: keyof Pick<Translations, 'starting' | 'analyzingTopic' | 'creatingContent' | 'preparingSlides' | 'applyingDesign' | 'ready'>;
+  icon: string;
+}
+
+const progressSteps: ProgressStep[] = [
+  { threshold: 0, labelKey: 'starting', icon: '🚀' },
+  { threshold: 20, labelKey: 'analyzingTopic', icon: '🔍' },
+  { threshold: 40, labelKey: 'creatingContent', icon: '✍️' },
+  { threshold: 60, labelKey: 'preparingSlides', icon: '📊' },
+  { threshold: 80, labelKey: 'applyingDesign', icon: '🎨' },
+  { threshold: 100, labelKey: 'ready', icon: '✅' },
 ];
 
-function GeneratingStep({ progress, topic }: { progress: number; topic: string }) {
+function GeneratingStep({ progress, topic, t }: { progress: number; topic: string; t: Translations }) {
   const isComplete = progress >= 100;
 
   // Find current step based on progress
@@ -517,7 +544,7 @@ function GeneratingStep({ progress, topic }: { progress: number; topic: string }
       </motion.div>
 
       <h2 className="text-xl font-bold text-gray-900 mb-2 text-center">
-        {currentStep.label}
+        {t[currentStep.labelKey]}
       </h2>
       <p className="text-gray-500 text-center mb-6 max-w-xs">
         "{topic}"
@@ -549,7 +576,7 @@ function GeneratingStep({ progress, topic }: { progress: number; topic: string }
           />
         </div>
         <p className="text-center text-sm text-gray-400 mt-2">
-          {isComplete ? '✓ Telegram chatga yuboriladi' : `${Math.round(progress)}% tayyor`}
+          {isComplete ? `✓ ${t.willBeSentToTelegram}` : `${Math.round(progress)}% ${t.percentReady}`}
         </p>
       </div>
     </motion.div>

@@ -1,7 +1,7 @@
 {
   "welcome": "Assalomu alaykum, {name}! 👋\n\nTezkor Slide AI ga xush kelibsiz!\n\nBu bot yordamida siz bir necha daqiqada professional prezentatsiyalar yaratishingiz mumkin.\n\n💰 Narxlar:\n• 6 bet - 1,000 so'm\n• 8 bet - 1,500 so'm\n• 10 bet - 1,700 so'm\n• 12 bet - 2,000 so'm\n• 14 bet - 2,200 so'm\n• 16 bet - 2,400 so'm\n• 18 bet - 2,500 so'm",
   "mainMenuText": "Asosiy menyu",
-  "selectLanguage": "Tilni tanlang / Выберите язык / Select language:",
+  "selectLanguage": "Tilni tanlang / Выберите язык / Select language / Sprache wählen:",
   "languageChanged": "Til o'zgartirildi",
   "languageSet": "✅ Til o'zbek tiliga o'zgartirildi",
   "help": "<b>Tezkor Slide AI - Yordam</b>\n\n📝 <b>Prezentatsiya yaratish:</b>\n1. \"Yangi prezentatsiya\" tugmasini bosing\n2. Mavzuni kiriting\n3. Ismingizni kiriting\n4. Ustoz ismini kiriting\n5. Reja kerakmi tanlang\n6. Slaydlar sonini tanlang\n7. Dizayn turini tanlang\n\n💰 <b>Narxlar:</b>\n• 6 bet - 1,000 so'm\n• 8 bet - 1,500 so'm\n• 10 bet - 1,700 so'm\n• 12 bet - 2,000 so'm\n\n🔧 <b>Buyruqlar:</b>\n/start - Botni qayta ishga tushirish\n/new - Yangi prezentatsiya\n/balance - Balansni tekshirish\n/language - Tilni o'zgartirish\n/help - Yordam",
@@ -65,6 +65,12 @@
     "broadcast": "📢 Xabar yuborish"
   },
   "progress": {
+    "0": "🚀 Boshlanmoqda...",
+    "20": "🔍 Mavzu tahlil qilinmoqda...",
+    "40": "✍️ Kontent yaratilmoqda...",
+    "60": "📊 Slaydlar tayyorlanmoqda...",
+    "80": "🎨 Dizayn qo'llanmoqda...",
+    "100": "✅ Tayyor!",
     "outline": "📋 Tuzilma yaratilmoqda...",
     "content": "✍️ Kontent yozilmoqda...",
     "layout": "🎨 Dizayn tayyorlanmoqda...",
@@ -73,10 +79,31 @@
     "uploading": "📤 Yuklanmoqda...",
     "done": "✅ Tayyor!"
   },
+  "progressTitle": "Prezentatsiya yaratilmoqda",
   "errors": {
     "unknown": "Noma'lum xatolik yuz berdi",
     "aiError": "AI xizmati bilan bog'lanishda xatolik",
     "renderError": "Prezentatsiya yaratishda xatolik",
-    "storageError": "Faylni saqlashda xatolik"
+    "storageError": "Faylni saqlashda xatolik",
+    "tryAgain": "Iltimos, qaytadan urinib ko'ring."
+  },
+  "presentation": {
+    "preparedBy": "Tayyorladi",
+    "checkedBy": "Tekshirdi",
+    "plan": "Reja",
+    "outline": "Mundarija",
+    "conclusion": "Xulosa",
+    "thankYou": "E'tiboringiz uchun rahmat!",
+    "topic": "Mavzu",
+    "slides": "Slaydlar",
+    "theme": "Tema",
+    "ready": "Prezentatsiya tayyor!",
+    "download": "Yuklab oling va foydalaning!"
+  },
+  "languages": {
+    "uz": "🇺🇿 O'zbekcha",
+    "ru": "🇷🇺 Русский",
+    "en": "🇬🇧 English",
+    "de": "🇩🇪 Deutsch"
   }
 }

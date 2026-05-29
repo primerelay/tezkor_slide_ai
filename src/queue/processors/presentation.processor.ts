@@ -15,17 +15,7 @@ import { RendererService } from '../../renderer/renderer.service';
 import { StorageService } from '../../storage/storage.service';
 import { PRESENTATION_QUEUE } from '../constants';
 import { PresentationJobData } from '../types/job.types';
-import { I18nService } from '../../common/i18n/i18n.service';
-
-// Progress messages with emojis
-const PROGRESS_MESSAGES: Record<number, { emoji: string; text: string }> = {
-  0: { emoji: '🚀', text: 'Boshlanmoqda...' },
-  20: { emoji: '🔍', text: 'Mavzu tahlil qilinmoqda...' },
-  40: { emoji: '✍️', text: 'Kontent yaratilmoqda...' },
-  60: { emoji: '📊', text: 'Slaydlar tayyorlanmoqda...' },
-  80: { emoji: '🎨', text: 'Dizayn qo\'llanmoqda...' },
-  100: { emoji: '✅', text: 'Tayyor!' },
-};
+import { I18nService, SupportedLanguage } from '../../common/i18n/i18n.service';
 
 @Processor(PRESENTATION_QUEUE)
 export class PresentationProcessor extends WorkerHost {
@@ -56,6 +46,10 @@ export class PresentationProcessor extends WorkerHost {
 
     const startTime = Date.now();
 
+    // Create i18n service with the correct language
+    const lang = (language || 'uz') as SupportedLanguage;
+    const i18n = I18nService.create(lang);
+
     // Get user for sending progress messages
     const presentation = await this.presentationRepository.findOne({
       where: { id: presentationId },
@@ -69,18 +63,18 @@ export class PresentationProcessor extends WorkerHost {
 
       // Send initial progress message
       if (user) {
-        await this.sendProgressMessage(presentationId, user.telegramId, topic, 0);
+        await this.sendProgressMessage(presentationId, user.telegramId, topic, 0, i18n);
       }
 
       await this.updateJobStage(presentationId, 'parsing', 5);
 
       // Update to 20%
       if (user) {
-        await this.sendProgressMessage(presentationId, user.telegramId, topic, 20);
+        await this.sendProgressMessage(presentationId, user.telegramId, topic, 20, i18n);
       }
 
       const pipelineOutput = await this.pipeline.generate(
-        { topic, studentName, teacherName, includeReja, slideCount, theme, language },
+        { topic, studentName, teacherName, includeReja, slideCount, theme, language: lang },
         async (progress) => {
           this.updateJobProgress(presentationId, progress.stage, progress.progress);
 
@@ -89,7 +83,7 @@ export class PresentationProcessor extends WorkerHost {
             const milestone = this.getProgressMilestone(progress.progress);
             const lastSent = this.lastProgressSent.get(presentationId) || 0;
             if (milestone > lastSent && milestone <= 60) {
-              await this.sendProgressMessage(presentationId, user.telegramId, topic, milestone);
+              await this.sendProgressMessage(presentationId, user.telegramId, topic, milestone, i18n);
             }
           }
         },
@@ -97,12 +91,12 @@ export class PresentationProcessor extends WorkerHost {
 
       // Update to 80%
       if (user) {
-        await this.sendProgressMessage(presentationId, user.telegramId, topic, 80);
+        await this.sendProgressMessage(presentationId, user.telegramId, topic, 80, i18n);
       }
 
       await this.updateJobStage(presentationId, 'rendering', 90);
 
-      const pptxBuffer = await this.renderer.renderPresentation(pipelineOutput);
+      const pptxBuffer = await this.renderer.renderPresentation(pipelineOutput, lang);
 
       await this.updateJobStage(presentationId, 'uploading', 95);
 
@@ -122,7 +116,7 @@ export class PresentationProcessor extends WorkerHost {
 
       // Update to 100%
       if (user) {
-        await this.sendProgressMessage(presentationId, user.telegramId, topic, 100);
+        await this.sendProgressMessage(presentationId, user.telegramId, topic, 100, i18n);
       }
 
       this.logger.log(
@@ -130,7 +124,7 @@ export class PresentationProcessor extends WorkerHost {
       );
 
       // Send file to user via Telegram
-      await this.sendFileToUser(presentationId, pptxUrl, topic);
+      await this.sendFileToUser(presentationId, pptxUrl, topic, i18n);
 
       // Cleanup
       this.progressMessageIds.delete(presentationId);
@@ -142,7 +136,7 @@ export class PresentationProcessor extends WorkerHost {
 
       // Send error message to user
       if (user) {
-        await this.sendErrorMessage(user.telegramId, topic, error);
+        await this.sendErrorMessage(user.telegramId, topic, error, i18n);
       }
 
       await this.presentationRepository.update(presentationId, {
@@ -176,13 +170,16 @@ export class PresentationProcessor extends WorkerHost {
     telegramId: string,
     topic: string,
     progress: number,
+    i18n: I18nService,
   ): Promise<void> {
     try {
-      const progressInfo = PROGRESS_MESSAGES[progress] || PROGRESS_MESSAGES[0];
+      const progressInfo = i18n.getProgressMessage(progress);
       const progressBar = this.buildProgressBar(progress);
+      const progressTitle = i18n.t('progressTitle');
+      const topicLabel = i18n.t('presentation.topic');
 
-      const messageText = `${progressInfo.emoji} <b>Prezentatsiya yaratilmoqda</b>\n\n` +
-        `📝 Mavzu: <i>${topic}</i>\n\n` +
+      const messageText = `${progressInfo.emoji} <b>${progressTitle}</b>\n\n` +
+        `📝 ${topicLabel}: <i>${topic}</i>\n\n` +
         `${progressBar} ${progress}%\n\n` +
         `${progressInfo.text}`;
 
@@ -223,15 +220,19 @@ export class PresentationProcessor extends WorkerHost {
     telegramId: string,
     topic: string,
     error: unknown,
+    i18n: I18nService,
   ): Promise<void> {
     try {
-      const errorMessage = error instanceof Error ? error.message : 'Noma\'lum xatolik';
+      const errorMessage = error instanceof Error ? error.message : i18n.t('errors.unknown');
+      const topicLabel = i18n.t('presentation.topic');
+      const tryAgain = i18n.t('errors.tryAgain');
+
       await this.bot.telegram.sendMessage(
         telegramId,
-        `❌ <b>Xatolik yuz berdi</b>\n\n` +
-          `📝 Mavzu: <i>${topic}</i>\n\n` +
-          `Xatolik: ${errorMessage}\n\n` +
-          `Iltimos, qaytadan urinib ko'ring.`,
+        `❌ <b>${i18n.t('errors.unknown')}</b>\n\n` +
+          `📝 ${topicLabel}: <i>${topic}</i>\n\n` +
+          `${errorMessage}\n\n` +
+          `${tryAgain}`,
         { parse_mode: 'HTML' },
       );
     } catch (sendError) {
@@ -297,6 +298,7 @@ export class PresentationProcessor extends WorkerHost {
     presentationId: string,
     pptxUrl: string,
     topic: string,
+    i18n: I18nService,
   ): Promise<void> {
     try {
       // Get presentation with user
@@ -337,15 +339,23 @@ export class PresentationProcessor extends WorkerHost {
         return;
       }
 
+      // Get translated labels
+      const readyText = i18n.t('presentation.ready');
+      const topicLabel = i18n.t('presentation.topic');
+      const slidesLabel = i18n.t('presentation.slides');
+      const themeLabel = i18n.t('presentation.theme');
+      const downloadText = i18n.t('presentation.download');
+      const themeName = i18n.t(`themes.${presentation.theme}`);
+
       await this.bot.telegram.sendDocument(
         user.telegramId,
         { source: filePath, filename: `${topic.substring(0, 30)}.pptx` },
         {
-          caption: `✅ <b>Prezentatsiya tayyor!</b>\n\n` +
-            `📝 Mavzu: <i>${topic}</i>\n` +
-            `📊 Slaydlar: ${presentation.slideCount}\n` +
-            `🎨 Tema: ${presentation.theme}\n\n` +
-            `Yuklab oling va foydalaning! 🎉`,
+          caption: `✅ <b>${readyText}</b>\n\n` +
+            `📝 ${topicLabel}: <i>${topic}</i>\n` +
+            `📊 ${slidesLabel}: ${presentation.slideCount}\n` +
+            `🎨 ${themeLabel}: ${themeName}\n\n` +
+            `${downloadText} 🎉`,
           parse_mode: 'HTML',
         },
       );

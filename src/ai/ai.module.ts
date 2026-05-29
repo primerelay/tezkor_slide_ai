@@ -7,6 +7,7 @@ import { OutlineAgent } from './agents/outline.agent';
 import { ContentAgent } from './agents/content.agent';
 import { LayoutAgent } from './agents/layout.agent';
 import { AssetAgent } from './agents/asset.agent';
+import { ImageService } from './services/image.service';
 import { PresentationPipeline } from './pipeline/presentation.pipeline';
 
 @Module({
@@ -19,8 +20,9 @@ import { PresentationPipeline } from './pipeline/presentation.pipeline';
     ContentAgent,
     LayoutAgent,
     AssetAgent,
+    ImageService,
     PresentationPipeline,
   ],
-  exports: [PresentationPipeline, GeminiProvider],
+  exports: [PresentationPipeline, GeminiProvider, ImageService],
 })
 export class AiModule {}

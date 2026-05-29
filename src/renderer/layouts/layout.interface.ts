@@ -1,10 +1,13 @@
 import PptxGenJS from 'pptxgenjs';
 import { ThemeConfig } from '../themes/theme.interface';
 import { SlideWithAssets } from '../../ai/agents/asset.agent';
+import { I18nService, SupportedLanguage } from '../../common/i18n/i18n.service';
 
 export interface PresentationMeta {
   studentName?: string;
   teacherName?: string;
+  language?: SupportedLanguage;
+  i18n?: I18nService;
 }
 
 export interface LayoutRenderer {
