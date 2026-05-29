@@ -1,5 +1,6 @@
 import { Update, Ctx, Start, Command, On, Action, Hears } from 'nestjs-telegraf';
 import { Context, Scenes, Markup } from 'telegraf';
+import { ConfigService } from '@nestjs/config';
 import { TelegramService } from './telegram.service';
 import { InlineKeyboards } from './keyboards/inline.keyboards';
 import { JobEventsService } from '../queue/events/job.events';
@@ -25,10 +26,15 @@ export interface BotContext extends Context {
 
 @Update()
 export class TelegramUpdate {
+  private readonly miniAppUrl: string | undefined;
+
   constructor(
     private readonly telegramService: TelegramService,
     private readonly jobEventsService: JobEventsService,
-  ) {}
+    private readonly configService: ConfigService,
+  ) {
+    this.miniAppUrl = this.configService.get<string>('MINI_APP_URL');
+  }
 
   @Start()
   async onStart(@Ctx() ctx: BotContext) {
@@ -58,7 +64,7 @@ export class TelegramUpdate {
 
     // Show inline menu
     await ctx.reply(i18n.t('mainMenuText'), {
-      reply_markup: InlineKeyboards.mainMenu(i18n),
+      reply_markup: InlineKeyboards.mainMenu(i18n, this.miniAppUrl),
     });
   }
 
@@ -85,7 +91,7 @@ export class TelegramUpdate {
     const i18n = this.telegramService.getI18n(user.language);
 
     await ctx.reply(i18n.t('mainMenuText'), {
-      reply_markup: InlineKeyboards.mainMenu(i18n),
+      reply_markup: InlineKeyboards.mainMenu(i18n, this.miniAppUrl),
     });
   }
 
@@ -222,7 +228,7 @@ export class TelegramUpdate {
     await ctx.editMessageText(i18n.t('languageSet'), { parse_mode: 'HTML' });
 
     await ctx.reply(i18n.t('mainMenuText'), {
-      reply_markup: InlineKeyboards.mainMenu(i18n),
+      reply_markup: InlineKeyboards.mainMenu(i18n, this.miniAppUrl),
     });
   }
 
@@ -504,7 +510,7 @@ export class TelegramUpdate {
     await ctx.editMessageText(i18n.t('generationCancelled'));
 
     await ctx.reply(i18n.t('mainMenuText'), {
-      reply_markup: InlineKeyboards.mainMenu(i18n),
+      reply_markup: InlineKeyboards.mainMenu(i18n, this.miniAppUrl),
     });
   }
 

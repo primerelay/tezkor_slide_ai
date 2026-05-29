@@ -10,16 +10,28 @@ export class InlineKeyboards {
     ]).reply_markup;
   }
 
-  static mainMenu(i18n: I18nService) {
-    return Markup.inlineKeyboard([
+  static mainMenu(i18n: I18nService, miniAppUrl?: string) {
+    const buttons: any[] = [
       [Markup.button.callback(i18n.t('buttons.newPresentation'), 'new_presentation')],
+    ];
+
+    // Add Mini App button if URL is provided
+    if (miniAppUrl) {
+      buttons.push([
+        Markup.button.webApp('🎨 Dizayner (Mini App)', miniAppUrl),
+      ]);
+    }
+
+    buttons.push(
       [Markup.button.callback(i18n.t('buttons.myPresentations'), 'my_presentations')],
       [
         Markup.button.callback(i18n.t('buttons.balance'), 'check_balance'),
         Markup.button.callback(i18n.t('buttons.addBalance'), 'add_balance'),
       ],
       [Markup.button.callback(i18n.t('buttons.language'), 'change_language')],
-    ]).reply_markup;
+    );
+
+    return Markup.inlineKeyboard(buttons).reply_markup;
   }
 
   static rejaSelection(i18n: I18nService) {

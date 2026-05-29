@@ -17,9 +17,21 @@ import { PRESENTATION_QUEUE } from '../constants';
 import { PresentationJobData } from '../types/job.types';
 import { I18nService } from '../../common/i18n/i18n.service';
 
+// Progress messages with emojis
+const PROGRESS_MESSAGES: Record<number, { emoji: string; text: string }> = {
+  0: { emoji: '🚀', text: 'Boshlanmoqda...' },
+  20: { emoji: '🔍', text: 'Mavzu tahlil qilinmoqda...' },
+  40: { emoji: '✍️', text: 'Kontent yaratilmoqda...' },
+  60: { emoji: '📊', text: 'Slaydlar tayyorlanmoqda...' },
+  80: { emoji: '🎨', text: 'Dizayn qo\'llanmoqda...' },
+  100: { emoji: '✅', text: 'Tayyor!' },
+};
+
 @Processor(PRESENTATION_QUEUE)
 export class PresentationProcessor extends WorkerHost {
   private readonly logger = new Logger(PresentationProcessor.name);
+  private progressMessageIds: Map<string, { chatId: string; messageId: number }> = new Map();
+  private lastProgressSent: Map<string, number> = new Map();
 
   constructor(
     @InjectBot()
@@ -44,16 +56,49 @@ export class PresentationProcessor extends WorkerHost {
 
     const startTime = Date.now();
 
+    // Get user for sending progress messages
+    const presentation = await this.presentationRepository.findOne({
+      where: { id: presentationId },
+    });
+    const user = presentation
+      ? await this.userRepository.findOne({ where: { id: presentation.userId } })
+      : null;
+
     try {
       await this.updatePresentationStatus(presentationId, 'processing');
+
+      // Send initial progress message
+      if (user) {
+        await this.sendProgressMessage(presentationId, user.telegramId, topic, 0);
+      }
+
       await this.updateJobStage(presentationId, 'parsing', 5);
+
+      // Update to 20%
+      if (user) {
+        await this.sendProgressMessage(presentationId, user.telegramId, topic, 20);
+      }
 
       const pipelineOutput = await this.pipeline.generate(
         { topic, studentName, teacherName, includeReja, slideCount, theme, language },
-        (progress) => {
+        async (progress) => {
           this.updateJobProgress(presentationId, progress.stage, progress.progress);
+
+          // Send progress updates at key milestones
+          if (user) {
+            const milestone = this.getProgressMilestone(progress.progress);
+            const lastSent = this.lastProgressSent.get(presentationId) || 0;
+            if (milestone > lastSent && milestone <= 60) {
+              await this.sendProgressMessage(presentationId, user.telegramId, topic, milestone);
+            }
+          }
         },
       );
+
+      // Update to 80%
+      if (user) {
+        await this.sendProgressMessage(presentationId, user.telegramId, topic, 80);
+      }
 
       await this.updateJobStage(presentationId, 'rendering', 90);
 
@@ -75,6 +120,11 @@ export class PresentationProcessor extends WorkerHost {
 
       await this.updateJobStage(presentationId, 'done', 100);
 
+      // Update to 100%
+      if (user) {
+        await this.sendProgressMessage(presentationId, user.telegramId, topic, 100);
+      }
+
       this.logger.log(
         `Presentation ${presentationId} completed in ${generationTimeMs}ms`,
       );
@@ -82,16 +132,110 @@ export class PresentationProcessor extends WorkerHost {
       // Send file to user via Telegram
       await this.sendFileToUser(presentationId, pptxUrl, topic);
 
+      // Cleanup
+      this.progressMessageIds.delete(presentationId);
+      this.lastProgressSent.delete(presentationId);
+
       return { pptxUrl };
     } catch (error) {
       this.logger.error(`Error processing presentation ${presentationId}:`, error);
+
+      // Send error message to user
+      if (user) {
+        await this.sendErrorMessage(user.telegramId, topic, error);
+      }
 
       await this.presentationRepository.update(presentationId, {
         status: 'failed',
         errorMessage: error instanceof Error ? error.message : 'Unknown error',
       });
 
+      // Cleanup
+      this.progressMessageIds.delete(presentationId);
+      this.lastProgressSent.delete(presentationId);
+
       throw error;
+    }
+  }
+
+  private getProgressMilestone(progress: number): number {
+    if (progress >= 60) return 60;
+    if (progress >= 40) return 40;
+    if (progress >= 20) return 20;
+    return 0;
+  }
+
+  private buildProgressBar(progress: number): string {
+    const filledBlocks = Math.floor(progress / 10);
+    const emptyBlocks = 10 - filledBlocks;
+    return '▓'.repeat(filledBlocks) + '░'.repeat(emptyBlocks);
+  }
+
+  private async sendProgressMessage(
+    presentationId: string,
+    telegramId: string,
+    topic: string,
+    progress: number,
+  ): Promise<void> {
+    try {
+      const progressInfo = PROGRESS_MESSAGES[progress] || PROGRESS_MESSAGES[0];
+      const progressBar = this.buildProgressBar(progress);
+
+      const messageText = `${progressInfo.emoji} <b>Prezentatsiya yaratilmoqda</b>\n\n` +
+        `📝 Mavzu: <i>${topic}</i>\n\n` +
+        `${progressBar} ${progress}%\n\n` +
+        `${progressInfo.text}`;
+
+      const existing = this.progressMessageIds.get(presentationId);
+
+      if (existing) {
+        // Edit existing message
+        try {
+          await this.bot.telegram.editMessageText(
+            existing.chatId,
+            existing.messageId,
+            undefined,
+            messageText,
+            { parse_mode: 'HTML' },
+          );
+        } catch (editError) {
+          // If edit fails, send new message
+          this.logger.warn(`Failed to edit message, sending new one`);
+        }
+      } else {
+        // Send new message
+        const sent = await this.bot.telegram.sendMessage(telegramId, messageText, {
+          parse_mode: 'HTML',
+        });
+        this.progressMessageIds.set(presentationId, {
+          chatId: telegramId,
+          messageId: sent.message_id,
+        });
+      }
+
+      this.lastProgressSent.set(presentationId, progress);
+    } catch (error) {
+      this.logger.error(`Failed to send progress message:`, error);
+    }
+  }
+
+  private async sendErrorMessage(
+    telegramId: string,
+    topic: string,
+    error: unknown,
+  ): Promise<void> {
+    try {
+      const errorMessage = error instanceof Error ? error.message : 'Noma\'lum xatolik';
+      await this.bot.telegram.sendMessage(
+        telegramId,
+        `❌ <b>Xatolik yuz berdi</b>\n\n` +
+          `📝 Mavzu: <i>${topic}</i>\n\n` +
+          `Xatolik: ${errorMessage}\n\n` +
+          `Iltimos, qaytadan urinib ko'ring.`,
+        { parse_mode: 'HTML' },
+      );
+    } catch (sendError) {
+      this.logger.error(`Failed to send error message:`, sendError);
     }
   }
 
@@ -175,7 +319,15 @@ export class PresentationProcessor extends WorkerHost {
         return;
       }
 
-      const i18n = new I18nService(user.language || 'uz');
+      // Delete progress message before sending file
+      const progressMsg = this.progressMessageIds.get(presentationId);
+      if (progressMsg) {
+        try {
+          await this.bot.telegram.deleteMessage(progressMsg.chatId, progressMsg.messageId);
+        } catch {
+          // Ignore delete errors
+        }
+      }
 
       // Send file to user
       const filePath = path.resolve(pptxUrl);
@@ -189,7 +341,11 @@ export class PresentationProcessor extends WorkerHost {
         user.telegramId,
         { source: filePath, filename: `${topic.substring(0, 30)}.pptx` },
         {
-          caption: i18n.t('presentationReady', { topic }),
+          caption: `✅ <b>Prezentatsiya tayyor!</b>\n\n` +
+            `📝 Mavzu: <i>${topic}</i>\n` +
+            `📊 Slaydlar: ${presentation.slideCount}\n` +
+            `🎨 Tema: ${presentation.theme}\n\n` +
+            `Yuklab oling va foydalaning! 🎉`,
           parse_mode: 'HTML',
         },
       );
