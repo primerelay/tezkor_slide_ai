@@ -36,6 +36,15 @@ export class Presentation {
   @Column({ type: 'text' })
   topic: string;
 
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  studentName: string;
+
+  @Column({ type: 'varchar', length: 255, nullable: true })
+  teacherName: string;
+
+  @Column({ type: 'boolean', default: false })
+  includeReja: boolean;
+
   @Column({ nullable: true })
   slideCount: number;
 

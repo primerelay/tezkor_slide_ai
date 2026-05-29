@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import PptxGenJS from 'pptxgenjs';
-import { LayoutRenderer } from './layout.interface';
+import { LayoutRenderer, PresentationMeta } from './layout.interface';
 import { ThemeConfig } from '../themes/theme.interface';
 import { SlideWithAssets } from '../../ai/agents/asset.agent';
 
@@ -12,6 +12,7 @@ export class StatisticsLayout implements LayoutRenderer {
     pptx: PptxGenJS,
     slideData: SlideWithAssets,
     theme: ThemeConfig,
+    _presentationMeta?: PresentationMeta,
   ): PptxGenJS.Slide {
     const slide = pptx.addSlide();
 

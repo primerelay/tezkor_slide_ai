@@ -38,7 +38,7 @@ export class PresentationProcessor extends WorkerHost {
   }
 
   async process(job: Job<PresentationJobData>): Promise<{ pptxUrl: string }> {
-    const { presentationId, topic, slideCount, theme, language } = job.data;
+    const { presentationId, topic, studentName, teacherName, includeReja, slideCount, theme, language } = job.data;
 
     this.logger.log(`Processing presentation: ${presentationId}`);
 
@@ -49,7 +49,7 @@ export class PresentationProcessor extends WorkerHost {
       await this.updateJobStage(presentationId, 'parsing', 5);
 
       const pipelineOutput = await this.pipeline.generate(
-        { topic, slideCount, theme, language },
+        { topic, studentName, teacherName, includeReja, slideCount, theme, language },
         (progress) => {
           this.updateJobProgress(presentationId, progress.stage, progress.progress);
         },

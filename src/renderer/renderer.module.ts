@@ -7,6 +7,7 @@ import { ComparisonLayout } from './layouts/comparison.layout';
 import { StatisticsLayout } from './layouts/statistics.layout';
 import { QuoteLayout } from './layouts/quote.layout';
 import { ConclusionLayout } from './layouts/conclusion.layout';
+import { RejaLayout } from './layouts/reja.layout';
 import { AcademicBlueTheme } from './themes/academic-blue.theme';
 import { MinimalWhiteTheme } from './themes/minimal-white.theme';
 import { ModernDarkTheme } from './themes/modern-dark.theme';
@@ -21,6 +22,7 @@ import { ModernDarkTheme } from './themes/modern-dark.theme';
     StatisticsLayout,
     QuoteLayout,
     ConclusionLayout,
+    RejaLayout,
     AcademicBlueTheme,
     MinimalWhiteTheme,
     ModernDarkTheme,

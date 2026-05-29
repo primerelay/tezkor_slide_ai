@@ -1,5 +1,5 @@
-import { Update, Ctx, Start, Command, On, Action } from 'nestjs-telegraf';
-import { Context, Scenes } from 'telegraf';
+import { Update, Ctx, Start, Command, On, Action, Hears } from 'nestjs-telegraf';
+import { Context, Scenes, Markup } from 'telegraf';
 import { TelegramService } from './telegram.service';
 import { InlineKeyboards } from './keyboards/inline.keyboards';
 import { JobEventsService } from '../queue/events/job.events';
@@ -7,9 +7,15 @@ import { JobEventsService } from '../queue/events/job.events';
 interface SessionData extends Scenes.SceneSession {
   language?: 'uz' | 'ru' | 'en';
   topic?: string;
+  studentName?: string;
+  teacherName?: string;
+  includeReja?: boolean;
   slideCount?: number;
   theme?: 'academic_blue' | 'minimal_white' | 'modern_dark';
   userId?: number;
+  step?: 'topic' | 'student_name' | 'teacher_name' | 'reja' | 'slides' | 'theme' | 'confirm';
+  awaitingPaymentScreenshot?: boolean;
+  adminApprovingUserId?: number;
 }
 
 export interface BotContext extends Context {
@@ -38,11 +44,47 @@ export class TelegramUpdate {
 
     ctx.session.userId = user.id;
     ctx.session.language = user.language;
+    ctx.session.step = undefined;
 
     const i18n = this.telegramService.getI18n(user.language);
 
+    // Set persistent menu button
     await ctx.reply(i18n.t('welcome', { name: user.firstName || 'User' }), {
       parse_mode: 'HTML',
+      reply_markup: Markup.keyboard([
+        ['📋 Menu']
+      ]).resize().reply_markup,
+    });
+
+    // Show inline menu
+    await ctx.reply(i18n.t('mainMenuText'), {
+      reply_markup: InlineKeyboards.mainMenu(i18n),
+    });
+  }
+
+  @Hears('📋 Menu')
+  async onMenuButton(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    if (!user) return;
+
+    // Reset session state
+    ctx.session.step = undefined;
+    ctx.session.topic = undefined;
+    ctx.session.studentName = undefined;
+    ctx.session.teacherName = undefined;
+    ctx.session.includeReja = undefined;
+    ctx.session.slideCount = undefined;
+    ctx.session.theme = undefined;
+    ctx.session.awaitingPaymentScreenshot = undefined;
+
+    const i18n = this.telegramService.getI18n(user.language);
+
+    await ctx.reply(i18n.t('mainMenuText'), {
       reply_markup: InlineKeyboards.mainMenu(i18n),
     });
   }
@@ -138,13 +180,55 @@ export class TelegramUpdate {
     ctx.session.userId = user.id;
     ctx.session.language = user.language;
     ctx.session.topic = undefined;
+    ctx.session.studentName = undefined;
+    ctx.session.teacherName = undefined;
+    ctx.session.includeReja = undefined;
     ctx.session.slideCount = undefined;
     ctx.session.theme = undefined;
+    ctx.session.step = 'topic';
 
     const i18n = this.telegramService.getI18n(user.language);
 
     await ctx.answerCbQuery();
     await ctx.reply(i18n.t('enterTopic'), { parse_mode: 'HTML' });
+  }
+
+  @Action('add_balance')
+  async onAddBalance(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    if (!user) return;
+
+    const i18n = this.telegramService.getI18n(user.language);
+    ctx.session.awaitingPaymentScreenshot = true;
+
+    await ctx.answerCbQuery();
+    await ctx.reply(i18n.t('paymentInstructions'), { parse_mode: 'HTML' });
+  }
+
+  @Action(/^reja_(yes|no)$/)
+  async onRejaSelect(@Ctx() ctx: BotContext) {
+    const callbackQuery = ctx.callbackQuery;
+    if (!callbackQuery || !('data' in callbackQuery)) return;
+
+    const includeReja = callbackQuery.data === 'reja_yes';
+    ctx.session.includeReja = includeReja;
+    ctx.session.step = 'slides';
+
+    const i18n = this.telegramService.getI18n(ctx.session.language || 'uz');
+
+    await ctx.answerCbQuery();
+    await ctx.editMessageText(
+      includeReja ? i18n.t('rejaYes') : i18n.t('rejaNo'),
+    );
+
+    await ctx.reply(i18n.t('selectSlideCount'), {
+      reply_markup: InlineKeyboards.slideCountSelection(i18n),
+    });
   }
 
   @Action('my_presentations')
@@ -245,23 +329,31 @@ export class TelegramUpdate {
 
     const i18n = this.telegramService.getI18n(user.language);
 
-    if (user.credits < 1) {
-      await ctx.answerCbQuery(i18n.t('insufficientCredits'), { show_alert: true });
-      return;
-    }
-
-    const { topic, slideCount, theme, language } = ctx.session;
+    const { topic, slideCount, theme, language, studentName, teacherName, includeReja } = ctx.session;
 
     if (!topic || !slideCount || !theme) {
       await ctx.answerCbQuery(i18n.t('missingData'), { show_alert: true });
       return;
     }
 
-    await this.telegramService.deductCredits(user.id, 1);
+    // Check price
+    const price = this.telegramService.getPriceForSlideCount(slideCount);
+    if (user.credits < price) {
+      await ctx.answerCbQuery(
+        i18n.t('insufficientCredits') + ` (${price} so'm kerak, ${user.credits} so'm bor)`,
+        { show_alert: true }
+      );
+      return;
+    }
+
+    await this.telegramService.deductCredits(user.id, price);
 
     const presentation = await this.telegramService.createPresentation({
       userId: user.id,
       topic,
+      studentName: studentName || '',
+      teacherName: teacherName || '',
+      includeReja: includeReja || false,
       slideCount,
       theme,
       language: language || 'uz',
@@ -271,6 +363,9 @@ export class TelegramUpdate {
       presentationId: presentation.id,
       userId: user.id,
       topic,
+      studentName: studentName || '',
+      teacherName: teacherName || '',
+      includeReja: includeReja || false,
       slideCount,
       theme,
       language: language || 'uz',
@@ -286,8 +381,56 @@ export class TelegramUpdate {
     );
 
     ctx.session.topic = undefined;
+    ctx.session.studentName = undefined;
+    ctx.session.teacherName = undefined;
+    ctx.session.includeReja = undefined;
     ctx.session.slideCount = undefined;
     ctx.session.theme = undefined;
+    ctx.session.step = undefined;
+  }
+
+  @Action(/^approve_payment_(\d+)_(\d+)$/)
+  async onApprovePayment(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    // Check if admin
+    if (!this.telegramService.isAdmin(telegramUser.id.toString())) {
+      await ctx.answerCbQuery('Sizda ruxsat yo\'q!', { show_alert: true });
+      return;
+    }
+
+    const callbackQuery = ctx.callbackQuery;
+    if (!callbackQuery || !('data' in callbackQuery)) return;
+
+    const match = callbackQuery.data.match(/^approve_payment_(\d+)_(\d+)$/);
+    if (!match) return;
+
+    const userId = parseInt(match[1], 10);
+
+    // Ask for amount
+    await ctx.answerCbQuery();
+    await ctx.reply(
+      `💰 Qancha so'm qo'shmoqchisiz? (User ID: ${userId})\n\nMiqdorni yozing (masalan: 5000):`,
+      { parse_mode: 'HTML' }
+    );
+
+    // Store admin state
+    ctx.session.adminApprovingUserId = userId;
+  }
+
+  @Action(/^reject_payment_(\d+)$/)
+  async onRejectPayment(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    if (!this.telegramService.isAdmin(telegramUser.id.toString())) {
+      await ctx.answerCbQuery('Sizda ruxsat yo\'q!', { show_alert: true });
+      return;
+    }
+
+    await ctx.answerCbQuery('❌ Rad etildi');
+    await ctx.editMessageCaption('❌ <b>Rad etildi</b>', { parse_mode: 'HTML' });
   }
 
   @Action('cancel_generation')
@@ -323,9 +466,30 @@ export class TelegramUpdate {
     );
     if (!user) return;
 
-    const i18n = this.telegramService.getI18n(user.language);
+    // Admin handling payment approval amount
+    if (ctx.session.adminApprovingUserId && this.telegramService.isAdmin(telegramUser.id.toString())) {
+      const amount = parseInt(text.replace(/\D/g, ''), 10);
+      if (isNaN(amount) || amount <= 0) {
+        await ctx.reply('❌ Noto\'g\'ri miqdor. Raqam kiriting.');
+        return;
+      }
 
-    if (!ctx.session.topic) {
+      const targetUserId = ctx.session.adminApprovingUserId;
+      await this.telegramService.addCreditsById(targetUserId, amount);
+
+      await ctx.reply(`✅ <b>Balans to'ldirildi!</b>\n\nUser ID: ${targetUserId}\nMiqdor: +${amount} so'm`, {
+        parse_mode: 'HTML',
+      });
+
+      ctx.session.adminApprovingUserId = undefined;
+      return;
+    }
+
+    const i18n = this.telegramService.getI18n(user.language);
+    const step = ctx.session.step || 'topic';
+
+    // Step 1: Topic
+    if (step === 'topic' && !ctx.session.topic) {
       if (text.length < 5) {
         await ctx.reply(i18n.t('topicTooShort'));
         return;
@@ -339,14 +503,74 @@ export class TelegramUpdate {
       ctx.session.topic = text;
       ctx.session.language = user.language;
       ctx.session.userId = user.id;
+      ctx.session.step = 'student_name';
 
       await ctx.reply(i18n.t('topicReceived', { topic: text }), {
         parse_mode: 'HTML',
       });
 
-      await ctx.reply(i18n.t('selectSlideCount'), {
-        reply_markup: InlineKeyboards.slideCountSelection(i18n),
+      await ctx.reply(i18n.t('enterStudentName'), { parse_mode: 'HTML' });
+      return;
+    }
+
+    // Step 2: Student Name
+    if (step === 'student_name') {
+      if (text.length < 2) {
+        await ctx.reply(i18n.t('nameTooShort'));
+        return;
+      }
+
+      ctx.session.studentName = text;
+      ctx.session.step = 'teacher_name';
+
+      await ctx.reply(i18n.t('studentNameReceived', { name: text }), {
+        parse_mode: 'HTML',
       });
+
+      await ctx.reply(i18n.t('enterTeacherName'), { parse_mode: 'HTML' });
+      return;
+    }
+
+    // Step 3: Teacher Name
+    if (step === 'teacher_name') {
+      if (text.length < 2) {
+        await ctx.reply(i18n.t('nameTooShort'));
+        return;
+      }
+
+      ctx.session.teacherName = text;
+      ctx.session.step = 'reja';
+
+      await ctx.reply(i18n.t('teacherNameReceived', { name: text }), {
+        parse_mode: 'HTML',
+      });
+
+      await ctx.reply(i18n.t('askReja'), {
+        parse_mode: 'HTML',
+        reply_markup: InlineKeyboards.rejaSelection(i18n),
+      });
+      return;
+    }
+  }
+
+  @On('photo')
+  async onPhoto(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    if (!user) return;
+
+    const i18n = this.telegramService.getI18n(user.language);
+
+    if (ctx.session.awaitingPaymentScreenshot) {
+      // Forward to admin
+      await this.telegramService.forwardPaymentToAdmin(ctx, user);
+      ctx.session.awaitingPaymentScreenshot = false;
+
+      await ctx.reply(i18n.t('paymentReceived'), { parse_mode: 'HTML' });
     }
   }
 }

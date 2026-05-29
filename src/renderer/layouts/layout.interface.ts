@@ -2,12 +2,18 @@ import PptxGenJS from 'pptxgenjs';
 import { ThemeConfig } from '../themes/theme.interface';
 import { SlideWithAssets } from '../../ai/agents/asset.agent';
 
+export interface PresentationMeta {
+  studentName?: string;
+  teacherName?: string;
+}
+
 export interface LayoutRenderer {
   readonly type: string;
   render(
     pptx: PptxGenJS,
     slide: SlideWithAssets,
     theme: ThemeConfig,
+    presentationMeta?: PresentationMeta,
   ): PptxGenJS.Slide;
 }
 

@@ -1,0 +1,25 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(npm run build:*)",
+      "Bash(docker-compose up:*)",
+      "Bash(lsof:*)",
+      "Bash(xargs kill -9:*)",
+      "Bash(pkill:*)",
+      "Bash(node -e \"\nconst { GoogleGenerativeAI } = require\\(''@google/generative-ai''\\);\nconst client = new GoogleGenerativeAI\\(''AIzaSyBklnHsPHmKvN0gOi8tnVC4uxWZZdmVGFM''\\);\nconst model = client.getGenerativeModel\\({ model: ''gemini-2.0-flash'' }\\);\n\nmodel.generateContent\\(''Say hello in one word''\\)\n  .then\\(r => console.log\\(''✅ SUCCESS:'', r.response.text\\(\\)\\)\\)\n  .catch\\(e => console.log\\(''❌ ERROR:'', e.message\\)\\);\n\")",
+      "Bash(node -e \"\nconst { GoogleGenerativeAI } = require\\(''@google/generative-ai''\\);\nconst client = new GoogleGenerativeAI\\(''AIzaSyAs4P92_bwBhtCeEPPSfkq3qHctTdCN_ao''\\);\nconst model = client.getGenerativeModel\\({ model: ''gemini-2.0-flash'' }\\);\n\nmodel.generateContent\\(''Say hello''\\)\n  .then\\(r => console.log\\(''✅ SUCCESS:'', r.response.text\\(\\)\\)\\)\n  .catch\\(e => console.log\\(''❌ ERROR:'', e.message\\)\\);\n\")",
+      "Bash(node -e \"\nconst { GoogleGenerativeAI } = require\\(''@google/generative-ai''\\);\nconst client = new GoogleGenerativeAI\\(''AIzaSyAlM8lnvlDGOf_oefS1wo_2c1g7ryzBjqw''\\);\nconst model = client.getGenerativeModel\\({ model: ''gemini-2.0-flash'' }\\);\n\nmodel.generateContent\\(''Say hello''\\)\n  .then\\(r => console.log\\(''✅ SUCCESS:'', r.response.text\\(\\)\\)\\)\n  .catch\\(e => console.log\\(''❌ ERROR:'', e.message\\)\\);\n\")",
+      "Bash(node -e \"\nconst OpenAI = require\\(''openai''\\);\nconst client = new OpenAI\\({\n  baseURL: ''https://openrouter.ai/api/v1'',\n  apiKey: ''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'',\n}\\);\n\nclient.chat.completions.create\\({\n  model: ''google/gemini-2.0-flash-exp:free'',\n  messages: [{ role: ''user'', content: ''Say hello in one word'' }],\n}\\)\n.then\\(r => console.log\\(''✅ SUCCESS:'', r.choices[0].message.content\\)\\)\n.catch\\(e => console.log\\(''❌ ERROR:'', e.message\\)\\);\n\")",
+      "Bash(node -e \"\nconst OpenAI = require\\(''openai''\\);\nconst client = new OpenAI\\({\n  baseURL: ''https://openrouter.ai/api/v1'',\n  apiKey: ''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'',\n}\\);\n\nclient.chat.completions.create\\({\n  model: ''google/gemini-flash-1.5'',\n  messages: [{ role: ''user'', content: ''Say hello'' }],\n}\\)\n.then\\(r => console.log\\(''✅ SUCCESS:'', r.choices[0].message.content\\)\\)\n.catch\\(e => console.log\\(''❌ ERROR:'', e.message\\)\\);\n\")",
+      "Bash(node -e \"\nconst OpenAI = require\\(''openai''\\);\nconst client = new OpenAI\\({\n  baseURL: ''https://openrouter.ai/api/v1'',\n  apiKey: ''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'',\n}\\);\n\nclient.chat.completions.create\\({\n  model: ''meta-llama/llama-3.2-3b-instruct:free'',\n  messages: [{ role: ''user'', content: ''Say hello'' }],\n}\\)\n.then\\(r => console.log\\(''✅ SUCCESS:'', r.choices[0].message.content\\)\\)\n.catch\\(e => console.log\\(''❌ ERROR:'', e.message\\)\\);\n\")",
+      "Bash(node -e \"\nconst OpenAI = require\\(''openai''\\);\nconst client = new OpenAI\\({\n  baseURL: ''https://openrouter.ai/api/v1'',\n  apiKey: ''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'',\n}\\);\n\nasync function test\\(\\) {\n  try {\n    const r = await client.chat.completions.create\\({\n      model: ''meta-llama/llama-3.2-3b-instruct:free'',\n      messages: [{ role: ''user'', content: ''Say hello'' }],\n    }\\);\n    console.log\\(''✅ SUCCESS:'', r.choices[0].message.content\\);\n  } catch \\(e\\) {\n    console.log\\(''❌ ERROR:'', e.message\\);\n  }\n}\ntest\\(\\);\n\")",
+      "Bash(node -e \"\nconst OpenAI = require\\(''openai''\\);\nconst client = new OpenAI\\({\n  baseURL: ''https://openrouter.ai/api/v1'',\n  apiKey: ''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'',\n}\\);\n\nasync function test\\(\\) {\n  try {\n    const r = await client.chat.completions.create\\({\n      model: ''openai/gpt-4o-mini'',\n      messages: [{ role: ''user'', content: ''Say hi'' }],\n    }\\);\n    console.log\\(''✅ SUCCESS:'', r.choices[0].message.content\\);\n  } catch \\(e\\) {\n    console.log\\(''❌ ERROR:'', e.message\\);\n  }\n}\ntest\\(\\);\n\")",
+      "Bash(grep:*)",
+      "Bash(for i in 1 2 3 4 5 6 7 8 9 10)",
+      "Bash(do echo -n \".\")",
+      "Bash(done)",
+      "Bash(for i in 1 2 3 4 5 6 7 8 9 10 11 12)"
+    ]
+  }
+}

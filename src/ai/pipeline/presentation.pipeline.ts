@@ -6,6 +6,9 @@ import { AssetAgent, SlideWithAssets } from '../agents/asset.agent';
 
 export interface PipelineInput {
   topic: string;
+  studentName?: string;
+  teacherName?: string;
+  includeReja?: boolean;
   slideCount: number;
   theme: 'academic_blue' | 'minimal_white' | 'modern_dark';
   language: 'uz' | 'ru' | 'en';
@@ -14,6 +17,8 @@ export interface PipelineInput {
 export interface PipelineOutput {
   title: string;
   subtitle: string;
+  studentName?: string;
+  teacherName?: string;
   theme: string;
   language: string;
   slides: SlideWithAssets[];
@@ -81,6 +86,9 @@ export class PresentationPipeline {
         input.topic,
         input.slideCount,
         input.language,
+        input.studentName,
+        input.teacherName,
+        input.includeReja,
       );
       stages.outline.durationMs = Date.now() - outlineStart;
 
@@ -138,6 +146,8 @@ export class PresentationPipeline {
       const output: PipelineOutput = {
         title: content.title,
         subtitle: content.subtitle,
+        studentName: input.studentName,
+        teacherName: input.teacherName,
         theme: input.theme,
         language: input.language,
         slides: slidesWithAssets,

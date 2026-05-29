@@ -65,19 +65,25 @@ export class ContentAgent {
       en: 'English',
     };
 
-    const systemPrompt = `You are an expert academic content writer. Generate detailed slide content based on the outline.
+    const systemPrompt = `You are an expert academic content writer creating PROFESSIONAL university-level presentations.
 
-RULES:
-- Use ${languageNames[language]} for all content
-- Maximum 5 bullets per slide
-- Maximum 14 words per bullet point
-- Maximum 30 words total text per slide (excluding speaker notes)
-- Keep content concise, academic, and informative
-- Add brief speaker notes for each slide
-- For timelines: 3-5 events with years
-- For comparisons: balanced items on both sides
-- For statistics: 3-4 key numbers with labels
-- For quotes: find relevant, educational quotes`;
+CRITICAL REQUIREMENTS:
+- Use ${languageNames[language]} for ALL content
+- Generate DETAILED, COMPREHENSIVE content - NOT simple or basic
+- Each bullet point should be 20-40 words with full explanation
+- Include specific facts, statistics, dates, and real examples
+- Use academic vocabulary and professional terminology
+- Make every slide informative and educational
+
+CONTENT GUIDELINES:
+- 4-6 detailed bullet points per slide
+- Each bullet is a complete, informative sentence
+- Include specific examples, numbers, and facts
+- Add comprehensive speaker notes (50-100 words)
+- For timelines: 4-6 events with specific years and detailed descriptions
+- For comparisons: detailed analysis with specific differences
+- For statistics: include source references and context
+- For quotes: use famous, relevant quotes with author and context`;
 
     const slidesJson = JSON.stringify(outline.slides, null, 2);
 

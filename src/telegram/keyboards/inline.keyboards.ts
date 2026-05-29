@@ -16,20 +16,38 @@ export class InlineKeyboards {
       [Markup.button.callback(i18n.t('buttons.myPresentations'), 'my_presentations')],
       [
         Markup.button.callback(i18n.t('buttons.balance'), 'check_balance'),
-        Markup.button.callback(i18n.t('buttons.language'), 'change_language'),
+        Markup.button.callback(i18n.t('buttons.addBalance'), 'add_balance'),
+      ],
+      [Markup.button.callback(i18n.t('buttons.language'), 'change_language')],
+    ]).reply_markup;
+  }
+
+  static rejaSelection(i18n: I18nService) {
+    return Markup.inlineKeyboard([
+      [
+        Markup.button.callback(i18n.t('buttons.yes'), 'reja_yes'),
+        Markup.button.callback(i18n.t('buttons.no'), 'reja_no'),
       ],
     ]).reply_markup;
   }
 
   static slideCountSelection(i18n: I18nService) {
+    // Prices: 6=1000, 8=1500, 10=1700, 12=2000, 14=2200, 16=2400, 18=2500
     return Markup.inlineKeyboard([
       [
-        Markup.button.callback('6 ' + i18n.t('slides'), 'slides_6'),
-        Markup.button.callback('8 ' + i18n.t('slides'), 'slides_8'),
+        Markup.button.callback('6 bet - 1,000 so\'m', 'slides_6'),
+        Markup.button.callback('8 bet - 1,500 so\'m', 'slides_8'),
       ],
       [
-        Markup.button.callback('10 ' + i18n.t('slides'), 'slides_10'),
-        Markup.button.callback('12 ' + i18n.t('slides'), 'slides_12'),
+        Markup.button.callback('10 bet - 1,700 so\'m', 'slides_10'),
+        Markup.button.callback('12 bet - 2,000 so\'m', 'slides_12'),
+      ],
+      [
+        Markup.button.callback('14 bet - 2,200 so\'m', 'slides_14'),
+        Markup.button.callback('16 bet - 2,400 so\'m', 'slides_16'),
+      ],
+      [
+        Markup.button.callback('18 bet - 2,500 so\'m', 'slides_18'),
       ],
     ]).reply_markup;
   }
@@ -74,6 +92,30 @@ export class InlineKeyboards {
       [Markup.button.callback(i18n.t('admin.pendingPayments'), 'admin_pending_payments')],
       [Markup.button.callback(i18n.t('admin.stats'), 'admin_stats')],
       [Markup.button.callback(i18n.t('admin.broadcast'), 'admin_broadcast')],
+    ]).reply_markup;
+  }
+
+  static adminApprovePayment(userId: number, amount: number) {
+    return Markup.inlineKeyboard([
+      [
+        Markup.button.callback(`✅ Tasdiqlash (+${amount} so'm)`, `approve_payment_${userId}_${amount}`),
+      ],
+      [
+        Markup.button.callback('❌ Rad etish', `reject_payment_${userId}`),
+      ],
+    ]).reply_markup;
+  }
+
+  static paymentAmountSelection() {
+    return Markup.inlineKeyboard([
+      [
+        Markup.button.callback('1,000 so\'m', 'pay_amount_1000'),
+        Markup.button.callback('2,000 so\'m', 'pay_amount_2000'),
+      ],
+      [
+        Markup.button.callback('5,000 so\'m', 'pay_amount_5000'),
+        Markup.button.callback('10,000 so\'m', 'pay_amount_10000'),
+      ],
     ]).reply_markup;
   }
 }

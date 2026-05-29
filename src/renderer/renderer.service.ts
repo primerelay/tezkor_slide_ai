@@ -13,7 +13,8 @@ import { ComparisonLayout } from './layouts/comparison.layout';
 import { StatisticsLayout } from './layouts/statistics.layout';
 import { QuoteLayout } from './layouts/quote.layout';
 import { ConclusionLayout } from './layouts/conclusion.layout';
-import { LayoutRenderer } from './layouts/layout.interface';
+import { RejaLayout } from './layouts/reja.layout';
+import { LayoutRenderer, PresentationMeta } from './layouts/layout.interface';
 
 @Injectable()
 export class RendererService {
@@ -32,6 +33,7 @@ export class RendererService {
     private readonly statisticsLayout: StatisticsLayout,
     private readonly quoteLayout: QuoteLayout,
     private readonly conclusionLayout: ConclusionLayout,
+    private readonly rejaLayout: RejaLayout,
   ) {
     this.themes = new Map([
       ['academic_blue', this.academicBlueTheme.getConfig()],
@@ -41,6 +43,7 @@ export class RendererService {
 
     this.layouts = new Map<string, LayoutRenderer>([
       ['hero', this.heroLayout],
+      ['reja', this.rejaLayout],
       ['bullets', this.bulletsLayout],
       ['timeline', this.timelineLayout],
       ['comparison', this.comparisonLayout],
@@ -66,8 +69,14 @@ export class RendererService {
     pptx.author = 'Tezkor Slide AI';
     pptx.company = 'Tezkor';
 
+    // Create presentation metadata for layouts
+    const presentationMeta: PresentationMeta = {
+      studentName: pipelineOutput.studentName,
+      teacherName: pipelineOutput.teacherName,
+    };
+
     for (const slideData of pipelineOutput.slides) {
-      this.renderSlide(pptx, slideData, theme);
+      this.renderSlide(pptx, slideData, theme, presentationMeta);
     }
 
     this.logger.log(`Rendered ${pipelineOutput.slides.length} slides`);
@@ -80,16 +89,17 @@ export class RendererService {
     pptx: PptxGenJS,
     slideData: SlideWithAssets,
     theme: ThemeConfig,
+    presentationMeta?: PresentationMeta,
   ): void {
     const layoutRenderer = this.layouts.get(slideData.type);
 
     if (layoutRenderer) {
-      layoutRenderer.render(pptx, slideData, theme);
+      layoutRenderer.render(pptx, slideData, theme, presentationMeta);
     } else {
       this.logger.warn(
         `Unknown slide type: ${slideData.type}, using bullets layout`,
       );
-      this.bulletsLayout.render(pptx, slideData, theme);
+      this.bulletsLayout.render(pptx, slideData, theme, presentationMeta);
     }
   }
 
