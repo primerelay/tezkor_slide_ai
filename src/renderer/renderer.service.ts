@@ -88,8 +88,8 @@ export class RendererService {
     pptx.layout = 'LAYOUT_16x9';
     pptx.title = pipelineOutput.title;
     pptx.subject = pipelineOutput.subtitle;
-    pptx.author = 'Tezkor Slide AI';
-    pptx.company = 'Tezkor';
+    pptx.author = 'SliderAI UZ';
+    pptx.company = 'SliderAI';
 
     // Create presentation metadata for layouts
     const presentationMeta: PresentationMeta = {

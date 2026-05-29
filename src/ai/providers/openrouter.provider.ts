@@ -31,8 +31,8 @@ export class OpenRouterProvider implements AiProvider {
         baseURL: 'https://openrouter.ai/api/v1',
         apiKey,
         defaultHeaders: {
-          'HTTP-Referer': 'https://tezkor-slide.ai',
-          'X-Title': 'Tezkor Slide AI',
+          'HTTP-Referer': 'https://sliderai.uz',
+          'X-Title': 'SliderAI UZ',
         },
       });
     }

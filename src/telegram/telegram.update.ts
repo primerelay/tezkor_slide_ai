@@ -277,7 +277,7 @@ export class TelegramUpdate {
     ctx.session.awaitingPaymentScreenshot = true;
 
     const cardNumber = this.configService.get<string>('payment.cardNumber') || '8600 1234 5678 9012';
-    const cardOwner = this.configService.get<string>('payment.cardOwner') || 'Tezkor Slide AI';
+    const cardOwner = this.configService.get<string>('payment.cardOwner') || 'SliderAI UZ';
 
     await ctx.answerCbQuery();
     await ctx.reply(i18n.t('paymentInstructions', { cardNumber, cardOwner }), { parse_mode: 'HTML' });

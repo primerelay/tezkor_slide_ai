@@ -16,7 +16,7 @@ async function bootstrap() {
   const port = process.env.PORT || 3000;
   await app.listen(port);
 
-  console.log(`🚀 Tezkor Slide AI is running on port ${port}`);
+  console.log(`🚀 SliderAI UZ is running on port ${port}`);
 }
 
 bootstrap();

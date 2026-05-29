@@ -1,10 +1,10 @@
 {
-  "welcome": "Hello, {name}! 👋\n\nWelcome to Tezkor Slide AI!\n\nWith this bot, you can create professional presentations in just a few minutes.\n\n💰 Prices:\n• 6 slides - $1\n• 8 slides - $1.5\n• 10 slides - $1.7\n• 12 slides - $2\n• 14 slides - $2.2\n• 16 slides - $2.4\n• 18 slides - $2.5",
+  "welcome": "Hello, {name}! 👋\n\nWelcome to SliderAI UZ!\n\nWith this bot, you can create professional presentations in just a few minutes.\n\n💰 Prices:\n• 6 slides - $1\n• 8 slides - $1.5\n• 10 slides - $1.7\n• 12 slides - $2\n• 14 slides - $2.2\n• 16 slides - $2.4\n• 18 slides - $2.5",
   "mainMenuText": "Main menu",
   "selectLanguage": "Tilni tanlang / Выберите язык / Select language / Sprache wählen:",
   "languageChanged": "Language changed",
   "languageSet": "✅ Language changed to English",
-  "help": "<b>Tezkor Slide AI - Help</b>\n\n📝 <b>Creating a presentation:</b>\n1. Click \"New presentation\"\n2. Enter the topic\n3. Enter your name\n4. Enter teacher's name\n5. Choose if outline is needed\n6. Select number of slides\n7. Choose a design\n\n💰 <b>Prices:</b>\n• 6 slides - $1\n• 8 slides - $1.5\n• 10 slides - $1.7\n• 12 slides - $2\n\n🔧 <b>Commands:</b>\n/start - Restart the bot\n/new - New presentation\n/balance - Check balance\n/language - Change language\n/help - Help",
+  "help": "<b>SliderAI UZ - Help</b>\n\n📝 <b>Creating a presentation:</b>\n1. Click \"New presentation\"\n2. Enter the topic\n3. Enter your name\n4. Enter teacher's name\n5. Choose if outline is needed\n6. Select number of slides\n7. Choose a design\n\n💰 <b>Prices:</b>\n• 6 slides - $1\n• 8 slides - $1.5\n• 10 slides - $1.7\n• 12 slides - $2\n\n🔧 <b>Commands:</b>\n/start - Restart the bot\n/new - New presentation\n/balance - Check balance\n/language - Change language\n/help - Help",
   "balance": "💰 <b>Your balance:</b> {credits} credits",
   "enterTopic": "📝 <b>Enter the presentation topic</b>\n\nExample: \"Ecology and Environmental Protection\"\n\nTopic must be between 5 and 500 characters.",
   "enterStudentName": "👤 <b>Enter your name</b>\n\nExample: \"John Smith\"",

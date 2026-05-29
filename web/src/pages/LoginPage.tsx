@@ -60,7 +60,7 @@ export default function LoginPage() {
               <Sparkles className="w-8 h-8 text-white" />
             </div>
             <h1 className="text-2xl font-bold text-gray-900">Admin Panel</h1>
-            <p className="text-gray-500 mt-1">Tezkor Slide AI boshqaruv paneli</p>
+            <p className="text-gray-500 mt-1">SliderAI UZ boshqaruv paneli</p>
           </div>
 
           {/* Error message */}

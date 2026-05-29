@@ -1,10 +1,10 @@
 {
-  "welcome": "Hallo, {name}! 👋\n\nWillkommen bei Tezkor Slide AI!\n\nMit diesem Bot können Sie in wenigen Minuten professionelle Präsentationen erstellen.\n\n💰 Preise:\n• 6 Folien - 1€\n• 8 Folien - 1,5€\n• 10 Folien - 1,7€\n• 12 Folien - 2€\n• 14 Folien - 2,2€\n• 16 Folien - 2,4€\n• 18 Folien - 2,5€",
+  "welcome": "Hallo, {name}! 👋\n\nWillkommen bei SliderAI UZ!\n\nMit diesem Bot können Sie in wenigen Minuten professionelle Präsentationen erstellen.\n\n💰 Preise:\n• 6 Folien - 1€\n• 8 Folien - 1,5€\n• 10 Folien - 1,7€\n• 12 Folien - 2€\n• 14 Folien - 2,2€\n• 16 Folien - 2,4€\n• 18 Folien - 2,5€",
   "mainMenuText": "Hauptmenü",
   "selectLanguage": "Tilni tanlang / Выберите язык / Select language / Sprache wählen:",
   "languageChanged": "Sprache geändert",
   "languageSet": "✅ Sprache auf Deutsch geändert",
-  "help": "<b>Tezkor Slide AI - Hilfe</b>\n\n📝 <b>Präsentation erstellen:</b>\n1. Klicken Sie auf \"Neue Präsentation\"\n2. Geben Sie das Thema ein\n3. Geben Sie Ihren Namen ein\n4. Geben Sie den Namen des Lehrers ein\n5. Wählen Sie, ob eine Gliederung benötigt wird\n6. Wählen Sie die Anzahl der Folien\n7. Wählen Sie ein Design\n\n💰 <b>Preise:</b>\n• 6 Folien - 1€\n• 8 Folien - 1,5€\n• 10 Folien - 1,7€\n• 12 Folien - 2€\n\n🔧 <b>Befehle:</b>\n/start - Bot neu starten\n/new - Neue Präsentation\n/balance - Guthaben prüfen\n/language - Sprache ändern\n/help - Hilfe",
+  "help": "<b>SliderAI UZ - Hilfe</b>\n\n📝 <b>Präsentation erstellen:</b>\n1. Klicken Sie auf \"Neue Präsentation\"\n2. Geben Sie das Thema ein\n3. Geben Sie Ihren Namen ein\n4. Geben Sie den Namen des Lehrers ein\n5. Wählen Sie, ob eine Gliederung benötigt wird\n6. Wählen Sie die Anzahl der Folien\n7. Wählen Sie ein Design\n\n💰 <b>Preise:</b>\n• 6 Folien - 1€\n• 8 Folien - 1,5€\n• 10 Folien - 1,7€\n• 12 Folien - 2€\n\n🔧 <b>Befehle:</b>\n/start - Bot neu starten\n/new - Neue Präsentation\n/balance - Guthaben prüfen\n/language - Sprache ändern\n/help - Hilfe",
   "balance": "💰 <b>Ihr Guthaben:</b> {credits} Credits",
   "enterTopic": "📝 <b>Geben Sie das Präsentationsthema ein</b>\n\nBeispiel: \"Ökologie und Umweltschutz\"\n\nDas Thema muss zwischen 5 und 500 Zeichen lang sein.",
   "enterStudentName": "👤 <b>Geben Sie Ihren Namen ein</b>\n\nBeispiel: \"Max Mustermann\"",

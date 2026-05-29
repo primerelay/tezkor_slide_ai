@@ -25,7 +25,7 @@ const features = [
 ];
 
 const steps = [
-  { number: '01', title: 'Telegram botni oching', description: '@TezkorSlideBot ni boshlang' },
+  { number: '01', title: 'Telegram botni oching', description: '@slider_ai_uz_bot ni boshlang' },
   { number: '02', title: 'Mavzuni kiriting', description: "Prezentatsiya mavzusini yozing" },
   { number: '03', title: 'Shablon tanlang', description: "Professional dizaynlardan birini tanlang" },
   { number: '04', title: 'Yuklab oling', description: 'Tayyor PPTX faylni oling' },
@@ -48,7 +48,7 @@ export default function LandingPage() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
-              <span className="font-bold text-xl text-gray-900">Tezkor Slide</span>
+              <span className="font-bold text-xl text-gray-900">SliderAI</span>
             </div>
             <div className="hidden md:flex items-center gap-8">
               <a href="#features" className="text-gray-600 hover:text-gray-900 transition-colors">Imkoniyatlar</a>
@@ -56,7 +56,7 @@ export default function LandingPage() {
               <a href="#pricing" className="text-gray-600 hover:text-gray-900 transition-colors">Narxlar</a>
             </div>
             <a
-              href="https://t.me/TezkorSlideBot"
+              href="https://t.me/slider_ai_uz_bot"
               target="_blank"
               rel="noopener noreferrer"
               className="btn btn-primary"
@@ -99,7 +99,7 @@ export default function LandingPage() {
 
             <div className="flex flex-col sm:flex-row items-center justify-center gap-4">
               <a
-                href="https://t.me/TezkorSlideBot"
+                href="https://t.me/slider_ai_uz_bot"
                 target="_blank"
                 rel="noopener noreferrer"
                 className="btn btn-primary text-lg px-8 py-4"
@@ -149,7 +149,7 @@ export default function LandingPage() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
-              Nima uchun <span className="gradient-text">Tezkor Slide</span>?
+              Nima uchun <span className="gradient-text">SliderAI</span>?
             </h2>
             <p className="text-xl text-gray-600 max-w-2xl mx-auto">
               Vaqtingizni tejang, professional natija oling
@@ -250,7 +250,7 @@ export default function LandingPage() {
                     </li>
                   </ul>
                   <a
-                    href="https://t.me/TezkorSlideBot"
+                    href="https://t.me/slider_ai_uz_bot"
                     target="_blank"
                     rel="noopener noreferrer"
                     className={`btn w-full ${plan.popular ? 'btn-primary' : 'btn-secondary'}`}
@@ -274,13 +274,13 @@ export default function LandingPage() {
             Telegram botimizni oching va birinchi prezentatsiyangizni yarating
           </p>
           <a
-            href="https://t.me/TezkorSlideBot"
+            href="https://t.me/slider_ai_uz_bot"
             target="_blank"
             rel="noopener noreferrer"
             className="btn bg-white text-primary-600 hover:bg-gray-100 text-lg px-8 py-4 shadow-xl"
           >
             <MessageCircle className="w-6 h-6" />
-            @TezkorSlideBot
+            @slider_ai_uz_bot
             <ArrowRight className="w-5 h-5" />
           </a>
         </div>
@@ -294,10 +294,10 @@ export default function LandingPage() {
               <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-purple-600 flex items-center justify-center">
                 <Sparkles className="w-5 h-5 text-white" />
               </div>
-              <span className="font-bold text-xl text-white">Tezkor Slide</span>
+              <span className="font-bold text-xl text-white">SliderAI</span>
             </div>
             <p className="text-gray-400">
-              © 2024 Tezkor Slide AI. Barcha huquqlar himoyalangan.
+              © 2024 SliderAI AI. Barcha huquqlar himoyalangan.
             </p>
           </div>
         </div>

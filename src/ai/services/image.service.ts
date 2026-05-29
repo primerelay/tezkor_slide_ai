@@ -230,8 +230,8 @@ export class ImageService {
       'https://openrouter.ai/api/v1/chat/completions',
       {
         Authorization: `Bearer ${this.openrouterApiKey}`,
-        'HTTP-Referer': 'https://tezkor-slide.ai',
-        'X-Title': 'Tezkor Slide AI',
+        'HTTP-Referer': 'https://sliderai.uz',
+        'X-Title': 'SliderAI UZ',
       },
       {
         model: this.generateModel,

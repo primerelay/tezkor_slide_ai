@@ -58,6 +58,6 @@ export default () => ({
 
   payment: {
     cardNumber: process.env.PAYMENT_CARD_NUMBER || '8600 1234 5678 9012',
-    cardOwner: process.env.PAYMENT_CARD_OWNER || 'Tezkor Slide AI',
+    cardOwner: process.env.PAYMENT_CARD_OWNER || 'SliderAI UZ',
   },
 });
