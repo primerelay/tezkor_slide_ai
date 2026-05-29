@@ -109,6 +109,7 @@ export class PresentationProcessor extends WorkerHost {
         status: 'completed',
         pptxUrl,
         generationTimeMs,
+        aiCost: pipelineOutput.metadata.totalCost || 0,
         generatedContent: JSON.parse(JSON.stringify(pipelineOutput)),
       });
 

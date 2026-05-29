@@ -14,8 +14,11 @@ import { RendererModule } from './renderer/renderer.module';
 import { StorageModule } from './storage/storage.module';
 import { PaymentModule } from './payment/payment.module';
 import { MiniAppModule } from './mini-app/mini-app.module';
+import { AdminModule } from './admin/admin.module';
+import { SpaController } from './spa.controller';
 
 @Module({
+  controllers: [SpaController],
   imports: [
     ConfigModule.forRoot({
       isGlobal: true,
@@ -42,6 +45,15 @@ import { MiniAppModule } from './mini-app/mini-app.module';
       rootPath: join(__dirname, '..', 'mini-app', 'dist'),
       serveRoot: '/mini-app',
     }),
+    ServeStaticModule.forRoot({
+      rootPath: join(__dirname, '..', 'web', 'dist'),
+      serveRoot: '/',
+      exclude: ['/api/{*path}', '/mini-app/{*path}'],
+      serveStaticOptions: {
+        index: ['index.html'],
+        fallthrough: true,
+      },
+    }),
     DatabaseModule,
     StorageModule,
     AiModule,
@@ -51,6 +63,7 @@ import { MiniAppModule } from './mini-app/mini-app.module';
     TelegramModule,
     PaymentModule,
     MiniAppModule,
+    AdminModule,
   ],
 })
 export class AppModule {}

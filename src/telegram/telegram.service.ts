@@ -5,6 +5,7 @@ import { InjectBot } from 'nestjs-telegraf';
 import { Telegraf, Context } from 'telegraf';
 import { User, UserLanguage } from '../database/entities/user.entity';
 import { Presentation } from '../database/entities/presentation.entity';
+import { Transaction } from '../database/entities/transaction.entity';
 import { I18nService, SupportedLanguage } from '../common/i18n/i18n.service';
 import { InlineKeyboards } from './keyboards/inline.keyboards';
 import { ConfigService } from '@nestjs/config';
@@ -32,6 +33,8 @@ export class TelegramService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Presentation)
     private readonly presentationRepository: Repository<Presentation>,
+    @InjectRepository(Transaction)
+    private readonly transactionRepository: Repository<Transaction>,
     private readonly configService: ConfigService,
   ) {
     this.adminTelegramIds = this.configService.get<number[]>('admin.telegramIds') || [];
@@ -183,7 +186,7 @@ export class TelegramService {
     }
   }
 
-  async addCreditsById(userId: number, amount: number): Promise<User | null> {
+  async addCreditsById(userId: number, amount: number, description?: string): Promise<User | null> {
     const user = await this.userRepository.findOne({
       where: { id: userId },
     });
@@ -191,6 +194,16 @@ export class TelegramService {
     if (user) {
       user.credits += amount;
       await this.userRepository.save(user);
+
+      // Create transaction record for income tracking
+      const transaction = this.transactionRepository.create({
+        userId: user.id,
+        type: 'topup',
+        amount: amount,
+        status: 'approved',
+        description: description || 'Admin tomonidan qo\'shildi',
+      });
+      await this.transactionRepository.save(transaction);
 
       // Notify user
       try {

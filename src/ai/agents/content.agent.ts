@@ -38,6 +38,11 @@ export interface FullPresentationContent {
   slides: SlideContent[];
 }
 
+export interface ContentResult {
+  content: FullPresentationContent;
+  cost?: number;
+}
+
 @Injectable()
 export class ContentAgent {
   private readonly logger = new Logger(ContentAgent.name);
@@ -59,7 +64,7 @@ export class ContentAgent {
   async generateContent(
     outline: PresentationOutline,
     language: SupportedLanguage,
-  ): Promise<FullPresentationContent> {
+  ): Promise<ContentResult> {
     const languageNames: Record<string, string> = {
       uz: "O'zbek tili",
       ru: 'Русский язык',
@@ -163,15 +168,15 @@ Generate content for ALL ${outline.slides.length} slides based on their types.`;
 
     this.logger.log(`Generating content for: ${outline.title}`);
 
-    const content =
+    const result =
       await this.provider.generateJson<FullPresentationContent>(
         prompt,
         systemPrompt,
         { temperature: 0.7, maxTokens: 4096 },
       );
 
-    this.logger.log(`Generated content for ${content.slides.length} slides`);
+    this.logger.log(`Generated content for ${result.data.slides.length} slides, cost: $${result.cost?.toFixed(6) || '0'}`);
 
-    return content;
+    return { content: result.data, cost: result.cost };
   }
 }

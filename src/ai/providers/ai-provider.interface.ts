@@ -8,6 +8,11 @@ export interface AiProviderResponse {
   cost?: number;
 }
 
+export interface AiJsonResponse<T> {
+  data: T;
+  cost?: number;
+}
+
 export interface AiProviderOptions {
   temperature?: number;
   maxTokens?: number;
@@ -28,7 +33,7 @@ export interface AiProvider {
     prompt: string,
     systemPrompt?: string,
     options?: AiProviderOptions,
-  ): Promise<T>;
+  ): Promise<AiJsonResponse<T>>;
 
   isAvailable(): boolean;
 }

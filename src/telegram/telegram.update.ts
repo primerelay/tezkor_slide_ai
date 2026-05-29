@@ -527,12 +527,8 @@ export class TelegramUpdate {
     const telegramUser = ctx.from;
     if (!telegramUser) return;
 
-    const user = await this.telegramService.getUserByTelegramId(
-      telegramUser.id.toString(),
-    );
-    if (!user) return;
-
-    // Admin handling payment approval amount
+    // Admin handling payment approval amount - check BEFORE user lookup
+    // because admin might not be in users table
     if (ctx.session.adminApprovingUserId && this.telegramService.isAdmin(telegramUser.id.toString())) {
       const amount = parseInt(text.replace(/\D/g, ''), 10);
       if (isNaN(amount) || amount <= 0) {
@@ -541,15 +537,29 @@ export class TelegramUpdate {
       }
 
       const targetUserId = ctx.session.adminApprovingUserId;
-      await this.telegramService.addCreditsById(targetUserId, amount);
+      const updatedUser = await this.telegramService.addCreditsById(targetUserId, amount);
 
-      await ctx.reply(`✅ <b>Balans to'ldirildi!</b>\n\nUser ID: ${targetUserId}\nMiqdor: +${amount} so'm`, {
-        parse_mode: 'HTML',
-      });
+      if (updatedUser) {
+        await ctx.reply(
+          `✅ <b>Balans to'ldirildi!</b>\n\n` +
+          `👤 User: ${updatedUser.firstName || 'N/A'} (@${updatedUser.username || 'N/A'})\n` +
+          `🆔 ID: ${targetUserId}\n` +
+          `💰 Qo'shildi: +${amount.toLocaleString()} so'm\n` +
+          `💳 Yangi balans: ${updatedUser.credits.toLocaleString()} so'm`,
+          { parse_mode: 'HTML' }
+        );
+      } else {
+        await ctx.reply(`❌ User topilmadi (ID: ${targetUserId})`);
+      }
 
       ctx.session.adminApprovingUserId = undefined;
       return;
     }
+
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    if (!user) return;
 
     const i18n = this.telegramService.getI18n(user.language);
     const step = ctx.session.step || 'topic';

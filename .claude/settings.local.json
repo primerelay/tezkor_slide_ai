@@ -27,7 +27,26 @@
       "Bash(redis-cli llen:*)",
       "Bash(brew services:*)",
       "Bash(docker compose:*)",
-      "Bash(open:*)"
+      "Bash(open:*)",
+      "Bash(npx tailwindcss:*)",
+      "Bash(/Users/Learning/tezkor_slide_ai/node_modules/.bin/nest build:*)",
+      "Bash(do if curl -s http://localhost:3000/api/admin/login -X POST -H \"Content-Type: application/json\" -d '{\"\"phone\"\":\"\"998901234567\"\",\"\"password\"\":\"\"TezkorAdmin2024!\"\"}')",
+      "Bash(then)",
+      "Bash(exit:*)",
+      "Bash(fi:*)",
+      "Bash(echo:*)",
+      "Bash(npm run start:dev:*)",
+      "Bash(xargs -I {} sh -c 'lsof -p {} 2>/dev/null | grep -E \"\"\\\\.log|error\"\"')",
+      "Bash(PGPASSWORD=tezkor123 psql:*)",
+      "Bash(docker exec:*)",
+      "Bash(docker ps:*)",
+      "Bash(node:*)",
+      "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicGhvbmUiOiI5OTg5MDEyMzQ1NjciLCJpYXQiOjE3ODAwNTM5NDcsImV4cCI6MTc4MDY1ODc0N30.mTB7Tyt4AX8-X85Pl1CSg4wkfuDX3j9wWYpLtbj569w\")",
+      "Bash(__NEW_LINE_6d12e2e9736b90fb__ echo -e \"\\\\n\\\\n--- Chart ---\")",
+      "Bash(TOKEN=\"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6MSwicGhvbmUiOiI5OTg5MDEyMzQ1NjciLCJpYXQiOjE3ODAwNTU4MDIsImV4cCI6MTc4MDY2MDYwMn0.wqo0fjTmTV9bxg9kosmOaNEhUk4-JDRmgA95CdrQ7Rg\")",
+      "Bash(python3:*)",
+      "Bash(psql:*)",
+      "Bash(pgrep:*)"
     ]
   }
 }

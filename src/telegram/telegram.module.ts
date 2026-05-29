@@ -6,6 +6,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../database/entities/user.entity';
 import { Presentation } from '../database/entities/presentation.entity';
 import { GenerationJob } from '../database/entities/generation-job.entity';
+import { Transaction } from '../database/entities/transaction.entity';
 import { TelegramService } from './telegram.service';
 import { TelegramUpdate } from './telegram.update';
 import { StartScene } from './scenes/start.scene';
@@ -24,7 +25,7 @@ import { GenerationScene } from './scenes/generation.scene';
         include: [TelegramModule],
       }),
     }),
-    TypeOrmModule.forFeature([User, Presentation, GenerationJob]),
+    TypeOrmModule.forFeature([User, Presentation, GenerationJob, Transaction]),
   ],
   providers: [
     TelegramService,

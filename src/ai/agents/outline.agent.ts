@@ -20,6 +20,11 @@ export interface PresentationOutline {
   slides: OutlineSlide[];
 }
 
+export interface OutlineResult {
+  outline: PresentationOutline;
+  cost?: number;
+}
+
 @Injectable()
 export class OutlineAgent {
   private readonly logger = new Logger(OutlineAgent.name);
@@ -46,7 +51,7 @@ export class OutlineAgent {
     studentName?: string,
     teacherName?: string,
     includeReja?: boolean,
-  ): Promise<PresentationOutline> {
+  ): Promise<OutlineResult> {
     const languageNames: Record<string, string> = {
       uz: "O'zbek tili",
       de: "Deutsch",
@@ -126,18 +131,20 @@ Return JSON:
 
     this.logger.log(`Generating professional outline for: ${topic}`);
 
-    const outline = await this.provider.generateJson<PresentationOutline>(
+    const result = await this.provider.generateJson<PresentationOutline>(
       prompt,
       systemPrompt,
       { temperature: 0.7, maxTokens: 4096 },
     );
 
+    const outline = result.data;
+
     // Ensure student and teacher names are included
     outline.studentName = studentName;
     outline.teacherName = teacherName;
 
-    this.logger.log(`Generated outline with ${outline.slides.length} slides`);
+    this.logger.log(`Generated outline with ${outline.slides.length} slides, cost: $${result.cost?.toFixed(6) || '0'}`);
 
-    return outline;
+    return { outline, cost: result.cost };
   }
 }

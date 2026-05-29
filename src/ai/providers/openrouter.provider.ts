@@ -7,6 +7,16 @@ import {
   AiProviderResponse,
 } from './ai-provider.interface';
 
+// OpenRouter model pricing (USD per 1M tokens)
+const MODEL_PRICING: Record<string, { input: number; output: number }> = {
+  'openai/gpt-4o-mini': { input: 0.15, output: 0.60 },
+  'openai/gpt-4o': { input: 2.50, output: 10.00 },
+  'anthropic/claude-3-haiku': { input: 0.25, output: 1.25 },
+  'anthropic/claude-3-sonnet': { input: 3.00, output: 15.00 },
+  'google/gemini-flash-1.5': { input: 0.075, output: 0.30 },
+  'google/gemini-pro-1.5': { input: 1.25, output: 5.00 },
+};
+
 @Injectable()
 export class OpenRouterProvider implements AiProvider {
   readonly name = 'openrouter';
@@ -59,6 +69,20 @@ export class OpenRouterProvider implements AiProvider {
 
       const content = completion.choices[0]?.message?.content || '';
       const usage = completion.usage;
+      const model = options?.model || this.defaultModel;
+
+      // Calculate cost based on token usage
+      let cost: number | undefined;
+      if (usage) {
+        const pricing = MODEL_PRICING[model] || MODEL_PRICING[this.defaultModel];
+        const inputCost = (usage.prompt_tokens / 1_000_000) * pricing.input;
+        const outputCost = (usage.completion_tokens / 1_000_000) * pricing.output;
+        cost = inputCost + outputCost;
+
+        this.logger.debug(
+          `API cost for ${model}: $${cost.toFixed(6)} (${usage.prompt_tokens} in, ${usage.completion_tokens} out)`
+        );
+      }
 
       return {
         content,
@@ -69,6 +93,7 @@ export class OpenRouterProvider implements AiProvider {
               totalTokens: usage.total_tokens,
             }
           : undefined,
+        cost,
       };
     } catch (error) {
       this.logger.error('OpenRouter API error:', error);
@@ -80,7 +105,7 @@ export class OpenRouterProvider implements AiProvider {
     prompt: string,
     systemPrompt?: string,
     options?: AiProviderOptions,
-  ): Promise<T> {
+  ): Promise<{ data: T; cost?: number }> {
     const jsonSystemPrompt = systemPrompt
       ? `${systemPrompt}\n\nIMPORTANT: Respond ONLY with valid JSON. No markdown, no code blocks, just pure JSON.`
       : 'Respond ONLY with valid JSON. No markdown, no code blocks, just pure JSON.';
@@ -101,7 +126,8 @@ export class OpenRouterProvider implements AiProvider {
     content = content.trim();
 
     try {
-      return JSON.parse(content) as T;
+      const data = JSON.parse(content) as T;
+      return { data, cost: response.cost };
     } catch (error) {
       this.logger.error('Failed to parse JSON response:', content);
       throw new Error(`Failed to parse AI response as JSON: ${error}`);

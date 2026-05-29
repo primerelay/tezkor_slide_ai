@@ -26,9 +26,10 @@ export interface PipelineOutput {
   metadata: {
     generatedAt: Date;
     pipelineVersion: string;
+    totalCost?: number;
     stages: {
-      outline: { durationMs: number };
-      content: { durationMs: number };
+      outline: { durationMs: number; cost?: number };
+      content: { durationMs: number; cost?: number };
       layout: { durationMs: number };
       assets: { durationMs: number };
     };
@@ -69,11 +70,13 @@ export class PresentationPipeline {
     this.logger.log(`Starting pipeline for: ${input.topic}`);
 
     const stages: PipelineOutput['metadata']['stages'] = {
-      outline: { durationMs: 0 },
-      content: { durationMs: 0 },
+      outline: { durationMs: 0, cost: 0 },
+      content: { durationMs: 0, cost: 0 },
       layout: { durationMs: 0 },
       assets: { durationMs: 0 },
     };
+
+    let totalCost = 0;
 
     try {
       onProgress?.({
@@ -83,7 +86,7 @@ export class PresentationPipeline {
       });
 
       const outlineStart = Date.now();
-      const outline = await this.outlineAgent.generateOutline(
+      const outlineResult = await this.outlineAgent.generateOutline(
         input.topic,
         input.slideCount,
         input.language,
@@ -91,9 +94,12 @@ export class PresentationPipeline {
         input.teacherName,
         input.includeReja,
       );
+      const outline = outlineResult.outline;
       stages.outline.durationMs = Date.now() - outlineStart;
+      stages.outline.cost = outlineResult.cost || 0;
+      totalCost += outlineResult.cost || 0;
 
-      this.logger.log(`Outline generated in ${stages.outline.durationMs}ms`);
+      this.logger.log(`Outline generated in ${stages.outline.durationMs}ms, cost: $${stages.outline.cost.toFixed(6)}`);
 
       onProgress?.({
         stage: 'content',
@@ -102,13 +108,16 @@ export class PresentationPipeline {
       });
 
       const contentStart = Date.now();
-      const content = await this.contentAgent.generateContent(
+      const contentResult = await this.contentAgent.generateContent(
         outline,
         input.language,
       );
+      const content = contentResult.content;
       stages.content.durationMs = Date.now() - contentStart;
+      stages.content.cost = contentResult.cost || 0;
+      totalCost += contentResult.cost || 0;
 
-      this.logger.log(`Content generated in ${stages.content.durationMs}ms`);
+      this.logger.log(`Content generated in ${stages.content.durationMs}ms, cost: $${stages.content.cost.toFixed(6)}`);
 
       onProgress?.({
         stage: 'layout',
@@ -156,6 +165,7 @@ export class PresentationPipeline {
         metadata: {
           generatedAt: new Date(),
           pipelineVersion: this.version,
+          totalCost,
           stages,
         },
       };
@@ -166,7 +176,7 @@ export class PresentationPipeline {
         stages.layout.durationMs +
         stages.assets.durationMs;
 
-      this.logger.log(`Pipeline completed in ${totalDuration}ms`);
+      this.logger.log(`Pipeline completed in ${totalDuration}ms, total AI cost: $${totalCost.toFixed(6)}`);
 
       return output;
     } catch (error) {

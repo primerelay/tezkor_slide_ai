@@ -7,6 +7,13 @@ import {
   AiProviderResponse,
 } from './ai-provider.interface';
 
+// Gemini model pricing (USD per 1M tokens)
+const GEMINI_PRICING: Record<string, { input: number; output: number }> = {
+  'gemini-2.0-flash': { input: 0.10, output: 0.40 },
+  'gemini-1.5-flash': { input: 0.075, output: 0.30 },
+  'gemini-1.5-pro': { input: 1.25, output: 5.00 },
+};
+
 @Injectable()
 export class GeminiProvider implements AiProvider {
   readonly name = 'gemini';
@@ -63,6 +70,20 @@ export class GeminiProvider implements AiProvider {
         const text = response.text();
 
         const usage = response.usageMetadata;
+        const modelName = options?.model || 'gemini-2.0-flash';
+
+        // Calculate cost based on token usage
+        let cost: number | undefined;
+        if (usage) {
+          const pricing = GEMINI_PRICING[modelName] || GEMINI_PRICING['gemini-2.0-flash'];
+          const inputCost = ((usage.promptTokenCount || 0) / 1_000_000) * pricing.input;
+          const outputCost = ((usage.candidatesTokenCount || 0) / 1_000_000) * pricing.output;
+          cost = inputCost + outputCost;
+
+          this.logger.debug(
+            `API cost for ${modelName}: $${cost.toFixed(6)} (${usage.promptTokenCount} in, ${usage.candidatesTokenCount} out)`
+          );
+        }
 
         return {
           content: text,
@@ -73,6 +94,7 @@ export class GeminiProvider implements AiProvider {
                 totalTokens: usage.totalTokenCount || 0,
               }
             : undefined,
+          cost,
         };
       } catch (error) {
         lastError = error as Error;
@@ -100,7 +122,7 @@ export class GeminiProvider implements AiProvider {
     prompt: string,
     systemPrompt?: string,
     options?: AiProviderOptions,
-  ): Promise<T> {
+  ): Promise<{ data: T; cost?: number }> {
     const jsonSystemPrompt = systemPrompt
       ? `${systemPrompt}\n\nIMPORTANT: Respond ONLY with valid JSON. No markdown, no code blocks, just pure JSON.`
       : 'Respond ONLY with valid JSON. No markdown, no code blocks, just pure JSON.';
@@ -121,7 +143,8 @@ export class GeminiProvider implements AiProvider {
     content = content.trim();
 
     try {
-      return JSON.parse(content) as T;
+      const data = JSON.parse(content) as T;
+      return { data, cost: response.cost };
     } catch (error) {
       this.logger.error('Failed to parse JSON response:', content);
       throw new Error(`Failed to parse AI response as JSON: ${error}`);
