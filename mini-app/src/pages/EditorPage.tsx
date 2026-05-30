@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef, useCallback } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
-import { ChevronLeft, Plus, Trash2, Download, Check, Loader2, ArrowLeft, ArrowRight, ListPlus, X, Image as ImageIcon, Search, BarChart3, Shapes, Square, Circle, Type, Minus } from 'lucide-react';
+import { ChevronLeft, Plus, Trash2, Download, Check, Loader2, ArrowLeft, ArrowRight, ListPlus, X, Image as ImageIcon, Search, BarChart3, Shapes, Square, Circle, Type, Minus, Undo2 } from 'lucide-react';
 import { useTelegram } from '../hooks/useTelegram';
 import { useLanguage } from '../contexts/LanguageContext';
 import { getThemeVisual, ThemeVisual } from '../data/themes';
@@ -28,6 +28,9 @@ export default function EditorPage() {
   const [imgResults, setImgResults] = useState<{ url: string; thumb: string; description: string }[]>([]);
   const [imgLoading, setImgLoading] = useState(false);
   const [shapeMenuOpen, setShapeMenuOpen] = useState(false);
+  const [textMenuOpen, setTextMenuOpen] = useState(false);
+  const [selectedElId, setSelectedElId] = useState<string | null>(null);
+  const undoStack = useRef<{ slideIdx: number; prev: Slide }[]>([]);
   const meta = useRef<{ studentName?: string; teacherName?: string; subtitle?: string }>({});
   const dragRef = useRef<number | null>(null);
 
@@ -60,10 +63,11 @@ export default function EditorPage() {
         if (!res.ok) throw new Error('not found');
         const p = await res.json();
         if (!active) return;
-        // Update live progress from backend job tracker
-        if (p.jobProgress !== undefined) setGenProgress(p.jobProgress);
-        if (p.jobStage) setGenStage(p.jobStage);
+        // Update live progress — always move forward, never backward
+        if (p.jobProgress !== undefined) setGenProgress((prev) => Math.max(prev, p.jobProgress));
+        if (p.jobStage && p.jobStage !== 'queued') setGenStage(p.jobStage);
         if (p.status === 'completed' && p.generatedContent) {
+          setGenProgress(100);
           const c = p.generatedContent;
           setTitle(c.title || p.topic || '');
           setThemeId(c.theme || p.theme || 'academic_blue');
@@ -76,9 +80,11 @@ export default function EditorPage() {
           setStatus('error');
           return;
         }
-        timer = setTimeout(poll, 2500);
+        // If processing but progress is still 0, show a small hint so user sees movement
+        if (p.status === 'processing') setGenProgress((prev) => Math.max(prev, 5));
+        timer = setTimeout(poll, 1500);
       } catch {
-        timer = setTimeout(poll, 3000);
+        timer = setTimeout(poll, 2000);
       }
     };
     poll();
@@ -88,8 +94,20 @@ export default function EditorPage() {
   const theme = getThemeVisual(themeId);
 
   const updateSlide = useCallback((idx: number, patch: Partial<Slide>) => {
-    setSlides((prev) => prev.map((s, i) => (i === idx ? { ...s, ...patch } : s)));
+    setSlides((prev) => {
+      undoStack.current.push({ slideIdx: idx, prev: { ...prev[idx] } });
+      if (undoStack.current.length > 30) undoStack.current.shift();
+      return prev.map((s, i) => (i === idx ? { ...s, ...patch } : s));
+    });
   }, []);
+
+  const undo = () => {
+    const entry = undoStack.current.pop();
+    if (!entry) return;
+    haptic('light');
+    setSlides((prev) => prev.map((s, i) => (i === entry.slideIdx ? entry.prev : s)));
+    setSelected(entry.slideIdx);
+  };
 
   const addSlide = () => {
     haptic('selection');
@@ -174,9 +192,52 @@ export default function EditorPage() {
     const id = `el_${Date.now()}_${Math.floor(performance.now())}`;
     const base = { id, kind, x: 0.32, y: 0.36, w: 0.28, h: 0.2 };
     let el: SlideElement;
-    if (kind === 'text') el = { ...base, h: 0.12, text: t.placeholderText, fontSize: 24, fontColor: '#111827' };
+    if (kind === 'text') el = { ...base, h: 0.12, text: t.placeholderText || 'Matn', fontSize: 24, fontColor: '#111827' };
     else if (kind === 'line') el = { ...base, h: 0.02, color: theme.accent };
     else el = { ...base, color: theme.accent };
+    updateSlide(selected, { elements: [...(s.elements || []), el] });
+  };
+
+  /** Pitch-like text style presets */
+  const TEXT_STYLES = [
+    { label: 'Title',       fontSize: 48, bold: true,  italic: false, w: 0.6, h: 0.14 },
+    { label: 'Headline',    fontSize: 36, bold: true,  italic: false, w: 0.55, h: 0.12 },
+    { label: 'Subheadline', fontSize: 28, bold: false, italic: false, w: 0.5, h: 0.1 },
+    { label: 'Normal text', fontSize: 20, bold: false, italic: false, w: 0.45, h: 0.09 },
+    { label: 'Small text',  fontSize: 14, bold: false, italic: false, w: 0.4, h: 0.07 },
+    { label: '• Bullet list',fontSize: 20, bold: true,  italic: false, w: 0.5, h: 0.09 },
+    { label: '1. Number list',fontSize:20,bold: false, italic: false, w: 0.5, h: 0.09 },
+  ];
+
+  const addTextStyle = (style: typeof TEXT_STYLES[0]) => {
+    haptic('selection');
+    setTextMenuOpen(false);
+    const s = slides[selected];
+    if (!s) return;
+
+    // If a text element is selected → apply the style to it (change type)
+    if (selectedElId) {
+      const el = (s.elements || []).find((e) => e.id === selectedElId);
+      if (el && el.kind === 'text') {
+        updateSlide(selected, {
+          elements: (s.elements || []).map((e) =>
+            e.id === selectedElId
+              ? { ...e, fontSize: style.fontSize, bold: style.bold, italic: style.italic, w: style.w, h: style.h }
+              : e,
+          ),
+        });
+        return;
+      }
+    }
+
+    // Otherwise create a new text element with this style
+    const id = `el_${Date.now()}_${Math.floor(performance.now())}`;
+    const el: SlideElement = {
+      id, kind: 'text',
+      x: 0.06, y: 0.35, w: style.w, h: style.h,
+      text: style.label, fontSize: style.fontSize,
+      fontColor: theme.contentText, bold: style.bold, italic: style.italic,
+    };
     updateSlide(selected, { elements: [...(s.elements || []), el] });
   };
 
@@ -313,6 +374,7 @@ export default function EditorPage() {
               theme={theme}
               onChange={(patch) => updateSlide(selected, patch)}
               t={t}
+              onElementSelect={setSelectedElId}
             />
           </div>
         </div>
@@ -339,20 +401,52 @@ export default function EditorPage() {
               className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white shadow-sm ring-1 ring-gray-200 text-gray-700 text-sm">
               <ImageIcon className="w-4 h-4" /> {t.addImage}
             </button>
+
+            {/* Text styles — Pitch-like */}
             <div className="relative">
-              <button onClick={() => setShapeMenuOpen((o) => !o)}
+              <button onClick={() => { setTextMenuOpen((o) => !o); setShapeMenuOpen(false); }}
+                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white shadow-sm ring-1 ring-gray-200 text-gray-700 text-sm">
+                <Type className="w-4 h-4" /> Text
+              </button>
+              {textMenuOpen && (() => {
+                const hasTextSel = selectedElId && (slides[selected]?.elements || []).find(e => e.id === selectedElId && e.kind === 'text');
+                return (
+                <div className="absolute bottom-full mb-2 left-0 w-52 bg-white rounded-xl shadow-lg ring-1 ring-gray-200 py-1 z-20">
+                  <div className="px-3 py-1.5 text-xs text-gray-400 font-medium">
+                    {hasTextSel ? 'Apply style ✏️' : 'Text styles'}
+                  </div>
+                  {TEXT_STYLES.map((st) => (
+                    <button key={st.label} onClick={() => addTextStyle(st)}
+                      className="w-full text-left px-3 py-1.5 hover:bg-gray-50 transition-colors"
+                      style={{ fontSize: Math.min(st.fontSize * 0.55, 20), fontWeight: st.bold ? 700 : 400, fontStyle: st.italic ? 'italic' : 'normal' }}>
+                      {st.label}
+                    </button>
+                  ))}
+                </div>
+                ); })()}
+            </div>
+
+            {/* Shape menu */}
+            <div className="relative">
+              <button onClick={() => { setShapeMenuOpen((o) => !o); setTextMenuOpen(false); }}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white shadow-sm ring-1 ring-gray-200 text-gray-700 text-sm">
                 <Shapes className="w-4 h-4" /> {t.addShape}
               </button>
               {shapeMenuOpen && (
-                <div className="absolute bottom-full mb-2 left-0 bg-white rounded-xl shadow-lg ring-1 ring-gray-200 p-1 flex gap-1 z-10">
+                <div className="absolute bottom-full mb-2 left-0 bg-white rounded-xl shadow-lg ring-1 ring-gray-200 p-1 flex gap-1 z-20">
                   <button onClick={() => addElement('rect')} className="p-2 rounded-lg hover:bg-gray-100"><Square className="w-5 h-5 text-gray-700" /></button>
                   <button onClick={() => addElement('ellipse')} className="p-2 rounded-lg hover:bg-gray-100"><Circle className="w-5 h-5 text-gray-700" /></button>
                   <button onClick={() => addElement('line')} className="p-2 rounded-lg hover:bg-gray-100"><Minus className="w-5 h-5 text-gray-700" /></button>
-                  <button onClick={() => addElement('text')} className="p-2 rounded-lg hover:bg-gray-100"><Type className="w-5 h-5 text-gray-700" /></button>
                 </div>
               )}
             </div>
+
+            {/* Undo */}
+            <button onClick={undo}
+              className="p-2 rounded-lg bg-white shadow-sm ring-1 ring-gray-200 text-gray-600">
+              <Undo2 className="w-4 h-4" />
+            </button>
+
             {slides.length > 1 && (
               <button onClick={() => deleteSlide(selected)}
                 className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white shadow-sm ring-1 ring-red-200 text-red-500 text-sm">

@@ -280,13 +280,15 @@ export class MiniAppService {
     });
   }
 
-  async getPresentationById(id: string): Promise<(Presentation & { jobProgress: number; jobStage: string }) | null> {
+  async getPresentationById(id: string): Promise<any | null> {
     const p = await this.presentationRepository.findOne({ where: { id } });
     if (!p) return null;
     const job = await this.generationJobRepository.findOne({ where: { presentationId: id } });
-    return Object.assign(p, {
+    // Spread into a plain object so NestJS serializes ALL fields (including jobProgress).
+    return {
+      ...p,
       jobProgress: job?.progress ?? (p.status === 'completed' ? 100 : 0),
       jobStage: job?.currentStage ?? p.status,
-    });
+    };
   }
 }

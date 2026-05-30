@@ -71,6 +71,8 @@ interface Props {
   theme: ThemeVisual;
   onChange: (patch: Partial<Slide>) => void;
   t?: Translations;
+  /** Reports the currently selected element ID (or null) to the parent. */
+  onElementSelect?: (id: string | null) => void;
 }
 
 // Default placeholders (Uzbek) for backward compatibility
@@ -88,7 +90,7 @@ const defaultT = {
   placeholderName: 'Nom',
 };
 
-export default function SlideSurface({ slide, theme, onChange, t }: Props) {
+export default function SlideSurface({ slide, theme, onChange, t, onElementSelect }: Props) {
   const full = FULL_BLEED.has(slide.type);
   const font = theme.serif ? 'Georgia, "Times New Roman", serif' : 'system-ui, sans-serif';
   const bg = full ? theme.heroBg : theme.contentBg;
@@ -112,15 +114,16 @@ export default function SlideSurface({ slide, theme, onChange, t }: Props) {
       {slide.type === 'statistics' && <Statistics slide={slide} theme={theme} onChange={onChange} t={tr} />}
       {slide.type === 'chart' && <Chart slide={slide} theme={theme} onChange={onChange} t={tr} />}
 
-      <ElementsLayer elements={slide.elements || []} theme={theme} onChange={(els) => onChange({ elements: els })} t={tr} />
+      <ElementsLayer elements={slide.elements || []} theme={theme} onChange={(els) => onChange({ elements: els })} t={tr} onSelect={onElementSelect} />
     </div>
   );
 }
 
 /* ---------- Free-form draggable/resizable elements overlay ---------- */
-function ElementsLayer({ elements, theme, onChange, t }: { elements: SlideElement[]; theme: ThemeVisual; onChange: (els: SlideElement[]) => void; t: typeof defaultT }) {
+function ElementsLayer({ elements, theme, onChange, t, onSelect }: { elements: SlideElement[]; theme: ThemeVisual; onChange: (els: SlideElement[]) => void; t: typeof defaultT; onSelect?: (id: string | null) => void }) {
   const ref = useRef<HTMLDivElement>(null);
-  const [selected, setSelected] = useState<string | null>(null);
+  const [selected, _setSelected] = useState<string | null>(null);
+  const setSelected = (id: string | null) => { _setSelected(id); onSelect?.(id); };
   const drag = useRef<{ id: string; mode: 'move' | 'resize'; px: number; py: number; box: SlideElement } | null>(null);
 
   const update = (id: string, patch: Partial<SlideElement>) =>

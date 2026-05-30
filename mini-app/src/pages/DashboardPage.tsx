@@ -1,36 +1,59 @@
+import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTelegram } from '../hooks/useTelegram';
 import { useLanguage } from '../contexts/LanguageContext';
 import { Plus, FileText, Clock, ChevronRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 
-// Mock recent presentations
-const recentPresentations: Array<{
+interface RecentPresentation {
   id: string;
-  title: string;
-  slides: number;
-  createdAtKey: 'hoursAgo' | 'yesterday';
-  hoursValue?: number;
+  topic: string;
+  slideCount: number;
   status: string;
-}> = [
-  { id: '1', title: "O'zbekiston tarixi", slides: 8, createdAtKey: 'hoursAgo', hoursValue: 2, status: 'completed' },
-  { id: '2', title: 'Matematika asoslari', slides: 10, createdAtKey: 'yesterday', status: 'completed' },
-];
+  createdAt: string;
+}
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { user, haptic } = useTelegram();
+  const { user, webApp, haptic } = useTelegram();
   const { t } = useLanguage();
+  const [recent, setRecent] = useState<RecentPresentation | null>(null);
+  const [loaded, setLoaded] = useState(false);
+
+  // Fetch the last presentation for this user
+  useEffect(() => {
+    const telegramId = webApp?.initDataUnsafe?.user?.id;
+    if (!telegramId) { setLoaded(true); return; }
+
+    (async () => {
+      try {
+        // Get user first to get internal userId
+        const uRes = await fetch(`/api/mini-app/user/${telegramId}`);
+        if (!uRes.ok) { setLoaded(true); return; }
+        const u = await uRes.json();
+
+        // Get presentations
+        const pRes = await fetch(`/api/mini-app/presentations/${u.id}`);
+        if (!pRes.ok) { setLoaded(true); return; }
+        const list: RecentPresentation[] = await pRes.json();
+
+        // Show the last one (already sorted DESC from backend)
+        if (list.length > 0) setRecent(list[0]);
+      } catch { /* ignore */ }
+      setLoaded(true);
+    })();
+  }, [webApp]);
 
   const handleCreate = () => {
     haptic('light');
     navigate('/create');
   };
 
-  const formatCreatedAt = (pres: typeof recentPresentations[0]) => {
-    if (pres.createdAtKey === 'hoursAgo' && pres.hoursValue) {
-      return `${pres.hoursValue} ${t.hoursAgo}`;
-    }
+  const formatTime = (iso: string) => {
+    const diff = Date.now() - new Date(iso).getTime();
+    const hours = Math.floor(diff / 3600000);
+    if (hours < 1) return `1 ${t.hoursAgo}`;
+    if (hours < 24) return `${hours} ${t.hoursAgo}`;
     return t.yesterday;
   };
 
@@ -81,7 +104,7 @@ export default function DashboardPage() {
           </div>
         </motion.button>
 
-        {/* Recent Presentations */}
+        {/* Recent — last presentation */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
@@ -94,34 +117,29 @@ export default function DashboardPage() {
             </h2>
           </div>
 
-          {recentPresentations.length > 0 ? (
-            <div className="space-y-3">
-              {recentPresentations.map((pres, index) => (
-                <motion.div
-                  key={pres.id}
-                  initial={{ opacity: 0, x: -20 }}
-                  animate={{ opacity: 1, x: 0 }}
-                  transition={{ delay: 0.3 + index * 0.1 }}
-                  onClick={() => {
-                    haptic('light');
-                    navigate(`/preview/${pres.id}`);
-                  }}
-                  className="card p-4 flex items-center gap-4 active:bg-gray-50 transition-colors cursor-pointer"
-                >
-                  <div className="w-14 h-10 rounded-lg bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center">
-                    <FileText className="w-5 h-5 text-purple-500" />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <div className="font-medium text-gray-900 truncate">{pres.title}</div>
-                    <div className="text-sm text-gray-400">
-                      {pres.slides} {t.slides} • {formatCreatedAt(pres)}
-                    </div>
-                  </div>
-                  <ChevronRight className="w-5 h-5 text-gray-300" />
-                </motion.div>
-              ))}
-            </div>
-          ) : (
+          {recent ? (
+            <motion.div
+              initial={{ opacity: 0, x: -20 }}
+              animate={{ opacity: 1, x: 0 }}
+              transition={{ delay: 0.3 }}
+              onClick={() => {
+                haptic('light');
+                navigate(`/editor/${recent.id}`);
+              }}
+              className="card p-4 flex items-center gap-4 active:bg-gray-50 transition-colors cursor-pointer"
+            >
+              <div className="w-14 h-10 rounded-lg bg-gradient-to-br from-purple-100 to-purple-50 flex items-center justify-center">
+                <FileText className="w-5 h-5 text-purple-500" />
+              </div>
+              <div className="flex-1 min-w-0">
+                <div className="font-medium text-gray-900 truncate">{recent.topic}</div>
+                <div className="text-sm text-gray-400">
+                  {recent.slideCount} {t.slides} • {formatTime(recent.createdAt)}
+                </div>
+              </div>
+              <ChevronRight className="w-5 h-5 text-gray-300" />
+            </motion.div>
+          ) : loaded ? (
             <div className="empty-state">
               <div className="empty-state-icon">
                 <FileText className="w-7 h-7 text-gray-400" />
@@ -129,7 +147,7 @@ export default function DashboardPage() {
               <p className="text-gray-500 font-medium">{t.noPresentation}</p>
               <p className="text-gray-400 text-sm mt-1">{t.createNew}</p>
             </div>
-          )}
+          ) : null}
         </motion.div>
 
         {/* Features Section */}
@@ -143,7 +161,7 @@ export default function DashboardPage() {
             {t.features}
           </h3>
           <div className="grid grid-cols-3 gap-3">
-            <FeatureCard emoji="🎨" title={t.templates} subtitle="10+" />
+            <FeatureCard emoji="🎨" title={t.templates} subtitle="30+" />
             <FeatureCard emoji="⚡" title={t.fast} subtitle="AI" />
             <FeatureCard emoji="📱" title={t.convenient} subtitle={t.mobile} />
           </div>
