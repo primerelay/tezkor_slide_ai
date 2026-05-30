@@ -15,6 +15,8 @@ export default function EditorPage() {
   const { t } = useLanguage();
 
   const [status, setStatus] = useState<'loading' | 'ready' | 'error'>('loading');
+  const [genProgress, setGenProgress] = useState(0);
+  const [genStage, setGenStage] = useState('');
   const [title, setTitle] = useState('');
   const [themeId, setThemeId] = useState('academic_blue');
   const [slides, setSlides] = useState<Slide[]>([]);
@@ -58,6 +60,9 @@ export default function EditorPage() {
         if (!res.ok) throw new Error('not found');
         const p = await res.json();
         if (!active) return;
+        // Update live progress from backend job tracker
+        if (p.jobProgress !== undefined) setGenProgress(p.jobProgress);
+        if (p.jobStage) setGenStage(p.jobStage);
         if (p.status === 'completed' && p.generatedContent) {
           const c = p.generatedContent;
           setTitle(c.title || p.topic || '');
@@ -235,11 +240,29 @@ export default function EditorPage() {
   };
 
   if (status === 'loading') {
+    const stageLabels: Record<string, string> = {
+      queued: t.starting || '🚀',
+      parsing: t.analyzingTopic || '🔍',
+      outline: t.analyzingTopic || '📋',
+      content: t.creatingContent || '✍️',
+      layout: t.preparingSlides || '📊',
+      assets: t.applyingDesign || '🖼️',
+      rendering: t.applyingDesign || '🔧',
+      uploading: t.applyingDesign || '📤',
+      done: t.ready || '✅',
+    };
+    const pct = Math.min(genProgress, 99);
     return (
       <div className="flex-1 flex flex-col items-center justify-center p-8 bg-white">
-        <Loader2 className="w-12 h-12 text-purple-600 animate-spin mb-4" />
-        <h2 className="text-lg font-bold text-gray-900">{t.buildingDeck}</h2>
-        <p className="text-gray-400 text-sm mt-1">{t.aiWillCreate}</p>
+        <Loader2 className="w-14 h-14 text-purple-600 animate-spin mb-5" />
+        <h2 className="text-lg font-bold text-gray-900 mb-1">{t.buildingDeck}</h2>
+        <p className="text-gray-500 text-sm mb-5">{stageLabels[genStage] || t.aiWillCreate}</p>
+        <div className="w-full max-w-xs">
+          <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
+            <div className="h-full bg-purple-600 rounded-full transition-all duration-500" style={{ width: `${pct}%` }} />
+          </div>
+          <p className="text-center text-xs text-gray-400 mt-2">{pct}%</p>
+        </div>
       </div>
     );
   }
@@ -257,9 +280,9 @@ export default function EditorPage() {
   const current = slides[selected];
 
   return (
-    <div className="flex-1 flex flex-col h-full bg-gray-100 overflow-hidden">
+    <div className="flex flex-col h-full bg-gray-100 overflow-hidden">
       {/* Top bar */}
-      <div className="flex items-center gap-2 px-3 py-2.5 bg-white border-b border-gray-100">
+      <div className="flex items-center gap-2 px-3 py-2 bg-white border-b border-gray-100 shrink-0">
         <button onClick={() => navigate('/')} className="p-1.5 rounded-lg hover:bg-gray-100">
           <ChevronLeft className="w-5 h-5 text-gray-600" />
         </button>
@@ -279,19 +302,23 @@ export default function EditorPage() {
         </button>
       </div>
 
-      {/* Canvas — true WYSIWYG, edit text directly on the slide */}
-      <div className="flex-1 overflow-auto p-4">
-        <div className="max-w-2xl mx-auto">
-          <SlideSurface
-            key={selected}
-            slide={current}
-            theme={theme}
-            onChange={(patch) => updateSlide(selected, patch)}
-            t={t}
-          />
+      {/* Canvas + controls — slide fills available height */}
+      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-2 pt-1 pb-1">
+        {/* Height-driven slide: fills vertical space, width follows from 16:9 */}
+        <div className="flex items-start justify-center" style={{ minHeight: 'calc(100vh - 190px)' }}>
+          <div style={{ height: 'calc(100vh - 200px)', aspectRatio: '16/9', maxWidth: '100%', margin: '0 auto', flexShrink: 0 }}>
+            <SlideSurface
+              key={selected}
+              slide={current}
+              theme={theme}
+              onChange={(patch) => updateSlide(selected, patch)}
+              t={t}
+            />
+          </div>
+        </div>
 
-          {/* Slide controls */}
-          <div className="mt-3 flex items-center justify-center gap-2 flex-wrap">
+        {/* Slide controls */}
+        <div className="mt-1.5 flex items-center justify-center gap-1.5 flex-wrap">
             <button onClick={() => moveSlide(-1)} disabled={selected === 0}
               className="p-2 rounded-lg bg-white shadow-sm ring-1 ring-gray-200 text-gray-600 disabled:opacity-40">
               <ArrowLeft className="w-4 h-4" />
@@ -333,12 +360,11 @@ export default function EditorPage() {
               </button>
             )}
           </div>
-        </div>
       </div>
 
       {/* Slide rail — drag thumbnails to reorder, or use ←/→ */}
       <div
-        className="bg-white border-t border-gray-100 px-3 py-2.5 flex items-center gap-2 overflow-x-auto"
+        className="bg-white border-t border-gray-100 px-2 py-1.5 flex items-center gap-1.5 overflow-x-auto"
         onPointerMove={onRailPointerMove}
         onPointerUp={endDrag}
         onPointerLeave={endDrag}
@@ -350,7 +376,7 @@ export default function EditorPage() {
             onPointerDown={() => { dragRef.current = i; }}
             onClick={() => { haptic('selection'); setSelected(i); }}
             style={{ touchAction: 'none' }}
-            className={`shrink-0 w-24 rounded-lg overflow-hidden ring-2 transition-all ${i === selected ? 'ring-purple-500' : 'ring-gray-200'}`}
+            className={`shrink-0 w-20 rounded-md overflow-hidden ring-2 transition-all ${i === selected ? 'ring-purple-500' : 'ring-gray-200'}`}
           >
             <RailThumb slide={s} theme={theme} index={i} />
           </button>
@@ -358,14 +384,14 @@ export default function EditorPage() {
         <button
           onClick={addSlide}
           title={t.addSlide}
-          className="shrink-0 w-16 h-[54px] rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-purple-400 hover:text-purple-500"
+          className="shrink-0 w-14 h-[45px] rounded-md border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-purple-400 hover:text-purple-500"
         >
-          <Plus className="w-5 h-5" />
+          <Plus className="w-4 h-4" />
         </button>
         <button
           onClick={addChartSlide}
           title={t.addChart}
-          className="shrink-0 w-16 h-[54px] rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-purple-400 hover:text-purple-500"
+          className="shrink-0 w-14 h-[45px] rounded-md border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-purple-400 hover:text-purple-500"
         >
           <BarChart3 className="w-5 h-5" />
         </button>

@@ -164,6 +164,8 @@ export interface SlideElement {
   fontSize?: number;
   fontColor?: string;
   align?: 'left' | 'center' | 'right';
+  bold?: boolean;
+  italic?: boolean;
 }
 
 /** Render free-form elements (shapes/text) on top of any slide. */
@@ -193,6 +195,8 @@ export function renderElements(
         fontFace: theme.fonts.body.face,
         align: el.align || 'left',
         valign: 'middle',
+        bold: el.bold ?? false,
+        italic: el.italic ?? false,
         fit: 'shrink',
       });
     }

@@ -9,6 +9,7 @@ import { TelegramService } from '../telegram/telegram.service';
 import { CreatePresentationDto, TemplateDto } from './dto/mini-app.dto';
 import { PRESENTATION_QUEUE } from '../queue/constants';
 import { PresentationTheme, normalizeTheme } from '../renderer/themes/theme-registry';
+import { GenerationJob } from '../database/entities/generation-job.entity';
 import { RendererService } from '../renderer/renderer.service';
 import { StorageService } from '../storage/storage.service';
 import { SupportedLanguage } from '../common/i18n/i18n.service';
@@ -23,6 +24,8 @@ export class MiniAppService {
     private readonly userRepository: Repository<User>,
     @InjectRepository(Presentation)
     private readonly presentationRepository: Repository<Presentation>,
+    @InjectRepository(GenerationJob)
+    private readonly generationJobRepository: Repository<GenerationJob>,
     @InjectQueue(PRESENTATION_QUEUE)
     private readonly presentationQueue: Queue,
     private readonly telegramService: TelegramService,
@@ -277,9 +280,13 @@ export class MiniAppService {
     });
   }
 
-  async getPresentationById(id: string): Promise<Presentation | null> {
-    return this.presentationRepository.findOne({
-      where: { id },
+  async getPresentationById(id: string): Promise<(Presentation & { jobProgress: number; jobStage: string }) | null> {
+    const p = await this.presentationRepository.findOne({ where: { id } });
+    if (!p) return null;
+    const job = await this.generationJobRepository.findOne({ where: { presentationId: id } });
+    return Object.assign(p, {
+      jobProgress: job?.progress ?? (p.status === 'completed' ? 100 : 0),
+      jobStage: job?.currentStage ?? p.status,
     });
   }
 }

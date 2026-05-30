@@ -5,6 +5,7 @@ import { MiniAppService } from './mini-app.service';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../database/entities/user.entity';
 import { Presentation } from '../database/entities/presentation.entity';
+import { GenerationJob } from '../database/entities/generation-job.entity';
 import { TelegramModule } from '../telegram/telegram.module';
 import { PRESENTATION_QUEUE } from '../queue/constants';
 import { RendererModule } from '../renderer/renderer.module';
@@ -13,7 +14,7 @@ import { AiModule } from '../ai/ai.module';
 
 @Module({
   imports: [
-    TypeOrmModule.forFeature([User, Presentation]),
+    TypeOrmModule.forFeature([User, Presentation, GenerationJob]),
     BullModule.registerQueue({
       name: PRESENTATION_QUEUE,
     }),

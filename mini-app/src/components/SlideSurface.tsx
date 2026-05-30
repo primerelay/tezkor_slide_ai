@@ -10,6 +10,8 @@ export interface SlideElement {
   text?: string;
   fontSize?: number;
   fontColor?: string;
+  bold?: boolean;
+  italic?: boolean;
 }
 
 /**
@@ -95,7 +97,7 @@ export default function SlideSurface({ slide, theme, onChange, t }: Props) {
 
   return (
     <div
-      style={{ position: 'relative', width: '100%', aspectRatio: '16/9', background: bg, color: fg, fontFamily: font, containerType: 'size', overflow: 'hidden' }}
+      style={{ position: 'relative', width: '100%', height: '100%', aspectRatio: '16/9', background: bg, color: fg, fontFamily: font, containerType: 'size', overflow: 'hidden' }}
       className="rounded-xl shadow-lg ring-1 ring-black/5"
     >
       {slide.type === 'hero' && <Hero slide={slide} theme={theme} onChange={onChange} font={font} t={tr} />}
@@ -176,7 +178,14 @@ function ElementsLayer({ elements, theme, onChange, t }: { elements: SlideElemen
             {e.kind === 'line' && <div style={{ width: '100%', height: 0, borderTop: `0.6cqw solid ${e.color || theme.accent}`, marginTop: '50%' }} />}
             {e.kind === 'text' && (
               <Editable value={e.text || ''} onChange={(v) => update(e.id, { text: v })} placeholder={t.placeholderText}
-                style={{ width: '100%', height: '100%', fontSize: `${e.fontSize ? e.fontSize / 5 : 4}cqw`, color: e.fontColor || '#111827', display: 'flex', alignItems: 'center' }} />
+                style={{
+                  width: '100%', height: '100%',
+                  fontSize: `${(e.fontSize || 20) / 5}cqw`,
+                  color: e.fontColor || '#111827',
+                  display: 'flex', alignItems: 'center',
+                  fontWeight: e.bold ? 700 : 400,
+                  fontStyle: e.italic ? 'italic' : 'normal',
+                }} />
             )}
             {sel && (
               <>
@@ -184,12 +193,30 @@ function ElementsLayer({ elements, theme, onChange, t }: { elements: SlideElemen
                 <div onPointerDown={start(e, 'resize')} style={{ position: 'absolute', right: -6, bottom: -6, width: 14, height: 14, background: '#7c3aed', borderRadius: '50%', cursor: 'nwse-resize' }} />
                 {/* delete */}
                 <button onPointerDown={(ev) => { ev.stopPropagation(); remove(e.id); }} style={{ position: 'absolute', right: -10, top: -12, width: 20, height: 20, background: '#ef4444', color: '#fff', borderRadius: '50%', fontSize: 12, lineHeight: '20px' }}>×</button>
-                {/* color swatches */}
-                <div style={{ position: 'absolute', left: 0, top: -22, display: 'flex', gap: 4 }}>
+
+                {/* floating toolbar — color + size + bold + italic */}
+                <div onPointerDown={(ev) => ev.stopPropagation()} style={{ position: 'absolute', left: '50%', transform: 'translateX(-50%)', bottom: -38, background: '#fff', borderRadius: 10, boxShadow: '0 2px 12px rgba(0,0,0,0.18)', padding: '3px 6px', display: 'flex', alignItems: 'center', gap: 4, whiteSpace: 'nowrap', zIndex: 20 }}>
+                  {/* color swatches */}
                   {COLORS.map((c) => (
-                    <div key={c} onPointerDown={(ev) => { ev.stopPropagation(); update(e.id, e.kind === 'text' ? { fontColor: c } : { color: c }); }}
-                      style={{ width: 14, height: 14, borderRadius: '50%', background: c, border: '1px solid rgba(0,0,0,0.2)', cursor: 'pointer' }} />
+                    <div key={c} onPointerDown={() => update(e.id, e.kind === 'text' ? { fontColor: c } : { color: c })}
+                      style={{ width: 13, height: 13, borderRadius: '50%', background: c, border: '1.5px solid rgba(0,0,0,0.2)', cursor: 'pointer', flexShrink: 0 }} />
                   ))}
+                  {/* divider */}
+                  <div style={{ width: 1, height: 14, background: '#e5e7eb', margin: '0 2px' }} />
+                  {/* size presets — only for text */}
+                  {e.kind === 'text' && [14, 20, 28, 40].map((sz) => (
+                    <button key={sz} onPointerDown={() => update(e.id, { fontSize: sz })}
+                      style={{ fontSize: 9, padding: '1px 4px', borderRadius: 4, background: e.fontSize === sz ? '#7c3aed' : '#f3f4f6', color: e.fontSize === sz ? '#fff' : '#374151', fontWeight: 600, cursor: 'pointer', border: 'none' }}>
+                      {sz === 14 ? 'S' : sz === 20 ? 'M' : sz === 28 ? 'L' : 'XL'}
+                    </button>
+                  ))}
+                  {/* bold + italic — only for text */}
+                  {e.kind === 'text' && <>
+                    <button onPointerDown={() => update(e.id, { bold: !e.bold })}
+                      style={{ fontSize: 11, fontWeight: 700, padding: '1px 5px', borderRadius: 4, background: e.bold ? '#7c3aed' : '#f3f4f6', color: e.bold ? '#fff' : '#374151', cursor: 'pointer', border: 'none' }}>B</button>
+                    <button onPointerDown={() => update(e.id, { italic: !e.italic })}
+                      style={{ fontSize: 11, fontStyle: 'italic', padding: '1px 5px', borderRadius: 4, background: e.italic ? '#7c3aed' : '#f3f4f6', color: e.italic ? '#fff' : '#374151', cursor: 'pointer', border: 'none' }}>I</button>
+                  </>}
                 </div>
               </>
             )}
