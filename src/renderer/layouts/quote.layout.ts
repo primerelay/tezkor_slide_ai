@@ -52,6 +52,8 @@ export class QuoteLayout implements LayoutRenderer {
         italic: true,
         align: 'left',
         valign: 'middle',
+        fit: 'shrink',
+        shrinkText: true,
       });
 
       slide.addText(`— ${slideData.quote.author}`, {

@@ -91,6 +91,8 @@ export class ComparisonLayout implements LayoutRenderer {
           w: 4.1,
           h: 2.9,
           valign: 'top',
+          fit: 'shrink',
+          shrinkText: true,
         });
       }
 
@@ -139,6 +141,8 @@ export class ComparisonLayout implements LayoutRenderer {
           w: 4.1,
           h: 2.9,
           valign: 'top',
+          fit: 'shrink',
+          shrinkText: true,
         });
       }
     }

@@ -48,6 +48,11 @@ export default () => ({
       .filter((id) => !isNaN(id)),
   },
 
+  requiredChannel: {
+    username: process.env.REQUIRED_CHANNEL_USERNAME || '',
+    url: process.env.REQUIRED_CHANNEL_URL || '',
+  },
+
   pricing: {
     creditsPerPresentation: parseInt(
       process.env.CREDITS_PER_PRESENTATION || '1',

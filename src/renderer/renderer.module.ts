@@ -8,13 +8,7 @@ import { StatisticsLayout } from './layouts/statistics.layout';
 import { QuoteLayout } from './layouts/quote.layout';
 import { ConclusionLayout } from './layouts/conclusion.layout';
 import { RejaLayout } from './layouts/reja.layout';
-import { AcademicBlueTheme } from './themes/academic-blue.theme';
-import { MinimalWhiteTheme } from './themes/minimal-white.theme';
-import { ModernDarkTheme } from './themes/modern-dark.theme';
-import { EditorialSerifTheme } from './themes/editorial-serif.theme';
-import { GradientVioletTheme } from './themes/gradient-violet.theme';
-import { ScholarGreenTheme } from './themes/scholar-green.theme';
-import { WarmSandTheme } from './themes/warm-sand.theme';
+// Themes are data-driven (see themes/theme-catalog.ts) — no per-theme providers.
 
 @Module({
   providers: [
@@ -27,13 +21,6 @@ import { WarmSandTheme } from './themes/warm-sand.theme';
     QuoteLayout,
     ConclusionLayout,
     RejaLayout,
-    AcademicBlueTheme,
-    MinimalWhiteTheme,
-    ModernDarkTheme,
-    EditorialSerifTheme,
-    GradientVioletTheme,
-    ScholarGreenTheme,
-    WarmSandTheme,
   ],
   exports: [RendererService],
 })

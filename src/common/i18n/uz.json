@@ -50,12 +50,35 @@
   },
   "themes": {
     "academic_blue": "🎓 Akademik ko'k",
-    "editorial_serif": "📰 Editorial (serif)",
-    "gradient_violet": "🌌 Gradient binafsha",
     "scholar_green": "🌿 Ilmiy yashil",
+    "royal_indigo": "🔷 Qirol indigo",
+    "crimson_scholar": "🎯 Qirmizi",
+    "teal_campus": "🧪 Kampus teal",
+    "ocean_blue": "🌊 Okean ko'k",
+    "editorial_serif": "📰 Editorial",
     "warm_sand": "🏛️ Iliq qum",
+    "bronze_classic": "📜 Bronza klassik",
+    "burgundy_press": "🍷 Burgundiya",
+    "gradient_violet": "🌌 Gradient binafsha",
+    "sunset_coral": "🌇 Quyosh botishi",
+    "ocean_breeze": "💧 Dengiz shabadasi",
+    "magenta_pop": "💜 Magenta",
+    "electric_blue": "⚡ Elektr ko'k",
+    "cosmic_purple": "🪐 Kosmik siyohrang",
+    "flamingo": "🦩 Flamingo",
+    "lime_punch": "🍃 Yashil zarba",
+    "peach_gold": "🍑 Shaftoli oltin",
+    "aurora": "🌈 Aurora",
+    "grape_soda": "🍇 Uzum",
+    "modern_dark": "🌙 Zamonaviy qorong'i",
+    "midnight_navy": "🌃 Yarim tun",
+    "carbon_neon": "🟢 Karbon neon",
     "minimal_white": "⚪ Minimal oq",
-    "modern_dark": "🌙 Zamonaviy qorong'i"
+    "swiss_red": "🔺 Shveytsariya",
+    "photo_focus": "🖼️ Foto fokus",
+    "photo_editorial": "📷 Foto editorial",
+    "photo_vibrant": "🌅 Foto yorqin",
+    "nature_canvas": "🍀 Tabiat"
   },
   "status": {
     "pending": "⏳ Kutilmoqda",
@@ -109,5 +132,10 @@
     "ru": "🇷🇺 Русский",
     "en": "🇬🇧 English",
     "de": "🇩🇪 Deutsch"
+  },
+  "channel": {
+    "joinRequired": "📢 <b>Botdan foydalanish uchun kanalga qo'shiling!</b>\n\nQuyidagi tugmani bosib @{channel} kanaliga qo'shiling, so'ng \"Qo'shildim\" tugmasini bosing.",
+    "joined": "✅ Rahmat! Endi botdan foydalanishingiz mumkin.",
+    "notJoined": "❌ Siz hali kanalga qo'shilmagansiz. Iltimos, avval @{channel} kanaliga qo'shiling."
   }
 }

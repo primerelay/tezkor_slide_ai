@@ -50,12 +50,35 @@
   },
   "themes": {
     "academic_blue": "🎓 Akademisches Blau",
-    "editorial_serif": "📰 Editorial (Serif)",
-    "gradient_violet": "🌌 Verlauf Violett",
     "scholar_green": "🌿 Wissenschaftsgrün",
+    "royal_indigo": "🔷 Königliches Indigo",
+    "crimson_scholar": "🎯 Karmesinrot",
+    "teal_campus": "🧪 Campus Teal",
+    "ocean_blue": "🌊 Ozeanblau",
+    "editorial_serif": "📰 Editorial",
     "warm_sand": "🏛️ Warmer Sand",
+    "bronze_classic": "📜 Bronze Klassik",
+    "burgundy_press": "🍷 Burgund",
+    "gradient_violet": "🌌 Verlauf Violett",
+    "sunset_coral": "🌇 Sonnenuntergang",
+    "ocean_breeze": "💧 Meeresbrise",
+    "magenta_pop": "💜 Magenta Pop",
+    "electric_blue": "⚡ Elektrisches Blau",
+    "cosmic_purple": "🪐 Kosmisches Lila",
+    "flamingo": "🦩 Flamingo",
+    "lime_punch": "🍃 Limetten Punch",
+    "peach_gold": "🍑 Pfirsich Gold",
+    "aurora": "🌈 Aurora",
+    "grape_soda": "🍇 Trauben",
+    "modern_dark": "🌙 Modern Dunkel",
+    "midnight_navy": "🌃 Mitternacht",
+    "carbon_neon": "🟢 Karbon Neon",
     "minimal_white": "⚪ Minimales Weiß",
-    "modern_dark": "🌙 Modern Dunkel"
+    "swiss_red": "🔺 Schweizer Rot",
+    "photo_focus": "🖼️ Foto Fokus",
+    "photo_editorial": "📷 Foto Editorial",
+    "photo_vibrant": "🌅 Foto Lebhaft",
+    "nature_canvas": "🍀 Natur"
   },
   "status": {
     "pending": "⏳ Ausstehend",
@@ -109,5 +132,10 @@
     "ru": "🇷🇺 Русский",
     "en": "🇬🇧 English",
     "de": "🇩🇪 Deutsch"
+  },
+  "channel": {
+    "joinRequired": "📢 <b>Treten Sie unserem Kanal bei, um den Bot zu nutzen!</b>\n\nKlicken Sie auf die Schaltfläche unten, um @{channel} beizutreten, und dann auf \"Beigetreten\".",
+    "joined": "✅ Danke! Sie können jetzt den Bot verwenden.",
+    "notJoined": "❌ Sie sind dem Kanal noch nicht beigetreten. Bitte treten Sie zuerst @{channel} bei."
   }
 }

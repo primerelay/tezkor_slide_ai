@@ -3,13 +3,7 @@ import PptxGenJS from 'pptxgenjs';
 import { PipelineOutput } from '../ai/pipeline/presentation.pipeline';
 import { SlideWithAssets } from '../ai/agents/asset.agent';
 import { ThemeConfig } from './themes/theme.interface';
-import { AcademicBlueTheme } from './themes/academic-blue.theme';
-import { MinimalWhiteTheme } from './themes/minimal-white.theme';
-import { ModernDarkTheme } from './themes/modern-dark.theme';
-import { EditorialSerifTheme } from './themes/editorial-serif.theme';
-import { GradientVioletTheme } from './themes/gradient-violet.theme';
-import { ScholarGreenTheme } from './themes/scholar-green.theme';
-import { WarmSandTheme } from './themes/warm-sand.theme';
+import { THEME_CATALOG } from './themes/theme-catalog';
 import { HeroLayout } from './layouts/hero.layout';
 import { BulletsLayout } from './layouts/bullets.layout';
 import { TimelineLayout } from './layouts/timeline.layout';
@@ -28,13 +22,6 @@ export class RendererService {
   private readonly layouts: Map<string, LayoutRenderer>;
 
   constructor(
-    private readonly academicBlueTheme: AcademicBlueTheme,
-    private readonly minimalWhiteTheme: MinimalWhiteTheme,
-    private readonly modernDarkTheme: ModernDarkTheme,
-    private readonly editorialSerifTheme: EditorialSerifTheme,
-    private readonly gradientVioletTheme: GradientVioletTheme,
-    private readonly scholarGreenTheme: ScholarGreenTheme,
-    private readonly warmSandTheme: WarmSandTheme,
     private readonly heroLayout: HeroLayout,
     private readonly bulletsLayout: BulletsLayout,
     private readonly timelineLayout: TimelineLayout,
@@ -44,15 +31,7 @@ export class RendererService {
     private readonly conclusionLayout: ConclusionLayout,
     private readonly rejaLayout: RejaLayout,
   ) {
-    this.themes = new Map([
-      ['academic_blue', this.academicBlueTheme.getConfig()],
-      ['minimal_white', this.minimalWhiteTheme.getConfig()],
-      ['modern_dark', this.modernDarkTheme.getConfig()],
-      ['editorial_serif', this.editorialSerifTheme.getConfig()],
-      ['gradient_violet', this.gradientVioletTheme.getConfig()],
-      ['scholar_green', this.scholarGreenTheme.getConfig()],
-      ['warm_sand', this.warmSandTheme.getConfig()],
-    ]);
+    this.themes = new Map(Object.entries(THEME_CATALOG));
 
     this.layouts = new Map<string, LayoutRenderer>([
       ['hero', this.heroLayout],

@@ -137,4 +137,11 @@ export class InlineKeyboards {
       ],
     ]).reply_markup;
   }
+
+  static joinChannel(channelUrl: string, channelUsername: string) {
+    return Markup.inlineKeyboard([
+      [Markup.button.url(`📢 @${channelUsername} kanalga qo'shilish`, channelUrl)],
+      [Markup.button.callback("✅ Qo'shildim, tekshirish", 'check_channel_membership')],
+    ]).reply_markup;
+  }
 }

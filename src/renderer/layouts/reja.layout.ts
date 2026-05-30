@@ -168,6 +168,8 @@ export class RejaLayout implements LayoutRenderer {
           bold: false,
           align: 'left',
           valign: 'middle',
+          fit: 'shrink',
+          shrinkText: true,
         });
       }
     }

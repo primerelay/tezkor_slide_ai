@@ -8,7 +8,7 @@ import { Presentation } from '../database/entities/presentation.entity';
 import { TelegramService } from '../telegram/telegram.service';
 import { CreatePresentationDto, TemplateDto } from './dto/mini-app.dto';
 import { PRESENTATION_QUEUE } from '../queue/constants';
-import { PresentationTheme } from '../renderer/themes/theme-registry';
+import { PresentationTheme, normalizeTheme } from '../renderer/themes/theme-registry';
 
 @Injectable()
 export class MiniAppService {
@@ -132,8 +132,10 @@ export class MiniAppService {
       throw new Error(`Balansingiz yetarli emas. Kerak: ${price} so'm, Balans: ${user.credits} so'm`);
     }
 
-    // Map template ID to theme
-    const themeMap: Record<string, PresentationTheme> = {
+    // The mini-app sends template.id equal to a backend theme id
+    // (e.g. 'gradient_violet'). Older builds used hyphenated/legacy ids,
+    // so map those first, then normalize (unknown -> default theme).
+    const legacy: Record<string, PresentationTheme> = {
       'academic-blue': 'academic_blue',
       'minimal-white': 'minimal_white',
       'modern-dark': 'modern_dark',
@@ -142,8 +144,8 @@ export class MiniAppService {
       'warm-orange': 'warm_sand',
       editorial: 'editorial_serif',
     };
-
-    const theme = themeMap[dto.presentation.template?.id || 'academic-blue'] || 'academic_blue';
+    const rawId = dto.presentation.template?.id || '';
+    const theme = normalizeTheme(legacy[rawId] || rawId);
 
     // Create presentation record
     const presentation = await this.telegramService.createPresentation({

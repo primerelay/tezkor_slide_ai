@@ -50,12 +50,35 @@
   },
   "themes": {
     "academic_blue": "🎓 Академический синий",
-    "editorial_serif": "📰 Editorial (serif)",
-    "gradient_violet": "🌌 Градиент фиолетовый",
     "scholar_green": "🌿 Научный зелёный",
+    "royal_indigo": "🔷 Королевский индиго",
+    "crimson_scholar": "🎯 Багровый",
+    "teal_campus": "🧪 Кампус бирюза",
+    "ocean_blue": "🌊 Океанский синий",
+    "editorial_serif": "📰 Editorial",
     "warm_sand": "🏛️ Тёплый песок",
+    "bronze_classic": "📜 Бронза классик",
+    "burgundy_press": "🍷 Бургундия",
+    "gradient_violet": "🌌 Градиент фиолетовый",
+    "sunset_coral": "🌇 Закат",
+    "ocean_breeze": "💧 Морской бриз",
+    "magenta_pop": "💜 Магента",
+    "electric_blue": "⚡ Электрик синий",
+    "cosmic_purple": "🪐 Космический фиолетовый",
+    "flamingo": "🦩 Фламинго",
+    "lime_punch": "🍃 Лаймовый",
+    "peach_gold": "🍑 Персиковое золото",
+    "aurora": "🌈 Аврора",
+    "grape_soda": "🍇 Виноград",
+    "modern_dark": "🌙 Современный тёмный",
+    "midnight_navy": "🌃 Полуночный",
+    "carbon_neon": "🟢 Карбон неон",
     "minimal_white": "⚪ Минимальный белый",
-    "modern_dark": "🌙 Современный темный"
+    "swiss_red": "🔺 Швейцарский",
+    "photo_focus": "🖼️ Фото фокус",
+    "photo_editorial": "📷 Фото editorial",
+    "photo_vibrant": "🌅 Фото яркий",
+    "nature_canvas": "🍀 Природа"
   },
   "status": {
     "pending": "⏳ Ожидание",
@@ -109,5 +132,10 @@
     "ru": "🇷🇺 Русский",
     "en": "🇬🇧 English",
     "de": "🇩🇪 Deutsch"
+  },
+  "channel": {
+    "joinRequired": "📢 <b>Подпишитесь на канал, чтобы использовать бота!</b>\n\nНажмите кнопку ниже, чтобы подписаться на @{channel}, затем нажмите \"Подписался\".",
+    "joined": "✅ Спасибо! Теперь вы можете пользоваться ботом.",
+    "notJoined": "❌ Вы ещё не подписаны на канал. Пожалуйста, сначала подпишитесь на @{channel}."
   }
 }

@@ -76,17 +76,18 @@ export class ContentAgent {
 
 CRITICAL REQUIREMENTS:
 - Use ${languageNames[language]} for ALL content
-- Generate DETAILED, COMPREHENSIVE content - NOT simple or basic
-- Each bullet point should be 20-40 words with full explanation
+- Generate DETAILED, informative content optimized for SLIDES (not paragraphs)
+- Each bullet point should be 14-24 words — substantive but still slide-friendly
 - Include specific facts, statistics, dates, and real examples
 - Use academic vocabulary and professional terminology
 - Make every slide informative and educational
 
 CONTENT GUIDELINES:
-- 4-6 detailed bullet points per slide
-- Each bullet is a complete, informative sentence
+- 4-6 informative bullet points per slide
+- Each bullet is ONE complete, informative sentence (not a multi-sentence paragraph)
+- Aim for at most ~2 lines per bullet; the renderer auto-fits if slightly longer
 - Include specific examples, numbers, and facts
-- Add comprehensive speaker notes (50-100 words)
+- Add comprehensive speaker notes (50-100 words) for extra depth
 - For timelines: 4-6 events with specific years and detailed descriptions
 - For comparisons: detailed analysis with specific differences
 - For statistics: include source references and context

@@ -26,6 +26,8 @@ const SLIDE_PRICES: Record<number, number> = {
 export class TelegramService {
   private readonly logger = new Logger(TelegramService.name);
   private readonly adminTelegramIds: number[];
+  private readonly requiredChannelUsername: string;
+  private readonly requiredChannelUrl: string;
 
   constructor(
     @InjectBot()
@@ -39,6 +41,43 @@ export class TelegramService {
     private readonly configService: ConfigService,
   ) {
     this.adminTelegramIds = this.configService.get<number[]>('admin.telegramIds') || [];
+    this.requiredChannelUsername = this.configService.get<string>('requiredChannel.username') || '';
+    this.requiredChannelUrl = this.configService.get<string>('requiredChannel.url') || '';
+  }
+
+  /**
+   * Check if user is a member of the required channel
+   */
+  async isChannelMember(telegramId: string | number): Promise<boolean> {
+    if (!this.requiredChannelUsername) {
+      return true; // No channel required
+    }
+
+    try {
+      const chatMember = await this.bot.telegram.getChatMember(
+        `@${this.requiredChannelUsername}`,
+        Number(telegramId),
+      );
+
+      // User is a member if status is 'member', 'administrator', or 'creator'
+      return ['member', 'administrator', 'creator'].includes(chatMember.status);
+    } catch (error) {
+      this.logger.warn(`Failed to check channel membership for ${telegramId}:`, error);
+      return false;
+    }
+  }
+
+  /**
+   * Get required channel info
+   */
+  getRequiredChannel(): { username: string; url: string } | null {
+    if (!this.requiredChannelUsername) {
+      return null;
+    }
+    return {
+      username: this.requiredChannelUsername,
+      url: this.requiredChannelUrl || `https://t.me/${this.requiredChannelUsername}`,
+    };
   }
 
   getPriceForSlideCount(slideCount: number): number {

@@ -114,6 +114,56 @@ export function applyHeroBackground(
   }
 }
 
+/**
+ * Full-bleed photo background with a dark overlay for legible text.
+ * Used by hero/conclusion when the theme opts into `heroImage`.
+ */
+export function applyPhotoBackground(
+  slide: PptxGenJS.Slide,
+  pptx: PptxGenJS,
+  theme: ThemeConfig,
+  imagePath: string,
+): void {
+  slide.background = { color: theme.gradient?.from || theme.colors.primary };
+  slide.addImage({
+    path: imagePath,
+    x: 0,
+    y: 0,
+    w: SLIDE_W,
+    h: SLIDE_H,
+    sizing: { type: 'cover', w: SLIDE_W, h: SLIDE_H },
+  });
+  // Overall darkening for contrast.
+  slide.addShape(pptx.ShapeType.rect, {
+    x: 0,
+    y: 0,
+    w: SLIDE_W,
+    h: SLIDE_H,
+    fill: { type: 'solid', color: '000000', transparency: 52 },
+    line: { type: 'none' },
+  });
+  // Brand-tinted wash so photos feel on-theme.
+  slide.addShape(pptx.ShapeType.rect, {
+    x: 0,
+    y: 0,
+    w: SLIDE_W,
+    h: SLIDE_H,
+    fill: { type: 'solid', color: theme.colors.primary, transparency: 70 },
+    line: { type: 'none' },
+  });
+}
+
+/**
+ * Title-bar fill + text color. Dark themes get a dark bar with light text
+ * (so text is always readable/white); light themes get a colored primary bar.
+ */
+export function headerBarColors(theme: ThemeConfig): { fill: string; text: string } {
+  if (theme.mode === 'dark') {
+    return { fill: theme.colors.backgroundAlt, text: theme.colors.text };
+  }
+  return { fill: theme.colors.primary, text: theme.colors.textInverse };
+}
+
 /** Consistent slide-number footer used by content layouts. */
 export function addSlideNumber(
   slide: PptxGenJS.Slide,
@@ -172,12 +222,13 @@ export function addContentHeader(
   }
 
   // Geometric: filled top bar with a left accent stripe.
+  const bar = headerBarColors(theme);
   slide.addShape(pptx.ShapeType.rect, {
     x: 0,
     y: 0,
     w: SLIDE_W,
     h: 1,
-    fill: { type: 'solid', color: theme.colors.primary },
+    fill: { type: 'solid', color: bar.fill },
     line: { type: 'none' },
   });
   slide.addShape(pptx.ShapeType.rect, {
@@ -195,10 +246,12 @@ export function addContentHeader(
     h: 0.64,
     fontSize: theme.fonts.heading.size,
     fontFace: theme.fonts.heading.face,
-    color: theme.colors.textInverse,
+    color: bar.text,
     bold: true,
     align: 'left',
     valign: 'middle',
+    fit: 'shrink',
+    shrinkText: true,
   });
   return 1.35;
 }

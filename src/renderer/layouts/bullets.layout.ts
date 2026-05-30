@@ -43,16 +43,22 @@ export class BulletsLayout implements LayoutRenderer {
   ): void {
     if (!slideData.bullets || slideData.bullets.length === 0) return;
 
-    const bulletTexts = slideData.bullets.map((bullet, index) => ({
+    // Cap bullets so a slide never tries to show a wall of text.
+    const bullets = slideData.bullets.slice(0, 6);
+    // Tighten spacing/size as the bullet count grows to avoid overflow.
+    const dense = bullets.length >= 5;
+    const fontSize = dense ? box.fontSize - 2 : box.fontSize;
+
+    const bulletTexts = bullets.map((bullet, index) => ({
       text: bullet,
       options: {
-        fontSize: box.fontSize,
+        fontSize,
         fontFace: theme.fonts.body.face,
         color: theme.colors.text,
         bullet: { type: 'bullet' as const, color: theme.colors.accent },
-        paraSpaceBefore: index === 0 ? 0 : 10,
-        paraSpaceAfter: 4,
-        lineSpacingMultiple: 1.05,
+        paraSpaceBefore: index === 0 ? 0 : dense ? 6 : 9,
+        paraSpaceAfter: 3,
+        lineSpacingMultiple: 1.02,
       },
     }));
 
@@ -62,6 +68,9 @@ export class BulletsLayout implements LayoutRenderer {
       w: box.w,
       h: box.h,
       valign: 'top',
+      // PowerPoint shrinks the text to fit the box if it still overflows.
+      fit: 'shrink',
+      shrinkText: true,
     });
   }
 
@@ -75,8 +84,8 @@ export class BulletsLayout implements LayoutRenderer {
     this.renderBulletList(slide, slideData, theme, {
       x: 0.55,
       y: bodyY,
-      w: 4.85,
-      h: 4.6 - bodyY,
+      w: 4.95,
+      h: 4.95 - bodyY,
       fontSize: theme.fonts.body.size - 1,
     });
 
@@ -122,7 +131,7 @@ export class BulletsLayout implements LayoutRenderer {
       x: 0.6,
       y: bodyY,
       w: SLIDE_W - 1.2,
-      h: 4.7 - bodyY,
+      h: 4.9 - bodyY,
       fontSize: theme.fonts.body.size + 1,
     });
   }

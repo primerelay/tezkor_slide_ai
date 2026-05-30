@@ -3,70 +3,14 @@ import { useNavigate } from 'react-router-dom';
 import { useTelegram } from '../hooks/useTelegram';
 import { useLanguage } from '../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, Sparkles, Check } from 'lucide-react';
+import { ArrowRight, Sparkles, Check, Eye } from 'lucide-react';
 import { Translations } from '../i18n/translations';
+import { THEME_VISUALS } from '../data/themes';
+import SlideMockup from '../components/SlideMockup';
+import TemplatePreviewModal from '../components/TemplatePreviewModal';
 
-// Template type - matches backend theme-registry.ts
-interface Template {
-  id: string;
-  nameKey: string;
-  emoji: string;
-  preview: string;
-  textColor: string;
-}
-
-// Professional templates matching backend themes
-const templates: Template[] = [
-  {
-    id: 'academic_blue',
-    nameKey: 'academicBlue',
-    emoji: '🎓',
-    preview: 'linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%)',
-    textColor: '#ffffff',
-  },
-  {
-    id: 'editorial_serif',
-    nameKey: 'editorialSerif',
-    emoji: '📰',
-    preview: 'linear-gradient(135deg, #1c1917 0%, #44403c 100%)',
-    textColor: '#ffffff',
-  },
-  {
-    id: 'gradient_violet',
-    nameKey: 'gradientViolet',
-    emoji: '🌌',
-    preview: 'linear-gradient(135deg, #7c3aed 0%, #db2777 100%)',
-    textColor: '#ffffff',
-  },
-  {
-    id: 'scholar_green',
-    nameKey: 'scholarGreen',
-    emoji: '🌿',
-    preview: 'linear-gradient(135deg, #065f46 0%, #10b981 100%)',
-    textColor: '#ffffff',
-  },
-  {
-    id: 'warm_sand',
-    nameKey: 'warmSand',
-    emoji: '🏛️',
-    preview: 'linear-gradient(135deg, #78716c 0%, #d6d3d1 100%)',
-    textColor: '#1c1917',
-  },
-  {
-    id: 'minimal_white',
-    nameKey: 'minimalWhite',
-    emoji: '⚪',
-    preview: 'linear-gradient(135deg, #f8fafc 0%, #e2e8f0 100%)',
-    textColor: '#1e293b',
-  },
-  {
-    id: 'modern_dark',
-    nameKey: 'modernDark',
-    emoji: '🌙',
-    preview: 'linear-gradient(135deg, #0f172a 0%, #334155 100%)',
-    textColor: '#ffffff',
-  },
-];
+// Theme visuals live in ../data/themes (THEME_VISUALS) and mirror the backend
+// renderer themes so previews match the real PPTX output.
 
 const slideCountOptions = [6, 8, 10, 12];
 
@@ -137,7 +81,7 @@ export default function CreatePage() {
             title: topic,
             studentName: studentName || undefined,
             teacherName: teacherName || undefined,
-            template: templates.find(tmpl => tmpl.id === selectedTemplate),
+            template: { id: selectedTemplate },
             language: language, // Use the user's selected language
             slides: [],
           },
@@ -228,6 +172,7 @@ export default function CreatePage() {
           {step === 'template' && (
             <TemplateStep
               key="template"
+              topic={topic}
               selectedTemplate={selectedTemplate}
               setSelectedTemplate={setSelectedTemplate}
               haptic={haptic}
@@ -343,16 +288,22 @@ function TopicStep({ topic, setTopic, t }: { topic: string; setTopic: (v: string
 type HapticType = 'light' | 'medium' | 'heavy' | 'success' | 'error' | 'warning' | 'selection';
 
 function TemplateStep({
+  topic,
   selectedTemplate,
   setSelectedTemplate,
   haptic,
   t,
 }: {
+  topic: string;
   selectedTemplate: string | null;
   setSelectedTemplate: (v: string) => void;
   haptic: (type: HapticType) => void;
   t: Translations;
 }) {
+  const [previewId, setPreviewId] = useState<string | null>(null);
+  const previewTheme = THEME_VISUALS.find((v) => v.id === previewId) || null;
+  const sampleTitle = topic.trim() || t.title;
+
   return (
     <motion.div
       initial={{ opacity: 0, x: 20 }}
@@ -361,63 +312,74 @@ function TemplateStep({
       className="p-5"
     >
       <div className="mb-6">
-        <h1 className="text-2xl font-bold text-gray-900 mb-2">
-          {t.selectTemplate}
-        </h1>
-        <p className="text-gray-500">
-          {t.chooseFromProfessional}
-        </p>
+        <h1 className="text-2xl font-bold text-gray-900 mb-2">{t.selectTemplate}</h1>
+        <p className="text-gray-500">{t.chooseFromProfessional}</p>
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        {templates.map((template) => (
-          <motion.button
-            key={template.id}
-            whileTap={{ scale: 0.97 }}
-            onClick={() => {
-              haptic('selection');
-              setSelectedTemplate(template.id);
-            }}
-            className={`template-card ${selectedTemplate === template.id ? 'selected' : ''}`}
-            style={{ background: template.preview }}
-          >
-            {/* Template preview content */}
-            <div className="absolute inset-0 flex flex-col items-center justify-center z-20 p-3">
-              <div
-                className="text-sm font-bold mb-1"
-                style={{ color: template.textColor }}
+        {THEME_VISUALS.map((theme) => {
+          const isSelected = selectedTemplate === theme.id;
+          return (
+            <motion.div
+              key={theme.id}
+              whileTap={{ scale: 0.97 }}
+              onClick={() => {
+                haptic('selection');
+                setSelectedTemplate(theme.id);
+              }}
+              className={`relative rounded-2xl overflow-hidden cursor-pointer transition-all ring-2 ${
+                isSelected ? 'ring-purple-500 shadow-lg' : 'ring-black/5'
+              }`}
+            >
+              {/* realistic title-slide preview */}
+              <SlideMockup theme={theme} variant="hero" title={sampleTitle} />
+
+              {/* legibility gradient + name */}
+              <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/55 to-transparent pointer-events-none" />
+              <div className="absolute bottom-0 left-0 right-0 p-2.5 flex items-center gap-1 text-white text-xs font-semibold">
+                <span>{theme.emoji}</span>
+                <span className="truncate">{theme.name}</span>
+              </div>
+
+              {/* preview (eye) button */}
+              <button
+                onClick={(e) => {
+                  e.stopPropagation();
+                  haptic('light');
+                  setPreviewId(theme.id);
+                }}
+                className="absolute top-2 left-2 z-30 h-7 px-2 rounded-full bg-black/35 backdrop-blur flex items-center gap-1 text-white text-[11px] font-medium"
               >
-                {t.title}
-              </div>
-              <div className="flex gap-1">
-                <div
-                  className="w-8 h-1 rounded-full opacity-60"
-                  style={{ backgroundColor: template.textColor }}
-                />
-                <div
-                  className="w-6 h-1 rounded-full opacity-40"
-                  style={{ backgroundColor: template.textColor }}
-                />
-              </div>
-            </div>
+                <Eye className="w-3.5 h-3.5" />
+                {t.previewLabel}
+              </button>
 
-            {/* Template name */}
-            <div className="absolute bottom-0 left-0 right-0 p-3 z-20">
-              <div className="text-sm font-medium flex items-center gap-1" style={{ color: template.textColor }}>
-                <span>{template.emoji}</span>
-                <span>{(t as any)[template.nameKey] || template.nameKey}</span>
-              </div>
-            </div>
-
-            {/* Selected indicator */}
-            {selectedTemplate === template.id && (
-              <div className="absolute top-2 right-2 z-30 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow">
-                <Check className="w-4 h-4 text-purple-600" />
-              </div>
-            )}
-          </motion.button>
-        ))}
+              {/* selected check */}
+              {isSelected && (
+                <div className="absolute top-2 right-2 z-30 w-6 h-6 bg-white rounded-full flex items-center justify-center shadow">
+                  <Check className="w-4 h-4 text-purple-600" />
+                </div>
+              )}
+            </motion.div>
+          );
+        })}
       </div>
+
+      <AnimatePresence>
+        {previewTheme && (
+          <TemplatePreviewModal
+            theme={previewTheme}
+            topic={topic}
+            t={t}
+            onClose={() => setPreviewId(null)}
+            onUse={() => {
+              haptic('success');
+              setSelectedTemplate(previewTheme.id);
+              setPreviewId(null);
+            }}
+          />
+        )}
+      </AnimatePresence>
     </motion.div>
   );
 }

@@ -247,6 +247,25 @@ export class TelegramUpdate {
     );
     if (!user) return;
 
+    const i18n = this.telegramService.getI18n(user.language);
+
+    // Check channel membership
+    const requiredChannel = this.telegramService.getRequiredChannel();
+    if (requiredChannel) {
+      const isMember = await this.telegramService.isChannelMember(telegramUser.id);
+      if (!isMember) {
+        await ctx.answerCbQuery();
+        await ctx.reply(
+          i18n.t('channel.joinRequired', { channel: requiredChannel.username }),
+          {
+            parse_mode: 'HTML',
+            reply_markup: InlineKeyboards.joinChannel(requiredChannel.url, requiredChannel.username),
+          }
+        );
+        return;
+      }
+    }
+
     ctx.session.userId = user.id;
     ctx.session.language = user.language;
     ctx.session.topic = undefined;
@@ -257,10 +276,44 @@ export class TelegramUpdate {
     ctx.session.theme = undefined;
     ctx.session.step = 'topic';
 
-    const i18n = this.telegramService.getI18n(user.language);
-
     await ctx.answerCbQuery();
     await ctx.reply(i18n.t('enterTopic'), { parse_mode: 'HTML' });
+  }
+
+  @Action('check_channel_membership')
+  async onCheckChannelMembership(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    if (!user) return;
+
+    const i18n = this.telegramService.getI18n(user.language);
+    const requiredChannel = this.telegramService.getRequiredChannel();
+
+    if (!requiredChannel) {
+      await ctx.answerCbQuery();
+      return;
+    }
+
+    const isMember = await this.telegramService.isChannelMember(telegramUser.id);
+
+    if (isMember) {
+      await ctx.answerCbQuery(i18n.t('channel.joined'));
+      await ctx.editMessageText(i18n.t('channel.joined'), { parse_mode: 'HTML' });
+
+      // Show main menu
+      await ctx.reply(i18n.t('mainMenuText'), {
+        reply_markup: InlineKeyboards.mainMenu(i18n, this.miniAppUrl),
+      });
+    } else {
+      await ctx.answerCbQuery(
+        i18n.t('channel.notJoined', { channel: requiredChannel.username }),
+        { show_alert: true }
+      );
+    }
   }
 
   @Action('add_balance')

@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import PptxGenJS from 'pptxgenjs';
+import * as fs from 'fs';
 import { LayoutRenderer, PresentationMeta } from './layout.interface';
 import { ThemeConfig } from '../themes/theme.interface';
 import { SlideWithAssets } from '../../ai/agents/asset.agent';
@@ -7,6 +8,7 @@ import {
   SLIDE_W,
   SLIDE_H,
   applyHeroBackground,
+  applyPhotoBackground,
   darkenColor,
   lightenColor,
 } from './layout.helpers';
@@ -28,11 +30,20 @@ export class HeroLayout implements LayoutRenderer {
     const preparedByLabel = i18n?.t('presentation.preparedBy') || 'Tayyorladi';
     const checkedByLabel = i18n?.t('presentation.checkedBy') || 'Tekshirdi';
 
-    // Full-bleed premium background (gradient or solid).
-    applyHeroBackground(slide, pptx, theme);
+    // Full-bleed background: photo (themed) > gradient > solid.
+    const bgImage =
+      !!theme.heroImage &&
+      !!slideData.assets?.image?.localPath &&
+      fs.existsSync(slideData.assets.image.localPath);
 
-    // Soft decorative circles for geometric themes (skipped for editorial).
-    if (!editorial) {
+    if (bgImage) {
+      applyPhotoBackground(slide, pptx, theme, slideData.assets!.image!.localPath!);
+    } else {
+      applyHeroBackground(slide, pptx, theme);
+    }
+
+    // Soft decorative circles for geometric themes (skipped for editorial/photo).
+    if (!editorial && !bgImage) {
       slide.addShape(pptx.ShapeType.ellipse, {
         x: 6.7,
         y: -1.4,
@@ -75,6 +86,8 @@ export class HeroLayout implements LayoutRenderer {
       align: editorial ? 'left' : 'center',
       valign: 'middle',
       lineSpacingMultiple: 0.95,
+      fit: 'shrink',
+      shrinkText: true,
     });
 
     // Subtitle.

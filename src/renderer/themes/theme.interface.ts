@@ -79,6 +79,8 @@ export interface ThemeConfig {
   gradient?: ThemeGradient;
   /** Whether title/closing slides should use the gradient (vs. flat primary). */
   heroGradient?: boolean;
+  /** Whether title/closing slides use a full-bleed photo + overlay (when an image is available). */
+  heroImage?: boolean;
 }
 
 export interface Theme {

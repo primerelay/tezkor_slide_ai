@@ -3,6 +3,7 @@ import { SlideContent } from './content.agent';
 import { SlideLayout } from './layout.agent';
 import { ImageService, ImageResult } from '../services/image.service';
 import { PresentationTheme } from '../../renderer/themes/theme-registry';
+import { HERO_IMAGE_THEMES } from '../../renderer/themes/theme-catalog';
 
 export interface SlideWithAssets extends SlideContent {
   layout: SlideLayout;
@@ -50,10 +51,10 @@ export class AssetAgent {
     const topicCategory = this.detectTopicCategory(slides);
     const icons = this.iconMap[topicCategory] || this.iconMap.default;
 
-    // Get slides that need images (not hero, reja, or conclusion)
-    const contentSlides = slides.filter(
-      (s) => !['hero', 'reja', 'conclusion'].includes(s.type)
-    );
+    // Photo-background themes also want an image on the hero/closing slides.
+    const usesHeroImage = HERO_IMAGE_THEMES.has(theme);
+    const excluded = usesHeroImage ? ['reja'] : ['hero', 'reja', 'conclusion'];
+    const contentSlides = slides.filter((s) => !excluded.includes(s.type));
 
     // Fetch images for content slides (max 5 to avoid rate limiting)
     const slideTitles = contentSlides.map(s => s.title);

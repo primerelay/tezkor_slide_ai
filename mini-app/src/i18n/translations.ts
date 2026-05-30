@@ -39,6 +39,8 @@ export interface Translations {
 
   selectTemplate: string;
   chooseFromProfessional: string;
+  previewLabel: string;
+  useThisTemplate: string;
 
   settings: string;
   enterDetails: string;
@@ -118,6 +120,8 @@ const uz: Translations = {
 
   selectTemplate: 'Shablon tanlang',
   chooseFromProfessional: 'Professional dizaynlar orasidan tanlang',
+  previewLabel: "Ko'rish",
+  useThisTemplate: 'Shu shablonni tanlash',
 
   settings: 'Sozlamalar',
   enterDetails: 'Prezentatsiya tafsilotlarini kiriting',
@@ -195,6 +199,8 @@ const ru: Translations = {
 
   selectTemplate: 'Выберите шаблон',
   chooseFromProfessional: 'Выберите из профессиональных дизайнов',
+  previewLabel: 'Просмотр',
+  useThisTemplate: 'Выбрать этот шаблон',
 
   settings: 'Настройки',
   enterDetails: 'Введите детали презентации',
@@ -272,6 +278,8 @@ const en: Translations = {
 
   selectTemplate: 'Select template',
   chooseFromProfessional: 'Choose from professional designs',
+  previewLabel: 'Preview',
+  useThisTemplate: 'Use this template',
 
   settings: 'Settings',
   enterDetails: 'Enter presentation details',
@@ -349,6 +357,8 @@ const de: Translations = {
 
   selectTemplate: 'Vorlage auswählen',
   chooseFromProfessional: 'Wählen Sie aus professionellen Designs',
+  previewLabel: 'Vorschau',
+  useThisTemplate: 'Diese Vorlage verwenden',
 
   settings: 'Einstellungen',
   enterDetails: 'Präsentationsdetails eingeben',

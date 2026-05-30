@@ -50,12 +50,35 @@
   },
   "themes": {
     "academic_blue": "🎓 Academic Blue",
-    "editorial_serif": "📰 Editorial (serif)",
-    "gradient_violet": "🌌 Gradient Violet",
     "scholar_green": "🌿 Scholar Green",
+    "royal_indigo": "🔷 Royal Indigo",
+    "crimson_scholar": "🎯 Crimson Scholar",
+    "teal_campus": "🧪 Teal Campus",
+    "ocean_blue": "🌊 Ocean Blue",
+    "editorial_serif": "📰 Editorial",
     "warm_sand": "🏛️ Warm Sand",
+    "bronze_classic": "📜 Bronze Classic",
+    "burgundy_press": "🍷 Burgundy Press",
+    "gradient_violet": "🌌 Gradient Violet",
+    "sunset_coral": "🌇 Sunset Coral",
+    "ocean_breeze": "💧 Ocean Breeze",
+    "magenta_pop": "💜 Magenta Pop",
+    "electric_blue": "⚡ Electric Blue",
+    "cosmic_purple": "🪐 Cosmic Purple",
+    "flamingo": "🦩 Flamingo",
+    "lime_punch": "🍃 Lime Punch",
+    "peach_gold": "🍑 Peach Gold",
+    "aurora": "🌈 Aurora",
+    "grape_soda": "🍇 Grape Soda",
+    "modern_dark": "🌙 Modern Dark",
+    "midnight_navy": "🌃 Midnight Navy",
+    "carbon_neon": "🟢 Carbon Neon",
     "minimal_white": "⚪ Minimal White",
-    "modern_dark": "🌙 Modern Dark"
+    "swiss_red": "🔺 Swiss Red",
+    "photo_focus": "🖼️ Photo Focus",
+    "photo_editorial": "📷 Photo Editorial",
+    "photo_vibrant": "🌅 Photo Vibrant",
+    "nature_canvas": "🍀 Nature Canvas"
   },
   "status": {
     "pending": "⏳ Pending",
@@ -109,5 +132,10 @@
     "ru": "🇷🇺 Русский",
     "en": "🇬🇧 English",
     "de": "🇩🇪 Deutsch"
+  },
+  "channel": {
+    "joinRequired": "📢 <b>Join our channel to use the bot!</b>\n\nClick the button below to join @{channel}, then click \"I joined\".",
+    "joined": "✅ Thank you! You can now use the bot.",
+    "notJoined": "❌ You haven't joined the channel yet. Please join @{channel} first."
   }
 }
