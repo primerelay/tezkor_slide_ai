@@ -153,6 +153,52 @@ export function applyPhotoBackground(
   });
 }
 
+export interface SlideElement {
+  kind: 'rect' | 'ellipse' | 'line' | 'text';
+  x: number; // 0..1 fraction of slide width
+  y: number; // 0..1 fraction of slide height
+  w: number;
+  h: number;
+  color?: string;
+  text?: string;
+  fontSize?: number;
+  fontColor?: string;
+  align?: 'left' | 'center' | 'right';
+}
+
+/** Render free-form elements (shapes/text) on top of any slide. */
+export function renderElements(
+  slide: PptxGenJS.Slide,
+  pptx: PptxGenJS,
+  theme: ThemeConfig,
+  elements: SlideElement[],
+): void {
+  for (const el of elements || []) {
+    const x = (el.x || 0) * SLIDE_W;
+    const y = (el.y || 0) * SLIDE_H;
+    const w = Math.max(0.1, (el.w || 0.2) * SLIDE_W);
+    const h = Math.max(0.1, (el.h || 0.15) * SLIDE_H);
+    const color = (el.color || theme.colors.accent).replace('#', '');
+    if (el.kind === 'rect') {
+      slide.addShape(pptx.ShapeType.rect, { x, y, w, h, fill: { type: 'solid', color }, line: { type: 'none' } });
+    } else if (el.kind === 'ellipse') {
+      slide.addShape(pptx.ShapeType.ellipse, { x, y, w, h, fill: { type: 'solid', color }, line: { type: 'none' } });
+    } else if (el.kind === 'line') {
+      slide.addShape(pptx.ShapeType.line, { x, y, w, h, line: { color, width: 2 } });
+    } else if (el.kind === 'text') {
+      slide.addText(el.text || '', {
+        x, y, w, h,
+        fontSize: el.fontSize || 18,
+        color: (el.fontColor || theme.colors.text).replace('#', ''),
+        fontFace: theme.fonts.body.face,
+        align: el.align || 'left',
+        valign: 'middle',
+        fit: 'shrink',
+      });
+    }
+  }
+}
+
 /**
  * Title-bar fill + text color. Dark themes get a dark bar with light text
  * (so text is always readable/white); light themes get a colored primary bar.

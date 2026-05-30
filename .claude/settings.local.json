@@ -55,7 +55,8 @@
       "Bash(ls MEMORY.md)",
       "Bash(cat MEMORY.md)",
       "WebFetch(domain:openrouter.ai)",
-      "WebSearch"
+      "WebSearch",
+      "mcp__Claude_Preview__preview_start"
     ]
   }
 }

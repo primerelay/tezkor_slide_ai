@@ -189,3 +189,9 @@ body {
 .empty-state-icon {
   @apply w-16 h-16 rounded-full bg-gray-100 flex items-center justify-center mb-4;
 }
+
+/* contentEditable placeholder for the WYSIWYG editor */
+.editable:empty:before {
+  content: attr(data-ph);
+  opacity: 0.45;
+}

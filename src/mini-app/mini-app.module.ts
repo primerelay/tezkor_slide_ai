@@ -7,6 +7,9 @@ import { User } from '../database/entities/user.entity';
 import { Presentation } from '../database/entities/presentation.entity';
 import { TelegramModule } from '../telegram/telegram.module';
 import { PRESENTATION_QUEUE } from '../queue/constants';
+import { RendererModule } from '../renderer/renderer.module';
+import { StorageModule } from '../storage/storage.module';
+import { AiModule } from '../ai/ai.module';
 
 @Module({
   imports: [
@@ -15,6 +18,9 @@ import { PRESENTATION_QUEUE } from '../queue/constants';
       name: PRESENTATION_QUEUE,
     }),
     TelegramModule,
+    RendererModule,
+    StorageModule,
+    AiModule,
   ],
   controllers: [MiniAppController],
   providers: [MiniAppService],

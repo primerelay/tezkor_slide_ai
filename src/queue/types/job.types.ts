@@ -12,4 +12,6 @@ export interface PresentationJobData {
   theme: PresentationTheme;
   language: SupportedLanguage;
   telegramChatId?: string;
+  /** 'mini_app' decks are reviewed/edited in the app, so the bot does NOT auto-send the file. */
+  source?: 'telegram' | 'mini_app';
 }

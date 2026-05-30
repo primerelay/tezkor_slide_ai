@@ -9,6 +9,10 @@ import { TelegramService } from '../telegram/telegram.service';
 import { CreatePresentationDto, TemplateDto } from './dto/mini-app.dto';
 import { PRESENTATION_QUEUE } from '../queue/constants';
 import { PresentationTheme, normalizeTheme } from '../renderer/themes/theme-registry';
+import { RendererService } from '../renderer/renderer.service';
+import { StorageService } from '../storage/storage.service';
+import { SupportedLanguage } from '../common/i18n/i18n.service';
+import { ImageService } from '../ai/services/image.service';
 
 @Injectable()
 export class MiniAppService {
@@ -22,7 +26,88 @@ export class MiniAppService {
     @InjectQueue(PRESENTATION_QUEUE)
     private readonly presentationQueue: Queue,
     private readonly telegramService: TelegramService,
+    private readonly rendererService: RendererService,
+    private readonly storageService: StorageService,
+    private readonly imageService: ImageService,
   ) {}
+
+  /** Editor image picker — search stock photos (no download yet). */
+  async searchImages(query: string) {
+    return this.imageService.searchImages(query, 12);
+  }
+
+  /**
+   * Save the user's edited slide content, re-render the PPTX, and deliver it
+   * to their Telegram chat. Called from the in-app editor's "Download" button.
+   */
+  async finalizePresentation(
+    id: string,
+    content: any,
+  ): Promise<{ success: boolean }> {
+    const presentation = await this.presentationRepository.findOne({ where: { id } });
+    if (!presentation) {
+      throw new Error('Presentation not found');
+    }
+    const user = await this.userRepository.findOne({
+      where: { id: presentation.userId },
+    });
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const language = (presentation.language || 'uz') as SupportedLanguage;
+
+    // Normalize the edited content into the shape the renderer expects.
+    const pipelineOutput = {
+      title: content?.title || presentation.topic,
+      subtitle: content?.subtitle || '',
+      studentName: content?.studentName ?? presentation.studentName,
+      teacherName: content?.teacherName ?? presentation.teacherName,
+      theme: presentation.theme,
+      language,
+      slides: Array.isArray(content?.slides) ? content.slides : [],
+      metadata: { generatedAt: new Date(), pipelineVersion: 'editor' },
+    };
+
+    // Download any editor-added images (assets.image.url) so the renderer
+    // can embed them as local files.
+    for (const slide of pipelineOutput.slides as any[]) {
+      const img = slide?.assets?.image;
+      if (img?.url && !img.localPath) {
+        try {
+          const fname = `editimg_${id}_${slide.slideNumber || 0}_${Date.now()}.jpg`;
+          const localPath = await this.imageService.downloadImage(img.url, fname);
+          if (localPath) slide.assets.image.localPath = localPath;
+        } catch (e) {
+          this.logger.warn(`Failed to download editor image: ${e}`);
+        }
+      }
+    }
+
+    const buffer = await this.rendererService.renderPresentation(
+      pipelineOutput as any,
+      language,
+    );
+    const filename = `${id}.pptx`;
+    const pptxUrl = await this.storageService.saveFile(filename, buffer);
+
+    await this.presentationRepository.update(id, {
+      generatedContent: JSON.parse(JSON.stringify(pipelineOutput)),
+      pptxUrl,
+      slideCount: pipelineOutput.slides.length,
+      status: 'completed',
+    });
+
+    // Deliver the edited file to the user's Telegram chat.
+    await this.telegramService.sendDocumentToUser(
+      user.telegramId,
+      pptxUrl,
+      `✅ <b>${pipelineOutput.title}</b>`,
+      `${pipelineOutput.title.substring(0, 40)}.pptx`,
+    );
+
+    return { success: true };
+  }
 
   getTemplates(): TemplateDto[] {
     return [
@@ -175,6 +260,8 @@ export class MiniAppService {
       userId: user.id,
       // Pass custom slides if provided from Mini App
       customSlides: dto.presentation.slides,
+      // Mini-app decks are reviewed/edited in the app; bot must not auto-send.
+      source: 'mini_app',
     });
 
     this.logger.log(`Presentation ${presentation.id} queued for user ${user.id}`);

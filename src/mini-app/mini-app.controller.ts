@@ -60,6 +60,11 @@ export class MiniAppController {
     }
   }
 
+  @Get('image-search')
+  async imageSearch(@Query('q') q: string) {
+    return this.miniAppService.searchImages(q || '');
+  }
+
   @Get('presentations/:userId')
   async getUserPresentations(@Param('userId') userId: string) {
     return this.miniAppService.getUserPresentations(parseInt(userId, 10));
@@ -72,5 +77,21 @@ export class MiniAppController {
       throw new HttpException('Presentation not found', HttpStatus.NOT_FOUND);
     }
     return presentation;
+  }
+
+  @Post('presentation/:id/finalize')
+  async finalizePresentation(
+    @Param('id') id: string,
+    @Body() body: { content: any },
+  ) {
+    try {
+      return await this.miniAppService.finalizePresentation(id, body?.content);
+    } catch (error) {
+      this.logger.error('Failed to finalize presentation', error);
+      throw new HttpException(
+        error.message || 'Failed to finalize presentation',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
   }
 }

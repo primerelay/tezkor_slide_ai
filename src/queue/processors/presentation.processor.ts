@@ -54,7 +54,10 @@ export class PresentationProcessor extends WorkerHost {
     const presentation = await this.presentationRepository.findOne({
       where: { id: presentationId },
     });
-    const user = presentation
+    // Mini-app decks are reviewed/edited in the app — don't push progress or
+    // the file to the Telegram chat. Skipping the user fetch disables all sends.
+    const deliver = job.data.source !== 'mini_app';
+    const user = deliver && presentation
       ? await this.userRepository.findOne({ where: { id: presentation.userId } })
       : null;
 
@@ -124,8 +127,11 @@ export class PresentationProcessor extends WorkerHost {
         `Presentation ${presentationId} completed in ${generationTimeMs}ms`,
       );
 
-      // Send file to user via Telegram
-      await this.sendFileToUser(presentationId, pptxUrl, topic, i18n);
+      // Send file to user via Telegram (only for the Telegram-wizard flow;
+      // mini-app decks are delivered from the in-app editor on download).
+      if (deliver) {
+        await this.sendFileToUser(presentationId, pptxUrl, topic, i18n);
+      }
 
       // Cleanup
       this.progressMessageIds.delete(presentationId);

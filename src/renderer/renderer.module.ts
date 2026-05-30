@@ -8,6 +8,7 @@ import { StatisticsLayout } from './layouts/statistics.layout';
 import { QuoteLayout } from './layouts/quote.layout';
 import { ConclusionLayout } from './layouts/conclusion.layout';
 import { RejaLayout } from './layouts/reja.layout';
+import { ChartLayout } from './layouts/chart.layout';
 // Themes are data-driven (see themes/theme-catalog.ts) — no per-theme providers.
 
 @Module({
@@ -21,6 +22,7 @@ import { RejaLayout } from './layouts/reja.layout';
     QuoteLayout,
     ConclusionLayout,
     RejaLayout,
+    ChartLayout,
   ],
   exports: [RendererService],
 })

@@ -12,7 +12,9 @@ import { StatisticsLayout } from './layouts/statistics.layout';
 import { QuoteLayout } from './layouts/quote.layout';
 import { ConclusionLayout } from './layouts/conclusion.layout';
 import { RejaLayout } from './layouts/reja.layout';
+import { ChartLayout } from './layouts/chart.layout';
 import { LayoutRenderer, PresentationMeta } from './layouts/layout.interface';
+import { renderElements, SlideElement } from './layouts/layout.helpers';
 import { I18nService, SupportedLanguage } from '../common/i18n/i18n.service';
 
 @Injectable()
@@ -30,6 +32,7 @@ export class RendererService {
     private readonly quoteLayout: QuoteLayout,
     private readonly conclusionLayout: ConclusionLayout,
     private readonly rejaLayout: RejaLayout,
+    private readonly chartLayout: ChartLayout,
   ) {
     this.themes = new Map(Object.entries(THEME_CATALOG));
 
@@ -42,6 +45,7 @@ export class RendererService {
       ['statistics', this.statisticsLayout],
       ['quote', this.quoteLayout],
       ['conclusion', this.conclusionLayout],
+      ['chart', this.chartLayout],
     ]);
   }
 
@@ -96,13 +100,20 @@ export class RendererService {
   ): void {
     const layoutRenderer = this.layouts.get(slideData.type);
 
+    let slide: PptxGenJS.Slide;
     if (layoutRenderer) {
-      layoutRenderer.render(pptx, slideData, theme, presentationMeta);
+      slide = layoutRenderer.render(pptx, slideData, theme, presentationMeta);
     } else {
       this.logger.warn(
         `Unknown slide type: ${slideData.type}, using bullets layout`,
       );
-      this.bulletsLayout.render(pptx, slideData, theme, presentationMeta);
+      slide = this.bulletsLayout.render(pptx, slideData, theme, presentationMeta);
+    }
+
+    // Free-form elements (shapes/text boxes) overlay on top of any slide type.
+    const elements = (slideData as unknown as { elements?: SlideElement[] }).elements;
+    if (elements && elements.length) {
+      renderElements(slide, pptx, theme, elements);
     }
   }
 

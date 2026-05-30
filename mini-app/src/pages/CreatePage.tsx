@@ -92,23 +92,12 @@ export default function CreatePage() {
       setProgress(100);
 
       if (response.ok) {
+        const data = await response.json().catch(() => ({}));
         haptic('success');
-        // Show success message and close after user confirms
-        setTimeout(() => {
-          if (webApp?.showAlert) {
-            webApp.showAlert(
-              `✅ ${t.presentationCreating}\n\n${t.willBeSentToChat}`,
-              () => {
-                // Close app after user dismisses alert
-                webApp?.close();
-              }
-            );
-          } else {
-            // Fallback for development
-            alert(`${t.presentationCreating} ${t.willBeSentToChat}`);
-            window.close();
-          }
-        }, 800);
+        // Don't close — open the in-app editor to review/edit/download.
+        if (data.presentationId) {
+          navigate(`/editor/${data.presentationId}`);
+        }
       } else {
         const errorData = await response.json().catch(() => ({}));
         throw new Error(errorData.message || 'Generation failed');

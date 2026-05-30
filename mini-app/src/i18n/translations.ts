@@ -7,6 +7,19 @@ export interface Translations {
   create: string;
   back: string;
 
+  // Slide editor placeholders
+  placeholderTitle: string;
+  placeholderSubtitle: string;
+  placeholderText: string;
+  placeholderConclusion: string;
+  placeholderQuote: string;
+  placeholderAuthor: string;
+  placeholderPlan: string;
+  placeholderYear: string;
+  placeholderEvent: string;
+  placeholderNote: string;
+  placeholderName: string;
+
   // Dashboard
   greeting: string;
   createProfessional: string;
@@ -41,6 +54,18 @@ export interface Translations {
   chooseFromProfessional: string;
   previewLabel: string;
   useThisTemplate: string;
+  buildingDeck: string;
+  downloadDeck: string;
+  deckSent: string;
+  deleteSlide: string;
+  addBullet: string;
+  bulletPlaceholder: string;
+  addImage: string;
+  imageSearchPlaceholder: string;
+  removeImage: string;
+  addSlide: string;
+  addChart: string;
+  addShape: string;
 
   settings: string;
   enterDetails: string;
@@ -91,6 +116,19 @@ const uz: Translations = {
   create: 'Yaratish',
   back: 'Orqaga',
 
+  // Slide editor placeholders
+  placeholderTitle: 'Sarlavha',
+  placeholderSubtitle: 'Quyi sarlavha',
+  placeholderText: 'Matn',
+  placeholderConclusion: 'Xulosa',
+  placeholderQuote: 'Iqtibos matni',
+  placeholderAuthor: 'Muallif',
+  placeholderPlan: 'Reja',
+  placeholderYear: 'Yil',
+  placeholderEvent: 'Voqea',
+  placeholderNote: 'Izoh',
+  placeholderName: 'Nom',
+
   greeting: 'Salom',
   createProfessional: 'Professional prezentatsiyalar yarating',
   newPresentation: 'Yangi prezentatsiya',
@@ -122,6 +160,18 @@ const uz: Translations = {
   chooseFromProfessional: 'Professional dizaynlar orasidan tanlang',
   previewLabel: "Ko'rish",
   useThisTemplate: 'Shu shablonni tanlash',
+  buildingDeck: 'Prezentatsiya tayyorlanmoqda...',
+  downloadDeck: 'Yuklab olish',
+  deckSent: 'Telegramga yuborildi',
+  deleteSlide: "Slaydni o'chirish",
+  addBullet: "Punkt qo'shish",
+  bulletPlaceholder: 'Matn kiriting...',
+  addImage: 'Rasm',
+  imageSearchPlaceholder: 'Rasm qidirish...',
+  removeImage: 'Rasmni olib tashlash',
+  addSlide: 'Slayd',
+  addChart: 'Grafik',
+  addShape: 'Shakl',
 
   settings: 'Sozlamalar',
   enterDetails: 'Prezentatsiya tafsilotlarini kiriting',
@@ -170,6 +220,19 @@ const ru: Translations = {
   create: 'Создать',
   back: 'Назад',
 
+  // Slide editor placeholders
+  placeholderTitle: 'Заголовок',
+  placeholderSubtitle: 'Подзаголовок',
+  placeholderText: 'Текст',
+  placeholderConclusion: 'Заключение',
+  placeholderQuote: 'Текст цитаты',
+  placeholderAuthor: 'Автор',
+  placeholderPlan: 'План',
+  placeholderYear: 'Год',
+  placeholderEvent: 'Событие',
+  placeholderNote: 'Примечание',
+  placeholderName: 'Название',
+
   greeting: 'Привет',
   createProfessional: 'Создавайте профессиональные презентации',
   newPresentation: 'Новая презентация',
@@ -201,6 +264,18 @@ const ru: Translations = {
   chooseFromProfessional: 'Выберите из профессиональных дизайнов',
   previewLabel: 'Просмотр',
   useThisTemplate: 'Выбрать этот шаблон',
+  buildingDeck: 'Презентация готовится...',
+  downloadDeck: 'Скачать',
+  deckSent: 'Отправлено в Telegram',
+  deleteSlide: 'Удалить слайд',
+  addBullet: 'Добавить пункт',
+  bulletPlaceholder: 'Введите текст...',
+  addImage: 'Картинка',
+  imageSearchPlaceholder: 'Поиск картинок...',
+  removeImage: 'Удалить картинку',
+  addSlide: 'Слайд',
+  addChart: 'График',
+  addShape: 'Фигура',
 
   settings: 'Настройки',
   enterDetails: 'Введите детали презентации',
@@ -249,6 +324,19 @@ const en: Translations = {
   create: 'Create',
   back: 'Back',
 
+  // Slide editor placeholders
+  placeholderTitle: 'Title',
+  placeholderSubtitle: 'Subtitle',
+  placeholderText: 'Text',
+  placeholderConclusion: 'Conclusion',
+  placeholderQuote: 'Quote text',
+  placeholderAuthor: 'Author',
+  placeholderPlan: 'Plan',
+  placeholderYear: 'Year',
+  placeholderEvent: 'Event',
+  placeholderNote: 'Note',
+  placeholderName: 'Name',
+
   greeting: 'Hello',
   createProfessional: 'Create professional presentations',
   newPresentation: 'New presentation',
@@ -280,6 +368,18 @@ const en: Translations = {
   chooseFromProfessional: 'Choose from professional designs',
   previewLabel: 'Preview',
   useThisTemplate: 'Use this template',
+  buildingDeck: 'Building your presentation...',
+  downloadDeck: 'Download',
+  deckSent: 'Sent to Telegram',
+  deleteSlide: 'Delete slide',
+  addBullet: 'Add point',
+  bulletPlaceholder: 'Enter text...',
+  addImage: 'Image',
+  imageSearchPlaceholder: 'Search images...',
+  removeImage: 'Remove image',
+  addSlide: 'Slide',
+  addChart: 'Chart',
+  addShape: 'Shape',
 
   settings: 'Settings',
   enterDetails: 'Enter presentation details',
@@ -328,6 +428,19 @@ const de: Translations = {
   create: 'Erstellen',
   back: 'Zurück',
 
+  // Slide editor placeholders
+  placeholderTitle: 'Titel',
+  placeholderSubtitle: 'Untertitel',
+  placeholderText: 'Text',
+  placeholderConclusion: 'Fazit',
+  placeholderQuote: 'Zitat-Text',
+  placeholderAuthor: 'Autor',
+  placeholderPlan: 'Gliederung',
+  placeholderYear: 'Jahr',
+  placeholderEvent: 'Ereignis',
+  placeholderNote: 'Anmerkung',
+  placeholderName: 'Name',
+
   greeting: 'Hallo',
   createProfessional: 'Erstellen Sie professionelle Präsentationen',
   newPresentation: 'Neue Präsentation',
@@ -359,6 +472,18 @@ const de: Translations = {
   chooseFromProfessional: 'Wählen Sie aus professionellen Designs',
   previewLabel: 'Vorschau',
   useThisTemplate: 'Diese Vorlage verwenden',
+  buildingDeck: 'Präsentation wird erstellt...',
+  downloadDeck: 'Herunterladen',
+  deckSent: 'An Telegram gesendet',
+  deleteSlide: 'Folie löschen',
+  addBullet: 'Punkt hinzufügen',
+  bulletPlaceholder: 'Text eingeben...',
+  addImage: 'Bild',
+  imageSearchPlaceholder: 'Bilder suchen...',
+  removeImage: 'Bild entfernen',
+  addSlide: 'Folie',
+  addChart: 'Diagramm',
+  addShape: 'Form',
 
   settings: 'Einstellungen',
   enterDetails: 'Präsentationsdetails eingeben',

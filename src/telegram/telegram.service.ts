@@ -150,6 +150,20 @@ export class TelegramService {
     return true;
   }
 
+  /** Send a generated presentation file to a user's Telegram chat. */
+  async sendDocumentToUser(
+    telegramId: string,
+    filePath: string,
+    caption: string,
+    filename: string,
+  ): Promise<void> {
+    await this.bot.telegram.sendDocument(
+      telegramId,
+      { source: filePath, filename },
+      { caption, parse_mode: 'HTML' },
+    );
+  }
+
   async addCredits(userId: number, amount: number): Promise<User | null> {
     const user = await this.userRepository.findOne({
       where: { id: userId },

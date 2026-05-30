@@ -284,6 +284,56 @@ export class ImageService {
     }
   }
 
+  /**
+   * Public image search for the editor's picker — returns URLs + thumbnails
+   * WITHOUT downloading. The chosen image is downloaded later (on finalize).
+   */
+  async searchImages(
+    query: string,
+    limit = 12,
+  ): Promise<{ url: string; thumb: string; description: string }[]> {
+    if (!query || !query.trim()) return [];
+    try {
+      if (this.unsplashAccessKey) {
+        const url =
+          `https://api.unsplash.com/search/photos?per_page=${limit}&orientation=landscape` +
+          `&content_filter=high&query=${encodeURIComponent(query)}`;
+        const json = await this.httpGetJson(url, {
+          Authorization: `Client-ID ${this.unsplashAccessKey}`,
+          'Accept-Version': 'v1',
+        });
+        const results: any[] = Array.isArray(json?.results) ? json.results : [];
+        const mapped = results
+          .filter((p) => p?.urls?.regular)
+          .map((p) => ({
+            url: p.urls.regular,
+            thumb: p.urls.thumb || p.urls.small || p.urls.regular,
+            description: p.alt_description || query,
+          }));
+        if (mapped.length) return mapped;
+      }
+      if (this.pexelsApiKey) {
+        const url =
+          `https://api.pexels.com/v1/search?per_page=${limit}&orientation=landscape` +
+          `&query=${encodeURIComponent(query)}`;
+        const json = await this.httpGetJson(url, {
+          Authorization: this.pexelsApiKey as string,
+        });
+        const photos: any[] = Array.isArray(json?.photos) ? json.photos : [];
+        return photos
+          .filter((p) => p?.src)
+          .map((p) => ({
+            url: p.src.large || p.src.medium,
+            thumb: p.src.tiny || p.src.small || p.src.medium,
+            description: p.alt || query,
+          }));
+      }
+    } catch (error) {
+      this.logger.warn(`Image search failed: ${error}`);
+    }
+    return [];
+  }
+
   /** Search Unsplash (official API) — returns a pool of landscape candidates. */
   private async searchUnsplash(query: string): Promise<ImageCandidate[]> {
     const url =

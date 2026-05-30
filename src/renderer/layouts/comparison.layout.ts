@@ -3,6 +3,7 @@ import PptxGenJS from 'pptxgenjs';
 import { LayoutRenderer, PresentationMeta } from './layout.interface';
 import { ThemeConfig } from '../themes/theme.interface';
 import { SlideWithAssets } from '../../ai/agents/asset.agent';
+import { headerBarColors } from './layout.helpers';
 
 @Injectable()
 export class ComparisonLayout implements LayoutRenderer {
@@ -17,6 +18,7 @@ export class ComparisonLayout implements LayoutRenderer {
     const slide = pptx.addSlide();
 
     slide.background = { color: theme.colors.background };
+    const bar = headerBarColors(theme);
 
     slide.addShape(pptx.ShapeType.rect, {
       x: 0,
@@ -25,7 +27,7 @@ export class ComparisonLayout implements LayoutRenderer {
       h: 1,
       fill: {
         type: 'solid',
-        color: theme.colors.primary,
+        color: bar.fill,
       },
     });
 
@@ -36,10 +38,12 @@ export class ComparisonLayout implements LayoutRenderer {
       h: 0.6,
       fontSize: theme.fonts.heading.size,
       fontFace: theme.fonts.heading.face,
-      color: theme.colors.textInverse,
+      color: bar.text,
       bold: true,
       align: 'left',
       valign: 'middle',
+      fit: 'shrink',
+      shrinkText: true,
     });
 
     if (slideData.comparison) {

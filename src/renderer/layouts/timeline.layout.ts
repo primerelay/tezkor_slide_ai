@@ -4,6 +4,7 @@ import * as fs from 'fs';
 import { LayoutRenderer, PresentationMeta } from './layout.interface';
 import { ThemeConfig } from '../themes/theme.interface';
 import { SlideWithAssets } from '../../ai/agents/asset.agent';
+import { headerBarColors } from './layout.helpers';
 
 @Injectable()
 export class TimelineLayout implements LayoutRenderer {
@@ -20,6 +21,7 @@ export class TimelineLayout implements LayoutRenderer {
                      fs.existsSync(slideData.assets.image.localPath);
 
     slide.background = { color: theme.colors.background };
+    const bar = headerBarColors(theme);
 
     // Title bar with accent stripe
     slide.addShape(pptx.ShapeType.rect, {
@@ -29,7 +31,7 @@ export class TimelineLayout implements LayoutRenderer {
       h: 1,
       fill: {
         type: 'solid',
-        color: theme.colors.primary,
+        color: bar.fill,
       },
     });
 
@@ -62,10 +64,12 @@ export class TimelineLayout implements LayoutRenderer {
       h: 0.6,
       fontSize: theme.fonts.heading.size,
       fontFace: theme.fonts.heading.face,
-      color: theme.colors.textInverse,
+      color: bar.text,
       bold: true,
       align: 'left',
       valign: 'middle',
+      fit: 'shrink',
+      shrinkText: true,
     });
 
     // Content area with optional image
