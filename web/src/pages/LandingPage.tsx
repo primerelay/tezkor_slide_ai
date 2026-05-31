@@ -1,5 +1,6 @@
 import { motion } from 'framer-motion';
-import { Sparkles, Zap, Globe, Shield, ArrowRight, CheckCircle, MessageCircle } from 'lucide-react';
+import { Sparkles, Zap, Globe, Shield, ArrowRight, CheckCircle, MessageCircle, FileText, HelpCircle, FileOutput, Play } from 'lucide-react';
+import { useState } from 'react';
 
 const features = [
   {
@@ -24,6 +25,58 @@ const features = [
   },
 ];
 
+const screenshots = [
+  {
+    src: '/features/feat-1.jpg',
+    title: 'Telegram Bot',
+    description: 'Qulay interfeys orqali buyurtma',
+  },
+  {
+    src: '/features/feat-2.jpg',
+    title: 'Tema tanlash',
+    description: '30+ zamonaviy dizaynlar',
+  },
+  {
+    src: '/features/feat-3.jpg',
+    title: 'Mini App Editor',
+    description: 'Real-time tahrirlash',
+  },
+  {
+    src: '/features/feat-4.jpg',
+    title: 'Professional natija',
+    description: 'Chiroyli slaydlar',
+  },
+  {
+    src: '/features/feat-5.jpg',
+    title: 'PPTX yuklab olish',
+    description: 'Tayyor fayl',
+  },
+];
+
+const upcomingFeatures = [
+  {
+    icon: HelpCircle,
+    title: 'Quiz & Test yaratish',
+    description: "Mavzu bo'yicha avtomatik test va viktorinalar",
+    color: 'from-purple-500 to-indigo-600',
+    badge: 'Tez kunda',
+  },
+  {
+    icon: FileOutput,
+    title: 'PDF → Word',
+    description: "PDF fayllarni Word formatiga aylantiring",
+    color: 'from-blue-500 to-cyan-600',
+    badge: 'Tez kunda',
+  },
+  {
+    icon: FileText,
+    title: 'Word → PDF',
+    description: "Word hujjatlarni PDF formatiga aylantiring",
+    color: 'from-green-500 to-emerald-600',
+    badge: 'Tez kunda',
+  },
+];
+
 const steps = [
   { number: '01', title: 'Telegram botni oching', description: '@slider_ai_uz_bot ni boshlang' },
   { number: '02', title: 'Mavzuni kiriting', description: "Prezentatsiya mavzusini yozing" },
@@ -32,12 +85,14 @@ const steps = [
 ];
 
 const pricing = [
-  { slides: '8 ta', price: "5,000", popular: false },
-  { slides: '10 ta', price: "7,000", popular: true },
-  { slides: '12 ta', price: "10,000", popular: false },
+  { slides: '6 ta', price: "1,000", popular: false },
+  { slides: '10 ta', price: "1,700", popular: true },
+  { slides: '14 ta', price: "2,200", popular: false },
 ];
 
 export default function LandingPage() {
+  const [activeScreenshot, setActiveScreenshot] = useState(0);
+
   return (
     <div className="min-h-screen bg-white">
       {/* Navbar */}
@@ -50,6 +105,7 @@ export default function LandingPage() {
             </div>
             <div className="hidden md:flex items-center gap-8">
               <a href="#features" className="text-gray-600 hover:text-gray-900 transition-colors">Imkoniyatlar</a>
+              <a href="#showcase" className="text-gray-600 hover:text-gray-900 transition-colors">Ko'rish</a>
               <a href="#how-it-works" className="text-gray-600 hover:text-gray-900 transition-colors">Qanday ishlaydi</a>
               <a href="#pricing" className="text-gray-600 hover:text-gray-900 transition-colors">Narxlar</a>
             </div>
@@ -106,39 +162,69 @@ export default function LandingPage() {
                 Telegram botni ochish
                 <ArrowRight className="w-5 h-5" />
               </a>
-              <a href="#how-it-works" className="btn btn-secondary text-lg px-8 py-4">
-                Qanday ishlaydi?
+              <a href="#showcase" className="btn btn-secondary text-lg px-8 py-4">
+                <Play className="w-5 h-5" />
+                Ko'rib chiqish
               </a>
             </div>
           </motion.div>
+        </div>
+      </section>
 
-          {/* Hero image mockup */}
+      {/* Screenshot Showcase */}
+      <section id="showcase" className="py-20 bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-12">
+            <h2 className="text-4xl font-bold text-white mb-4">
+              Bot qanday <span className="text-primary-400">ishlaydi</span>?
+            </h2>
+            <p className="text-xl text-gray-400">Haqiqiy screenshotlar</p>
+          </div>
+
+          {/* Main screenshot */}
           <motion.div
-            initial={{ opacity: 0, y: 40 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="mt-16 relative"
+            key={activeScreenshot}
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            transition={{ duration: 0.3 }}
+            className="relative max-w-4xl mx-auto mb-8"
           >
-            <div className="bg-gradient-to-br from-primary-600 to-purple-700 rounded-2xl p-8 shadow-2xl max-w-4xl mx-auto">
-              <div className="bg-white rounded-xl p-6 shadow-inner">
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-3 h-3 rounded-full bg-red-400" />
-                  <div className="w-3 h-3 rounded-full bg-yellow-400" />
-                  <div className="w-3 h-3 rounded-full bg-green-400" />
-                </div>
-                <div className="aspect-video bg-gradient-to-br from-blue-600 to-blue-800 rounded-lg flex items-center justify-center">
-                  <div className="text-center text-white">
-                    <h3 className="text-2xl md:text-4xl font-bold mb-2">O'ZBEKISTON TARIXI</h3>
-                    <p className="text-blue-200">Professional prezentatsiya namunasi</p>
-                    <div className="mt-4 flex justify-center gap-2">
-                      <div className="w-16 h-1 bg-white/60 rounded-full" />
-                      <div className="w-12 h-1 bg-white/40 rounded-full" />
-                    </div>
-                  </div>
-                </div>
+            <div className="relative rounded-2xl overflow-hidden shadow-2xl border-4 border-gray-700">
+              <img
+                src={screenshots[activeScreenshot].src}
+                alt={screenshots[activeScreenshot].title}
+                className="w-full h-auto"
+              />
+              <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-6">
+                <h3 className="text-2xl font-bold text-white">{screenshots[activeScreenshot].title}</h3>
+                <p className="text-gray-300">{screenshots[activeScreenshot].description}</p>
               </div>
             </div>
           </motion.div>
+
+          {/* Thumbnail navigation */}
+          <div className="flex justify-center gap-4 flex-wrap">
+            {screenshots.map((shot, index) => (
+              <button
+                key={index}
+                onClick={() => setActiveScreenshot(index)}
+                className={`relative rounded-xl overflow-hidden transition-all duration-300 ${
+                  activeScreenshot === index
+                    ? 'ring-4 ring-primary-500 scale-105'
+                    : 'opacity-60 hover:opacity-100'
+                }`}
+              >
+                <img
+                  src={shot.src}
+                  alt={shot.title}
+                  className="w-24 h-16 md:w-32 md:h-20 object-cover"
+                />
+                {activeScreenshot === index && (
+                  <div className="absolute inset-0 bg-primary-500/20" />
+                )}
+              </button>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -175,8 +261,53 @@ export default function LandingPage() {
         </div>
       </section>
 
+      {/* Upcoming Features */}
+      <section className="py-20 bg-white">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div className="text-center mb-16">
+            <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-yellow-100 text-yellow-800 text-sm font-medium mb-4">
+              <Sparkles className="w-4 h-4" />
+              Yangi imkoniyatlar
+            </span>
+            <h2 className="text-4xl font-bold text-gray-900 mb-4">
+              <span className="gradient-text">Tez kunda</span> qo'shiladi
+            </h2>
+            <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+              Yanada ko'proq foydali funksiyalar ustida ishlayapmiz
+            </p>
+          </div>
+
+          <div className="grid md:grid-cols-3 gap-8">
+            {upcomingFeatures.map((feature, index) => (
+              <motion.div
+                key={feature.title}
+                initial={{ opacity: 0, y: 20 }}
+                whileInView={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.5, delay: index * 0.1 }}
+                viewport={{ once: true }}
+                className="relative group"
+              >
+                <div className={`absolute inset-0 bg-gradient-to-br ${feature.color} rounded-2xl opacity-0 group-hover:opacity-10 transition-opacity`} />
+                <div className="card border-2 border-dashed border-gray-200 hover:border-gray-300 transition-colors">
+                  <div className="absolute -top-3 right-4">
+                    <span className="px-3 py-1 bg-yellow-400 text-yellow-900 text-xs font-bold rounded-full">
+                      {feature.badge}
+                    </span>
+                  </div>
+                  <div className={`w-16 h-16 rounded-2xl bg-gradient-to-br ${feature.color} flex items-center justify-center mb-4 shadow-lg`}>
+                    <feature.icon className="w-8 h-8 text-white" />
+                  </div>
+                  <h3 className="text-xl font-semibold text-gray-900 mb-2">{feature.title}</h3>
+                  <p className="text-gray-600">{feature.description}</p>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+        </div>
+      </section>
+
       {/* How it works */}
-      <section id="how-it-works" className="py-20">
+      <section id="how-it-works" className="py-20 bg-gray-50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -205,7 +336,7 @@ export default function LandingPage() {
       </section>
 
       {/* Pricing */}
-      <section id="pricing" className="py-20 bg-gray-50">
+      <section id="pricing" className="py-20 bg-white">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="text-center mb-16">
             <h2 className="text-4xl font-bold text-gray-900 mb-4">
@@ -293,7 +424,7 @@ export default function LandingPage() {
               <span className="font-bold text-xl text-white">SliderAI</span>
             </div>
             <p className="text-gray-400">
-              © 2024 SliderAI AI. Barcha huquqlar himoyalangan.
+              © 2024 SliderAI. Barcha huquqlar himoyalangan.
             </p>
           </div>
         </div>
