@@ -15,7 +15,7 @@
   "askReja": "📋 <b>Do you need an outline page?</b>\n\nThe outline shows the main topics on page 2.",
   "rejaYes": "✅ Outline will be included",
   "rejaNo": "📝 Continue without outline",
-  "paymentInstructions": "💳 <b>Top up balance</b>\n\n📱 Card number:\n<code>{cardNumber}</code>\n\n👤 Owner: {cardOwner}\n\n✅ After payment, send a screenshot.\n\nAdmin will verify and top up your balance.",
+  "paymentInstructions": "💳 <b>Top up balance</b>\n\n🟡 <b>HUMO:</b>\n<code>{humoCard}</code>\n👤 {humoOwner}\n\n🔵 <b>UZCARD:</b>\n<code>{uzcardCard}</code>\n👤 {uzcardOwner}\n\n✅ After payment, send a screenshot.\n\nAdmin will verify and top up your balance.",
   "paymentReceived": "✅ <b>Screenshot received!</b>\n\nAdmin will verify and top up your balance soon.\n\nThank you for your patience! 🙏",
   "topicTooShort": "❌ Topic is too short. Enter at least 5 characters.",
   "topicTooLong": "❌ Topic is too long. Maximum 500 characters.",
@@ -51,8 +51,7 @@
     "backToMenu": "🔙 Back to menu"
   },
   "quizBot": {
-    "requestSent": "✅ <b>Your request has been sent!</b>\n\nAdmin will contact you soon.",
-    "adminNotification": "🤖 <b>Quiz Bot Creation Request</b>\n\n👤 User: {name}\n🆔 Username: @{username}\n📱 Telegram ID: {telegramId}\n\nPlease contact the user!"
+    "contactAdmin": "🤖 <b>Create Quiz Bot</b>\n\nTo order a Quiz Bot, contact the admin:\n\n👉 https://t.me/{adminUsername}"
   },
   "miniApp": {
     "promo": "🎨 <b>SliderAI Designer</b>\n\n✨ Create professional presentations!\n🖼️ 30+ premium designs\n✏️ Real-time editing\n📥 Download PPTX/PDF\n\n👇 Click the button below to start:",

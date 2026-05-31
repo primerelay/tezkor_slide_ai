@@ -15,7 +15,7 @@
   "askReja": "📋 <b>Reja (mundarija) sahifasi kerakmi?</b>\n\nReja - mavzu bo'yicha asosiy bandlarni ko'rsatuvchi 2-sahifa.",
   "rejaYes": "✅ Reja qo'shiladi",
   "rejaNo": "📝 Rejasiz davom etiladi",
-  "paymentInstructions": "💳 <b>Balans to'ldirish</b>\n\n📱 Karta raqami:\n<code>{cardNumber}</code>\n\n👤 Egasi: {cardOwner}\n\n✅ To'lov qilganingizdan so'ng screenshot yuboring.\n\nAdmin tekshirib, balansingizni to'ldiradi.",
+  "paymentInstructions": "💳 <b>Balans to'ldirish</b>\n\n🟡 <b>HUMO:</b>\n<code>{humoCard}</code>\n👤 {humoOwner}\n\n🔵 <b>UZCARD:</b>\n<code>{uzcardCard}</code>\n👤 {uzcardOwner}\n\n✅ To'lov qilganingizdan so'ng screenshot yuboring.\n\nAdmin tekshirib, balansingizni to'ldiradi.",
   "paymentReceived": "✅ <b>Screenshot qabul qilindi!</b>\n\nAdmin tekshirib, tez orada balansingizni to'ldiradi.\n\nKutganingiz uchun rahmat! 🙏",
   "topicTooShort": "❌ Mavzu juda qisqa. Kamida 5 ta belgi kiriting.",
   "topicTooLong": "❌ Mavzu juda uzun. Maksimum 500 ta belgi.",
@@ -51,8 +51,7 @@
     "backToMenu": "🔙 Menyuga qaytish"
   },
   "quizBot": {
-    "requestSent": "✅ <b>So'rovingiz yuborildi!</b>\n\nAdmin tez orada siz bilan bog'lanadi.",
-    "adminNotification": "🤖 <b>Quiz Bot yaratish so'rovi</b>\n\n👤 Foydalanuvchi: {name}\n🆔 Username: @{username}\n📱 Telegram ID: {telegramId}\n\nFoydalanuvchi bilan bog'laning!"
+    "contactAdmin": "🤖 <b>Quiz Bot yaratish</b>\n\nQuiz Bot buyurtma qilish uchun admin bilan bog'laning:\n\n👉 https://t.me/{adminUsername}"
   },
   "miniApp": {
     "promo": "🎨 <b>SliderAI Dizayner</b>\n\n✨ Professional prezentatsiyalar yarating!\n🖼️ 30+ premium dizayn\n✏️ Real-time tahrirlash\n📥 PPTX/PDF yuklab olish\n\n👇 Boshlash uchun quyidagi tugmani bosing:",

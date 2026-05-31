@@ -2,7 +2,8 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { useTelegram } from '../hooks/useTelegram';
 import { useLanguage } from '../contexts/LanguageContext';
-import { Plus, FileText, Clock, ChevronRight } from 'lucide-react';
+import { PRICING } from '../i18n/translations';
+import { Plus, FileText, Clock, ChevronRight, Wallet, Sparkles, Gift } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface RecentPresentation {
@@ -13,24 +14,31 @@ interface RecentPresentation {
   createdAt: string;
 }
 
+interface UserData {
+  id: number;
+  credits: number;
+}
+
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user, webApp, haptic } = useTelegram();
   const { t } = useLanguage();
   const [recent, setRecent] = useState<RecentPresentation | null>(null);
+  const [userData, setUserData] = useState<UserData | null>(null);
   const [loaded, setLoaded] = useState(false);
 
-  // Fetch the last presentation for this user
+  // Fetch user data and last presentation
   useEffect(() => {
     const telegramId = webApp?.initDataUnsafe?.user?.id;
     if (!telegramId) { setLoaded(true); return; }
 
     (async () => {
       try {
-        // Get user first to get internal userId
+        // Get user first to get internal userId and credits
         const uRes = await fetch(`/api/mini-app/user/${telegramId}`);
         if (!uRes.ok) { setLoaded(true); return; }
         const u = await uRes.json();
+        setUserData({ id: u.id, credits: u.credits || 0 });
 
         // Get presentations
         const pRes = await fetch(`/api/mini-app/presentations/${u.id}`);
@@ -150,20 +158,84 @@ export default function DashboardPage() {
           ) : null}
         </motion.div>
 
-        {/* Features Section */}
+        {/* Balance Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.3 }}
+          className="mt-6"
+        >
+          <div className="card p-4 bg-gradient-to-r from-emerald-50 to-teal-50 border border-emerald-100">
+            <div className="flex items-center justify-between">
+              <div className="flex items-center gap-3">
+                <div className="w-10 h-10 rounded-full bg-emerald-100 flex items-center justify-center">
+                  <Wallet className="w-5 h-5 text-emerald-600" />
+                </div>
+                <div>
+                  <div className="text-xs text-emerald-600 font-medium">{t.yourBalance}</div>
+                  <div className="text-xl font-bold text-emerald-700">
+                    {userData ? userData.credits.toLocaleString() : '---'} {t.uzs}
+                  </div>
+                </div>
+              </div>
+              {userData && userData.credits > 0 && (
+                <div className="flex items-center gap-1 text-xs text-emerald-600 bg-emerald-100 px-2 py-1 rounded-full">
+                  <Gift className="w-3 h-3" />
+                  {t.giftBalance}
+                </div>
+              )}
+            </div>
+          </div>
+        </motion.div>
+
+        {/* Pricing Section */}
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ delay: 0.4 }}
-          className="mt-8"
+          className="mt-6"
         >
           <h3 className="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-3">
-            {t.features}
+            {t.pricing}
           </h3>
-          <div className="grid grid-cols-3 gap-3">
-            <FeatureCard emoji="🎨" title={t.templates} subtitle="30+" />
-            <FeatureCard emoji="⚡" title={t.fast} subtitle="AI" />
-            <FeatureCard emoji="📱" title={t.convenient} subtitle={t.mobile} />
+          <div className="card overflow-hidden divide-y divide-gray-100">
+            {PRICING.map((item, index) => (
+              <div
+                key={item.slides}
+                className={`px-4 py-2.5 flex items-center justify-between ${
+                  index % 2 === 0 ? 'bg-white' : 'bg-gray-50/50'
+                }`}
+              >
+                <span className="text-sm text-gray-600">
+                  {item.slides} {t.slides}
+                </span>
+                <span className="text-sm font-semibold text-purple-600">
+                  {item.price.toLocaleString()} {t.uzs}
+                </span>
+              </div>
+            ))}
+          </div>
+        </motion.div>
+
+        {/* Free Editing Banner */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+          className="mt-6 mb-4"
+        >
+          <div className="card p-4 bg-gradient-to-r from-purple-50 to-pink-50 border border-purple-100">
+            <div className="flex items-start gap-3">
+              <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center flex-shrink-0">
+                <Sparkles className="w-5 h-5 text-purple-600" />
+              </div>
+              <div>
+                <div className="text-sm font-semibold text-purple-700">{t.freeEditing}</div>
+                <div className="text-xs text-purple-600 mt-1 leading-relaxed">
+                  {t.freeEditingDesc}
+                </div>
+              </div>
+            </div>
           </div>
         </motion.div>
       </div>
@@ -171,12 +243,3 @@ export default function DashboardPage() {
   );
 }
 
-function FeatureCard({ emoji, title, subtitle }: { emoji: string; title: string; subtitle: string }) {
-  return (
-    <div className="card p-3 text-center">
-      <div className="text-2xl mb-1">{emoji}</div>
-      <div className="text-xs font-medium text-gray-700">{title}</div>
-      <div className="text-xs text-gray-400">{subtitle}</div>
-    </div>
-  );
-}

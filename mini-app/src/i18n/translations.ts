@@ -1,5 +1,16 @@
 export type SupportedLanguage = 'uz' | 'ru' | 'en' | 'de';
 
+// Pricing data - centralized
+export const PRICING = [
+  { slides: 6, price: 1000 },
+  { slides: 8, price: 1500 },
+  { slides: 10, price: 1700 },
+  { slides: 12, price: 2000 },
+  { slides: 14, price: 2200 },
+  { slides: 16, price: 2400 },
+  { slides: 18, price: 2500 },
+];
+
 export interface Translations {
   // Common
   loading: string;
@@ -34,6 +45,15 @@ export interface Translations {
   fast: string;
   convenient: string;
   mobile: string;
+
+  // Balance & Pricing
+  yourBalance: string;
+  uzs: string;
+  pricing: string;
+  slidesCount: string;
+  freeEditing: string;
+  freeEditingDesc: string;
+  giftBalance: string;
 
   // Time
   hoursAgo: string;
@@ -143,6 +163,15 @@ const uz: Translations = {
   convenient: 'Qulay',
   mobile: 'Mobil',
 
+  // Balance & Pricing
+  yourBalance: 'Sizning balansingiz',
+  uzs: "so'm",
+  pricing: 'Narxlar',
+  slidesCount: '{count} slayd',
+  freeEditing: 'Tahrirlash BEPUL!',
+  freeEditingDesc: "Redaktorda slayd qo'shish, o'zgartirish va tahrirlash qo'shimcha pul talab qilmaydi",
+  giftBalance: 'Sovg\'a balans',
+
   hoursAgo: 'soat oldin',
   yesterday: 'Kecha',
 
@@ -246,6 +275,15 @@ const ru: Translations = {
   fast: 'Быстро',
   convenient: 'Удобно',
   mobile: 'Мобильно',
+
+  // Balance & Pricing
+  yourBalance: 'Ваш баланс',
+  uzs: 'сум',
+  pricing: 'Цены',
+  slidesCount: '{count} слайдов',
+  freeEditing: 'Редактирование БЕСПЛАТНО!',
+  freeEditingDesc: 'Добавление, изменение и редактирование слайдов в редакторе не требует дополнительной оплаты',
+  giftBalance: 'Подарочный баланс',
 
   hoursAgo: 'часов назад',
   yesterday: 'Вчера',
@@ -351,6 +389,15 @@ const en: Translations = {
   convenient: 'Convenient',
   mobile: 'Mobile',
 
+  // Balance & Pricing
+  yourBalance: 'Your balance',
+  uzs: 'UZS',
+  pricing: 'Pricing',
+  slidesCount: '{count} slides',
+  freeEditing: 'Editing is FREE!',
+  freeEditingDesc: 'Adding, changing, and editing slides in the editor does not require additional payment',
+  giftBalance: 'Gift balance',
+
   hoursAgo: 'hours ago',
   yesterday: 'Yesterday',
 
@@ -454,6 +501,15 @@ const de: Translations = {
   fast: 'Schnell',
   convenient: 'Praktisch',
   mobile: 'Mobil',
+
+  // Balance & Pricing
+  yourBalance: 'Ihr Guthaben',
+  uzs: 'UZS',
+  pricing: 'Preise',
+  slidesCount: '{count} Folien',
+  freeEditing: 'Bearbeitung ist KOSTENLOS!',
+  freeEditingDesc: 'Das Hinzufügen, Ändern und Bearbeiten von Folien im Editor erfordert keine zusätzliche Zahlung',
+  giftBalance: 'Geschenkguthaben',
 
   hoursAgo: 'Stunden her',
   yesterday: 'Gestern',

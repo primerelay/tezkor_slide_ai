@@ -15,7 +15,7 @@
   "askReja": "📋 <b>Benötigen Sie eine Gliederungsseite?</b>\n\nDie Gliederung zeigt die Hauptthemen auf Seite 2.",
   "rejaYes": "✅ Gliederung wird hinzugefügt",
   "rejaNo": "📝 Ohne Gliederung fortfahren",
-  "paymentInstructions": "💳 <b>Guthaben aufladen</b>\n\n📱 Kartennummer:\n<code>{cardNumber}</code>\n\n👤 Inhaber: {cardOwner}\n\n✅ Nach der Zahlung senden Sie einen Screenshot.\n\nDer Admin wird prüfen und Ihr Guthaben aufladen.",
+  "paymentInstructions": "💳 <b>Guthaben aufladen</b>\n\n🟡 <b>HUMO:</b>\n<code>{humoCard}</code>\n👤 {humoOwner}\n\n🔵 <b>UZCARD:</b>\n<code>{uzcardCard}</code>\n👤 {uzcardOwner}\n\n✅ Nach der Zahlung senden Sie einen Screenshot.\n\nDer Admin wird prüfen und Ihr Guthaben aufladen.",
   "paymentReceived": "✅ <b>Screenshot erhalten!</b>\n\nDer Admin wird prüfen und Ihr Guthaben bald aufladen.\n\nVielen Dank für Ihre Geduld! 🙏",
   "topicTooShort": "❌ Thema ist zu kurz. Geben Sie mindestens 5 Zeichen ein.",
   "topicTooLong": "❌ Thema ist zu lang. Maximal 500 Zeichen.",
@@ -51,8 +51,7 @@
     "backToMenu": "🔙 Zurück zum Menü"
   },
   "quizBot": {
-    "requestSent": "✅ <b>Ihre Anfrage wurde gesendet!</b>\n\nDer Admin wird sich bald bei Ihnen melden.",
-    "adminNotification": "🤖 <b>Quiz Bot Erstellungsanfrage</b>\n\n👤 Benutzer: {name}\n🆔 Username: @{username}\n📱 Telegram ID: {telegramId}\n\nBitte kontaktieren Sie den Benutzer!"
+    "contactAdmin": "🤖 <b>Quiz Bot erstellen</b>\n\nUm einen Quiz Bot zu bestellen, kontaktieren Sie den Admin:\n\n👉 https://t.me/{adminUsername}"
   },
   "miniApp": {
     "promo": "🎨 <b>SliderAI Designer</b>\n\n✨ Erstellen Sie professionelle Präsentationen!\n🖼️ 30+ Premium-Designs\n✏️ Echtzeit-Bearbeitung\n📥 PPTX/PDF herunterladen\n\n👇 Klicken Sie auf die Schaltfläche unten, um zu beginnen:",

@@ -206,10 +206,12 @@ export class TelegramUpdate {
     const i18n = this.telegramService.getI18n(user.language);
     ctx.session.awaitingPaymentScreenshot = true;
 
-    const cardNumber = this.configService.get<string>('payment.cardNumber') || '8600 1234 5678 9012';
-    const cardOwner = this.configService.get<string>('payment.cardOwner') || 'SliderAI UZ';
+    const humoCard = this.configService.get<string>('HUMO_CARD_NUMBER') || '9860 0000 0000 0000';
+    const humoOwner = this.configService.get<string>('HUMO_CARD_OWNER') || 'SliderAI UZ';
+    const uzcardCard = this.configService.get<string>('UZCARD_CARD_NUMBER') || '8600 0000 0000 0000';
+    const uzcardOwner = this.configService.get<string>('UZCARD_CARD_OWNER') || 'SliderAI UZ';
 
-    await ctx.reply(i18n.t('paymentInstructions', { cardNumber, cardOwner }), { parse_mode: 'HTML' });
+    await ctx.reply(i18n.t('paymentInstructions', { humoCard, humoOwner, uzcardCard, uzcardOwner }), { parse_mode: 'HTML' });
   }
 
   /**
@@ -226,12 +228,10 @@ export class TelegramUpdate {
     if (!user) return;
 
     const i18n = this.telegramService.getI18n(user.language);
+    const adminUsername = this.configService.get<string>('ADMIN_USERNAME') || 'admin';
 
-    // Send notification to admin
-    await this.telegramService.sendQuizBotRequestToAdmin(user);
-
-    // Confirm to user
-    await ctx.reply(i18n.t('quizBot.requestSent'), { parse_mode: 'HTML' });
+    // Just show admin contact info
+    await ctx.reply(i18n.t('quizBot.contactAdmin', { adminUsername }), { parse_mode: 'HTML' });
   }
 
   /**
@@ -481,11 +481,13 @@ export class TelegramUpdate {
     const i18n = this.telegramService.getI18n(user.language);
     ctx.session.awaitingPaymentScreenshot = true;
 
-    const cardNumber = this.configService.get<string>('payment.cardNumber') || '8600 1234 5678 9012';
-    const cardOwner = this.configService.get<string>('payment.cardOwner') || 'SliderAI UZ';
+    const humoCard = this.configService.get<string>('HUMO_CARD_NUMBER') || '9860 0000 0000 0000';
+    const humoOwner = this.configService.get<string>('HUMO_CARD_OWNER') || 'SliderAI UZ';
+    const uzcardCard = this.configService.get<string>('UZCARD_CARD_NUMBER') || '8600 0000 0000 0000';
+    const uzcardOwner = this.configService.get<string>('UZCARD_CARD_OWNER') || 'SliderAI UZ';
 
     await ctx.answerCbQuery();
-    await ctx.reply(i18n.t('paymentInstructions', { cardNumber, cardOwner }), { parse_mode: 'HTML' });
+    await ctx.reply(i18n.t('paymentInstructions', { humoCard, humoOwner, uzcardCard, uzcardOwner }), { parse_mode: 'HTML' });
   }
 
   @Action(/^reja_(yes|no)$/)
