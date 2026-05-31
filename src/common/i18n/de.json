@@ -1,5 +1,5 @@
 {
-  "welcome": "Hallo, {name}! 👋\n\nWillkommen bei SliderAI UZ!\n\nMit diesem Bot können Sie in wenigen Minuten professionelle Präsentationen erstellen.\n\n💰 Preise:\n• 6 Folien - 1€\n• 8 Folien - 1,5€\n• 10 Folien - 1,7€\n• 12 Folien - 2€\n• 14 Folien - 2,2€\n• 16 Folien - 2,4€\n• 18 Folien - 2,5€",
+  "welcome": "Hallo, {name}! 👋\n\n🎉 Willkommen bei <b>SliderAI UZ</b>!\n\n🎁 Sie haben ein Geschenkguthaben von <b>2.500 UZS</b> erhalten!\n\n✨ <b>Bot-Funktionen:</b>\n• 🎨 Professionelle Präsentationen erstellen\n• 📊 30+ moderne Designs und Themen\n• 🤖 KI-gestützte Inhaltserstellung\n• ✏️ Echtzeit-Bearbeitung (Mini App)\n• 📥 Download als PPTX/PDF\n• ⚡ Fertig in 2-3 Minuten!\n\n💰 <b>Preise:</b>\n• 6 Folien - 1.000 UZS\n• 8 Folien - 1.500 UZS\n• 10 Folien - 1.700 UZS\n• 12 Folien - 2.000 UZS\n• 14 Folien - 2.200 UZS\n• 16 Folien - 2.400 UZS\n• 18 Folien - 2.500 UZS\n\n👇 Verwenden Sie die Schaltflächen unten, um zu beginnen:",
   "mainMenuText": "Hauptmenü",
   "selectLanguage": "Tilni tanlang / Выберите язык / Select language / Sprache wählen:",
   "languageChanged": "Sprache geändert",
@@ -35,11 +35,13 @@
   "noPresentations": "📭 Sie haben noch keine Präsentationen.",
   "yourPresentations": "📑 <b>Ihre Präsentationen:</b>",
   "buttons": {
-    "newPresentation": "📝 Neue Präsentation",
+    "openMiniApp": "🎨 Folien Erstellen",
+    "newPresentation": "📊 Via Bot Folien",
     "myPresentations": "📑 Meine Präsentationen",
     "balance": "💰 Guthaben",
     "addBalance": "➕ Aufladen",
     "language": "🌐 Sprache",
+    "quizBot": "🤖 Quiz Bot erstellen",
     "confirm": "✅ Bestätigen",
     "cancel": "❌ Abbrechen",
     "yes": "✅ Ja",
@@ -47,6 +49,14 @@
     "downloadPptx": "📥 PPTX herunterladen",
     "downloadPdf": "📥 PDF herunterladen",
     "backToMenu": "🔙 Zurück zum Menü"
+  },
+  "quizBot": {
+    "requestSent": "✅ <b>Ihre Anfrage wurde gesendet!</b>\n\nDer Admin wird sich bald bei Ihnen melden.",
+    "adminNotification": "🤖 <b>Quiz Bot Erstellungsanfrage</b>\n\n👤 Benutzer: {name}\n🆔 Username: @{username}\n📱 Telegram ID: {telegramId}\n\nBitte kontaktieren Sie den Benutzer!"
+  },
+  "miniApp": {
+    "promo": "🎨 <b>SliderAI Designer</b>\n\n✨ Erstellen Sie professionelle Präsentationen!\n🖼️ 30+ Premium-Designs\n✏️ Echtzeit-Bearbeitung\n📥 PPTX/PDF herunterladen\n\n👇 Klicken Sie auf die Schaltfläche unten, um zu beginnen:",
+    "openButton": "🎨✨ DESIGNER ÖFFNEN ✨🎨"
   },
   "themes": {
     "academic_blue": "🎓 Akademisches Blau",

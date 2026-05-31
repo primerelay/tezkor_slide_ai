@@ -2,7 +2,7 @@ import { Update, Ctx, Start, Command, On, Action, Hears } from 'nestjs-telegraf'
 import { Context, Scenes, Markup } from 'telegraf';
 import { ConfigService } from '@nestjs/config';
 import { TelegramService } from './telegram.service';
-import { InlineKeyboards } from './keyboards/inline.keyboards';
+import { InlineKeyboards, ReplyKeyboards } from './keyboards/inline.keyboards';
 import { JobEventsService } from '../queue/events/job.events';
 import { SupportedLanguage } from '../common/i18n/i18n.service';
 import {
@@ -59,22 +59,18 @@ export class TelegramUpdate {
 
     const i18n = this.telegramService.getI18n(user.language);
 
-    // Set persistent menu button
+    // Set persistent reply keyboard with all menu buttons
     await ctx.reply(i18n.t('welcome', { name: user.firstName || 'User' }), {
       parse_mode: 'HTML',
-      reply_markup: Markup.keyboard([
-        ['📋 Menu']
-      ]).resize().reply_markup,
-    });
-
-    // Show inline menu
-    await ctx.reply(i18n.t('mainMenuText'), {
-      reply_markup: InlineKeyboards.mainMenu(i18n, this.miniAppUrl),
+      reply_markup: ReplyKeyboards.mainMenu(i18n),
     });
   }
 
-  @Hears('📋 Menu')
-  async onMenuButton(@Ctx() ctx: BotContext) {
+  /**
+   * Handler for "Open Mini App / Designer" button (🎨)
+   */
+  @Hears(/^🎨.+$/)
+  async onOpenMiniAppButton(@Ctx() ctx: BotContext) {
     const telegramUser = ctx.from;
     if (!telegramUser) return;
 
@@ -83,20 +79,178 @@ export class TelegramUpdate {
     );
     if (!user) return;
 
-    // Reset session state
-    ctx.session.step = undefined;
+    const i18n = this.telegramService.getI18n(user.language);
+
+    if (!this.miniAppUrl) {
+      await ctx.reply('Mini App hozircha mavjud emas.');
+      return;
+    }
+
+    // Send inline button to open Mini App (WebApp buttons only work in inline keyboards)
+    await ctx.reply(i18n.t('miniApp.promo'), {
+      parse_mode: 'HTML',
+      reply_markup: Markup.inlineKeyboard([
+        [Markup.button.webApp(i18n.t('miniApp.openButton'), this.miniAppUrl)],
+      ]).reply_markup,
+    });
+  }
+
+  /**
+   * Handler for "New Presentation" button (📊)
+   */
+  @Hears(/^📊.+$/)
+  async onNewPresentationButton(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    if (!user) return;
+
+    const i18n = this.telegramService.getI18n(user.language);
+
+    // Check channel membership
+    const requiredChannel = this.telegramService.getRequiredChannel();
+    if (requiredChannel) {
+      const isMember = await this.telegramService.isChannelMember(telegramUser.id);
+      if (!isMember) {
+        await ctx.reply(
+          i18n.t('channel.joinRequired', { channel: requiredChannel.username }),
+          {
+            parse_mode: 'HTML',
+            reply_markup: InlineKeyboards.joinChannel(requiredChannel.url, requiredChannel.username),
+          }
+        );
+        return;
+      }
+    }
+
+    // Reset session and start new presentation flow
+    ctx.session.userId = user.id;
+    ctx.session.language = user.language;
     ctx.session.topic = undefined;
     ctx.session.studentName = undefined;
     ctx.session.teacherName = undefined;
     ctx.session.includeReja = undefined;
     ctx.session.slideCount = undefined;
     ctx.session.theme = undefined;
-    ctx.session.awaitingPaymentScreenshot = undefined;
+    ctx.session.step = 'topic';
+
+    await ctx.reply(i18n.t('enterTopic'), { parse_mode: 'HTML' });
+  }
+
+  /**
+   * Handler for "My Presentations" button (📑)
+   */
+  @Hears(/^📑.+$/)
+  async onMyPresentationsButton(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    if (!user) return;
+
+    const presentations = await this.telegramService.getUserPresentations(user.id);
+    const i18n = this.telegramService.getI18n(user.language);
+
+    if (presentations.length === 0) {
+      await ctx.reply(i18n.t('noPresentations'));
+      return;
+    }
+
+    let message = i18n.t('yourPresentations') + '\n\n';
+    presentations.forEach((p, index) => {
+      const status = i18n.t(`status.${p.status}`);
+      message += `${index + 1}. ${p.topic.substring(0, 50)}...\n`;
+      message += `   📊 ${status}\n\n`;
+    });
+
+    await ctx.reply(message, { parse_mode: 'HTML' });
+  }
+
+  /**
+   * Handler for "Balance" button (💰)
+   */
+  @Hears(/^💰.+$/)
+  async onBalanceButton(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    if (!user) return;
+
+    const i18n = this.telegramService.getI18n(user.language);
+    await ctx.reply(i18n.t('balance', { credits: user.credits }), {
+      parse_mode: 'HTML',
+    });
+  }
+
+  /**
+   * Handler for "Add Balance" button (➕)
+   */
+  @Hears(/^➕.+$/)
+  async onAddBalanceButton(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    if (!user) return;
+
+    const i18n = this.telegramService.getI18n(user.language);
+    ctx.session.awaitingPaymentScreenshot = true;
+
+    const cardNumber = this.configService.get<string>('payment.cardNumber') || '8600 1234 5678 9012';
+    const cardOwner = this.configService.get<string>('payment.cardOwner') || 'SliderAI UZ';
+
+    await ctx.reply(i18n.t('paymentInstructions', { cardNumber, cardOwner }), { parse_mode: 'HTML' });
+  }
+
+  /**
+   * Handler for "Quiz Bot" button (🤖)
+   */
+  @Hears(/^🤖.+$/)
+  async onQuizBotButton(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    if (!user) return;
 
     const i18n = this.telegramService.getI18n(user.language);
 
-    await ctx.reply(i18n.t('mainMenuText'), {
-      reply_markup: InlineKeyboards.mainMenu(i18n, this.miniAppUrl),
+    // Send notification to admin
+    await this.telegramService.sendQuizBotRequestToAdmin(user);
+
+    // Confirm to user
+    await ctx.reply(i18n.t('quizBot.requestSent'), { parse_mode: 'HTML' });
+  }
+
+  /**
+   * Handler for "Language" button (🌐)
+   */
+  @Hears(/^🌐.+$/)
+  async onLanguageButton(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    if (!user) return;
+
+    const i18n = this.telegramService.getI18n(user.language);
+
+    await ctx.reply(i18n.t('selectLanguage'), {
+      reply_markup: InlineKeyboards.languageSelection(),
     });
   }
 
@@ -214,10 +368,7 @@ export class TelegramUpdate {
     const callbackQuery = ctx.callbackQuery;
     if (!callbackQuery || !('data' in callbackQuery)) return;
 
-    const language = callbackQuery.data.replace('lang_', '') as
-      | 'uz'
-      | 'ru'
-      | 'en';
+    const language = callbackQuery.data.replace('lang_', '') as SupportedLanguage;
     const telegramUser = ctx.from;
     if (!telegramUser) return;
 
@@ -232,8 +383,9 @@ export class TelegramUpdate {
     await ctx.answerCbQuery(i18n.t('languageChanged'));
     await ctx.editMessageText(i18n.t('languageSet'), { parse_mode: 'HTML' });
 
+    // Update reply keyboard with new language
     await ctx.reply(i18n.t('mainMenuText'), {
-      reply_markup: InlineKeyboards.mainMenu(i18n, this.miniAppUrl),
+      reply_markup: ReplyKeyboards.mainMenu(i18n),
     });
   }
 
@@ -304,9 +456,9 @@ export class TelegramUpdate {
       await ctx.answerCbQuery(i18n.t('channel.joined'));
       await ctx.editMessageText(i18n.t('channel.joined'), { parse_mode: 'HTML' });
 
-      // Show main menu
+      // Show reply keyboard
       await ctx.reply(i18n.t('mainMenuText'), {
-        reply_markup: InlineKeyboards.mainMenu(i18n, this.miniAppUrl),
+        reply_markup: ReplyKeyboards.mainMenu(i18n),
       });
     } else {
       await ctx.answerCbQuery(
@@ -561,14 +713,18 @@ export class TelegramUpdate {
     const i18n = this.telegramService.getI18n(ctx.session.language || 'uz');
 
     ctx.session.topic = undefined;
+    ctx.session.studentName = undefined;
+    ctx.session.teacherName = undefined;
+    ctx.session.includeReja = undefined;
     ctx.session.slideCount = undefined;
     ctx.session.theme = undefined;
+    ctx.session.step = undefined;
 
     await ctx.answerCbQuery();
     await ctx.editMessageText(i18n.t('generationCancelled'));
 
     await ctx.reply(i18n.t('mainMenuText'), {
-      reply_markup: InlineKeyboards.mainMenu(i18n, this.miniAppUrl),
+      reply_markup: ReplyKeyboards.mainMenu(i18n),
     });
   }
 

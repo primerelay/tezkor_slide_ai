@@ -2,6 +2,20 @@ import { Markup } from 'telegraf';
 import { I18nService } from '../../common/i18n/i18n.service';
 import { THEME_META } from '../../renderer/themes/theme-registry';
 
+export class ReplyKeyboards {
+  /**
+   * Persistent main menu keyboard (always visible at bottom)
+   */
+  static mainMenu(i18n: I18nService) {
+    return Markup.keyboard([
+      [i18n.t('buttons.openMiniApp')],
+      [i18n.t('buttons.newPresentation'), i18n.t('buttons.myPresentations')],
+      [i18n.t('buttons.balance'), i18n.t('buttons.addBalance')],
+      [i18n.t('buttons.quizBot'), i18n.t('buttons.language')],
+    ]).resize().reply_markup;
+  }
+}
+
 export class InlineKeyboards {
   static languageSelection() {
     return Markup.inlineKeyboard([

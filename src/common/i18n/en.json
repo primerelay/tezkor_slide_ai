@@ -1,5 +1,5 @@
 {
-  "welcome": "Hello, {name}! 👋\n\nWelcome to SliderAI UZ!\n\nWith this bot, you can create professional presentations in just a few minutes.\n\n💰 Prices:\n• 6 slides - $1\n• 8 slides - $1.5\n• 10 slides - $1.7\n• 12 slides - $2\n• 14 slides - $2.2\n• 16 slides - $2.4\n• 18 slides - $2.5",
+  "welcome": "Hello, {name}! 👋\n\n🎉 Welcome to <b>SliderAI UZ</b>!\n\n🎁 You received a gift balance of <b>2,500 UZS</b>!\n\n✨ <b>Bot Features:</b>\n• 🎨 Create professional presentations\n• 📊 30+ modern designs and themes\n• 🤖 AI-powered content generation\n• ✏️ Real-time editing (Mini App)\n• 📥 Download in PPTX/PDF format\n• ⚡ Ready in 2-3 minutes!\n\n💰 <b>Prices:</b>\n• 6 slides - 1,000 UZS\n• 8 slides - 1,500 UZS\n• 10 slides - 1,700 UZS\n• 12 slides - 2,000 UZS\n• 14 slides - 2,200 UZS\n• 16 slides - 2,400 UZS\n• 18 slides - 2,500 UZS\n\n👇 Use the buttons below to get started:",
   "mainMenuText": "Main menu",
   "selectLanguage": "Tilni tanlang / Выберите язык / Select language / Sprache wählen:",
   "languageChanged": "Language changed",
@@ -35,11 +35,13 @@
   "noPresentations": "📭 You don't have any presentations yet.",
   "yourPresentations": "📑 <b>Your presentations:</b>",
   "buttons": {
-    "newPresentation": "📝 New presentation",
+    "openMiniApp": "🎨 Create Slides",
+    "newPresentation": "📊 Via Bot Slide",
     "myPresentations": "📑 My presentations",
     "balance": "💰 Balance",
     "addBalance": "➕ Top up",
     "language": "🌐 Language",
+    "quizBot": "🤖 Create Quiz Bot",
     "confirm": "✅ Confirm",
     "cancel": "❌ Cancel",
     "yes": "✅ Yes",
@@ -47,6 +49,14 @@
     "downloadPptx": "📥 Download PPTX",
     "downloadPdf": "📥 Download PDF",
     "backToMenu": "🔙 Back to menu"
+  },
+  "quizBot": {
+    "requestSent": "✅ <b>Your request has been sent!</b>\n\nAdmin will contact you soon.",
+    "adminNotification": "🤖 <b>Quiz Bot Creation Request</b>\n\n👤 User: {name}\n🆔 Username: @{username}\n📱 Telegram ID: {telegramId}\n\nPlease contact the user!"
+  },
+  "miniApp": {
+    "promo": "🎨 <b>SliderAI Designer</b>\n\n✨ Create professional presentations!\n🖼️ 30+ premium designs\n✏️ Real-time editing\n📥 Download PPTX/PDF\n\n👇 Click the button below to start:",
+    "openButton": "🎨✨ OPEN DESIGNER ✨🎨"
   },
   "themes": {
     "academic_blue": "🎓 Academic Blue",

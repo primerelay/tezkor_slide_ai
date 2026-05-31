@@ -302,4 +302,27 @@ export class TelegramService {
 
     return user;
   }
+
+  /**
+   * Send Quiz Bot creation request to admin
+   */
+  async sendQuizBotRequestToAdmin(user: User): Promise<void> {
+    const i18n = this.getI18n(user.language);
+
+    const message = i18n.t('quizBot.adminNotification', {
+      name: user.firstName || 'N/A',
+      username: user.username || 'N/A',
+      telegramId: user.telegramId,
+    });
+
+    for (const adminId of this.adminTelegramIds) {
+      try {
+        await this.bot.telegram.sendMessage(adminId, message, {
+          parse_mode: 'HTML',
+        });
+      } catch (error) {
+        this.logger.error(`Failed to send Quiz Bot request to admin ${adminId}:`, error);
+      }
+    }
+  }
 }
