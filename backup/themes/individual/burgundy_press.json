@@ -1,0 +1,90 @@
+{
+  "spec": {
+    "key": "burgundy_press",
+    "name": "Burgundiya",
+    "emoji": "🍷",
+    "primary": "7f1d1d",
+    "accent": "dc2626",
+    "gradFrom": "7f1d1d",
+    "gradTo": "b91c1c",
+    "secondary": "dc2626",
+    "bg": "fdf6f6",
+    "bgAlt": "f0ece4",
+    "text": "3f1d1d",
+    "textMuted": "8a5a5a",
+    "textInverse": "ffffff",
+    "border": "e2e8f0",
+    "mode": "light",
+    "decor": "editorial",
+    "heroGradient": true,
+    "heroImage": false,
+    "serif": true
+  },
+  "config": {
+    "name": "burgundy_press",
+    "colors": {
+      "primary": "7f1d1d",
+      "secondary": "dc2626",
+      "accent": "dc2626",
+      "background": "fdf6f6",
+      "backgroundAlt": "f0ece4",
+      "text": "3f1d1d",
+      "textMuted": "8a5a5a",
+      "textInverse": "ffffff",
+      "border": "e2e8f0",
+      "success": "16a34a",
+      "warning": "d97706",
+      "error": "dc2626"
+    },
+    "fonts": {
+      "title": {
+        "face": "Georgia",
+        "size": 46,
+        "bold": true,
+        "color": "7f1d1d"
+      },
+      "subtitle": {
+        "face": "Georgia",
+        "size": 23,
+        "bold": false,
+        "color": "8a5a5a"
+      },
+      "heading": {
+        "face": "Georgia",
+        "size": 32,
+        "bold": true,
+        "color": "7f1d1d"
+      },
+      "body": {
+        "face": "Arial",
+        "size": 18,
+        "bold": false,
+        "color": "3f1d1d"
+      },
+      "caption": {
+        "face": "Arial",
+        "size": 14,
+        "bold": false,
+        "color": "8a5a5a"
+      }
+    },
+    "slideWidth": 10,
+    "slideHeight": 5.625,
+    "margin": {
+      "top": 0.5,
+      "right": 0.5,
+      "bottom": 0.5,
+      "left": 0.5
+    },
+    "gridUnit": 0.125,
+    "mode": "light",
+    "decor": "editorial",
+    "gradient": {
+      "from": "7f1d1d",
+      "to": "b91c1c",
+      "angle": 135
+    },
+    "heroGradient": true,
+    "heroImage": false
+  }
+}

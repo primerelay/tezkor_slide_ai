@@ -1,0 +1,90 @@
+{
+  "spec": {
+    "key": "carbon_neon",
+    "name": "Karbon neon",
+    "emoji": "🟢",
+    "primary": "22d3ee",
+    "accent": "a3e635",
+    "gradFrom": "0a0a0a",
+    "gradTo": "1f2937",
+    "secondary": "a3e635",
+    "bg": "0a0a0a",
+    "bgAlt": "18181b",
+    "text": "fafafa",
+    "textMuted": "a1a1aa",
+    "textInverse": "f8fafc",
+    "border": "e2e8f0",
+    "mode": "dark",
+    "decor": "geometric",
+    "heroGradient": true,
+    "heroImage": false,
+    "serif": false
+  },
+  "config": {
+    "name": "carbon_neon",
+    "colors": {
+      "primary": "22d3ee",
+      "secondary": "a3e635",
+      "accent": "a3e635",
+      "background": "0a0a0a",
+      "backgroundAlt": "18181b",
+      "text": "fafafa",
+      "textMuted": "a1a1aa",
+      "textInverse": "f8fafc",
+      "border": "e2e8f0",
+      "success": "16a34a",
+      "warning": "d97706",
+      "error": "dc2626"
+    },
+    "fonts": {
+      "title": {
+        "face": "Arial",
+        "size": 46,
+        "bold": true,
+        "color": "22d3ee"
+      },
+      "subtitle": {
+        "face": "Arial",
+        "size": 23,
+        "bold": false,
+        "color": "a1a1aa"
+      },
+      "heading": {
+        "face": "Arial",
+        "size": 32,
+        "bold": true,
+        "color": "22d3ee"
+      },
+      "body": {
+        "face": "Arial",
+        "size": 18,
+        "bold": false,
+        "color": "fafafa"
+      },
+      "caption": {
+        "face": "Arial",
+        "size": 14,
+        "bold": false,
+        "color": "a1a1aa"
+      }
+    },
+    "slideWidth": 10,
+    "slideHeight": 5.625,
+    "margin": {
+      "top": 0.5,
+      "right": 0.5,
+      "bottom": 0.5,
+      "left": 0.5
+    },
+    "gridUnit": 0.125,
+    "mode": "dark",
+    "decor": "geometric",
+    "gradient": {
+      "from": "0a0a0a",
+      "to": "1f2937",
+      "angle": 135
+    },
+    "heroGradient": true,
+    "heroImage": false
+  }
+}

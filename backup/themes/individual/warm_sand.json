@@ -1,0 +1,90 @@
+{
+  "spec": {
+    "key": "warm_sand",
+    "name": "Iliq qum",
+    "emoji": "🏛️",
+    "primary": "b45309",
+    "accent": "ea580c",
+    "gradFrom": "9a3412",
+    "gradTo": "ea580c",
+    "secondary": "ea580c",
+    "bg": "fffbf5",
+    "bgAlt": "fef3e2",
+    "text": "431407",
+    "textMuted": "92766a",
+    "textInverse": "fffbf5",
+    "border": "e2e8f0",
+    "mode": "light",
+    "decor": "editorial",
+    "heroGradient": true,
+    "heroImage": false,
+    "serif": true
+  },
+  "config": {
+    "name": "warm_sand",
+    "colors": {
+      "primary": "b45309",
+      "secondary": "ea580c",
+      "accent": "ea580c",
+      "background": "fffbf5",
+      "backgroundAlt": "fef3e2",
+      "text": "431407",
+      "textMuted": "92766a",
+      "textInverse": "fffbf5",
+      "border": "e2e8f0",
+      "success": "16a34a",
+      "warning": "d97706",
+      "error": "dc2626"
+    },
+    "fonts": {
+      "title": {
+        "face": "Georgia",
+        "size": 46,
+        "bold": true,
+        "color": "b45309"
+      },
+      "subtitle": {
+        "face": "Georgia",
+        "size": 23,
+        "bold": false,
+        "color": "92766a"
+      },
+      "heading": {
+        "face": "Georgia",
+        "size": 32,
+        "bold": true,
+        "color": "b45309"
+      },
+      "body": {
+        "face": "Arial",
+        "size": 18,
+        "bold": false,
+        "color": "431407"
+      },
+      "caption": {
+        "face": "Arial",
+        "size": 14,
+        "bold": false,
+        "color": "92766a"
+      }
+    },
+    "slideWidth": 10,
+    "slideHeight": 5.625,
+    "margin": {
+      "top": 0.5,
+      "right": 0.5,
+      "bottom": 0.5,
+      "left": 0.5
+    },
+    "gridUnit": 0.125,
+    "mode": "light",
+    "decor": "editorial",
+    "gradient": {
+      "from": "9a3412",
+      "to": "ea580c",
+      "angle": 135
+    },
+    "heroGradient": true,
+    "heroImage": false
+  }
+}

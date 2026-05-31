@@ -1,0 +1,90 @@
+{
+  "spec": {
+    "key": "photo_editorial",
+    "name": "Foto editorial",
+    "emoji": "📷",
+    "primary": "1c1917",
+    "accent": "f59e0b",
+    "gradFrom": "1c1917",
+    "gradTo": "44403c",
+    "secondary": "f59e0b",
+    "bg": "faf7f2",
+    "bgAlt": "f0ece4",
+    "text": "2b2622",
+    "textMuted": "7c736b",
+    "textInverse": "ffffff",
+    "border": "e2e8f0",
+    "mode": "light",
+    "decor": "editorial",
+    "heroGradient": true,
+    "heroImage": true,
+    "serif": true
+  },
+  "config": {
+    "name": "photo_editorial",
+    "colors": {
+      "primary": "1c1917",
+      "secondary": "f59e0b",
+      "accent": "f59e0b",
+      "background": "faf7f2",
+      "backgroundAlt": "f0ece4",
+      "text": "2b2622",
+      "textMuted": "7c736b",
+      "textInverse": "ffffff",
+      "border": "e2e8f0",
+      "success": "16a34a",
+      "warning": "d97706",
+      "error": "dc2626"
+    },
+    "fonts": {
+      "title": {
+        "face": "Georgia",
+        "size": 46,
+        "bold": true,
+        "color": "1c1917"
+      },
+      "subtitle": {
+        "face": "Georgia",
+        "size": 23,
+        "bold": false,
+        "color": "7c736b"
+      },
+      "heading": {
+        "face": "Georgia",
+        "size": 32,
+        "bold": true,
+        "color": "1c1917"
+      },
+      "body": {
+        "face": "Arial",
+        "size": 18,
+        "bold": false,
+        "color": "2b2622"
+      },
+      "caption": {
+        "face": "Arial",
+        "size": 14,
+        "bold": false,
+        "color": "7c736b"
+      }
+    },
+    "slideWidth": 10,
+    "slideHeight": 5.625,
+    "margin": {
+      "top": 0.5,
+      "right": 0.5,
+      "bottom": 0.5,
+      "left": 0.5
+    },
+    "gridUnit": 0.125,
+    "mode": "light",
+    "decor": "editorial",
+    "gradient": {
+      "from": "1c1917",
+      "to": "44403c",
+      "angle": 135
+    },
+    "heroGradient": true,
+    "heroImage": true
+  }
+}

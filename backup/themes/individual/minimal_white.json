@@ -1,0 +1,90 @@
+{
+  "spec": {
+    "key": "minimal_white",
+    "name": "Minimal oq",
+    "emoji": "⚪",
+    "primary": "111827",
+    "accent": "6b7280",
+    "gradFrom": "111827",
+    "gradTo": "374151",
+    "secondary": "6b7280",
+    "bg": "ffffff",
+    "bgAlt": "f9fafb",
+    "text": "111827",
+    "textMuted": "6b7280",
+    "textInverse": "ffffff",
+    "border": "e2e8f0",
+    "mode": "light",
+    "decor": "minimal",
+    "heroGradient": false,
+    "heroImage": false,
+    "serif": false
+  },
+  "config": {
+    "name": "minimal_white",
+    "colors": {
+      "primary": "111827",
+      "secondary": "6b7280",
+      "accent": "6b7280",
+      "background": "ffffff",
+      "backgroundAlt": "f9fafb",
+      "text": "111827",
+      "textMuted": "6b7280",
+      "textInverse": "ffffff",
+      "border": "e2e8f0",
+      "success": "16a34a",
+      "warning": "d97706",
+      "error": "dc2626"
+    },
+    "fonts": {
+      "title": {
+        "face": "Arial",
+        "size": 46,
+        "bold": true,
+        "color": "111827"
+      },
+      "subtitle": {
+        "face": "Arial",
+        "size": 23,
+        "bold": false,
+        "color": "6b7280"
+      },
+      "heading": {
+        "face": "Arial",
+        "size": 32,
+        "bold": true,
+        "color": "111827"
+      },
+      "body": {
+        "face": "Arial",
+        "size": 18,
+        "bold": false,
+        "color": "111827"
+      },
+      "caption": {
+        "face": "Arial",
+        "size": 14,
+        "bold": false,
+        "color": "6b7280"
+      }
+    },
+    "slideWidth": 10,
+    "slideHeight": 5.625,
+    "margin": {
+      "top": 0.5,
+      "right": 0.5,
+      "bottom": 0.5,
+      "left": 0.5
+    },
+    "gridUnit": 0.125,
+    "mode": "light",
+    "decor": "minimal",
+    "gradient": {
+      "from": "111827",
+      "to": "374151",
+      "angle": 135
+    },
+    "heroGradient": false,
+    "heroImage": false
+  }
+}

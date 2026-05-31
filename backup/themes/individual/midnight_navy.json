@@ -1,0 +1,90 @@
+{
+  "spec": {
+    "key": "midnight_navy",
+    "name": "Yarim tun",
+    "emoji": "🌃",
+    "primary": "60a5fa",
+    "accent": "38bdf8",
+    "gradFrom": "0b1f44",
+    "gradTo": "1e40af",
+    "secondary": "38bdf8",
+    "bg": "0b1220",
+    "bgAlt": "13203a",
+    "text": "e2e8f0",
+    "textMuted": "94a3b8",
+    "textInverse": "f8fafc",
+    "border": "e2e8f0",
+    "mode": "dark",
+    "decor": "geometric",
+    "heroGradient": true,
+    "heroImage": false,
+    "serif": false
+  },
+  "config": {
+    "name": "midnight_navy",
+    "colors": {
+      "primary": "60a5fa",
+      "secondary": "38bdf8",
+      "accent": "38bdf8",
+      "background": "0b1220",
+      "backgroundAlt": "13203a",
+      "text": "e2e8f0",
+      "textMuted": "94a3b8",
+      "textInverse": "f8fafc",
+      "border": "e2e8f0",
+      "success": "16a34a",
+      "warning": "d97706",
+      "error": "dc2626"
+    },
+    "fonts": {
+      "title": {
+        "face": "Arial",
+        "size": 46,
+        "bold": true,
+        "color": "60a5fa"
+      },
+      "subtitle": {
+        "face": "Arial",
+        "size": 23,
+        "bold": false,
+        "color": "94a3b8"
+      },
+      "heading": {
+        "face": "Arial",
+        "size": 32,
+        "bold": true,
+        "color": "60a5fa"
+      },
+      "body": {
+        "face": "Arial",
+        "size": 18,
+        "bold": false,
+        "color": "e2e8f0"
+      },
+      "caption": {
+        "face": "Arial",
+        "size": 14,
+        "bold": false,
+        "color": "94a3b8"
+      }
+    },
+    "slideWidth": 10,
+    "slideHeight": 5.625,
+    "margin": {
+      "top": 0.5,
+      "right": 0.5,
+      "bottom": 0.5,
+      "left": 0.5
+    },
+    "gridUnit": 0.125,
+    "mode": "dark",
+    "decor": "geometric",
+    "gradient": {
+      "from": "0b1f44",
+      "to": "1e40af",
+      "angle": 135
+    },
+    "heroGradient": true,
+    "heroImage": false
+  }
+}

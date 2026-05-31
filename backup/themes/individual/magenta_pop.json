@@ -1,0 +1,90 @@
+{
+  "spec": {
+    "key": "magenta_pop",
+    "name": "Magenta",
+    "emoji": "💜",
+    "primary": "c026d3",
+    "accent": "f0abfc",
+    "gradFrom": "c026d3",
+    "gradTo": "7c3aed",
+    "secondary": "f0abfc",
+    "bg": "ffffff",
+    "bgAlt": "fdf4ff",
+    "text": "1e293b",
+    "textMuted": "64748b",
+    "textInverse": "ffffff",
+    "border": "e2e8f0",
+    "mode": "light",
+    "decor": "geometric",
+    "heroGradient": true,
+    "heroImage": false,
+    "serif": false
+  },
+  "config": {
+    "name": "magenta_pop",
+    "colors": {
+      "primary": "c026d3",
+      "secondary": "f0abfc",
+      "accent": "f0abfc",
+      "background": "ffffff",
+      "backgroundAlt": "fdf4ff",
+      "text": "1e293b",
+      "textMuted": "64748b",
+      "textInverse": "ffffff",
+      "border": "e2e8f0",
+      "success": "16a34a",
+      "warning": "d97706",
+      "error": "dc2626"
+    },
+    "fonts": {
+      "title": {
+        "face": "Arial",
+        "size": 46,
+        "bold": true,
+        "color": "c026d3"
+      },
+      "subtitle": {
+        "face": "Arial",
+        "size": 23,
+        "bold": false,
+        "color": "64748b"
+      },
+      "heading": {
+        "face": "Arial",
+        "size": 32,
+        "bold": true,
+        "color": "c026d3"
+      },
+      "body": {
+        "face": "Arial",
+        "size": 18,
+        "bold": false,
+        "color": "1e293b"
+      },
+      "caption": {
+        "face": "Arial",
+        "size": 14,
+        "bold": false,
+        "color": "64748b"
+      }
+    },
+    "slideWidth": 10,
+    "slideHeight": 5.625,
+    "margin": {
+      "top": 0.5,
+      "right": 0.5,
+      "bottom": 0.5,
+      "left": 0.5
+    },
+    "gridUnit": 0.125,
+    "mode": "light",
+    "decor": "geometric",
+    "gradient": {
+      "from": "c026d3",
+      "to": "7c3aed",
+      "angle": 135
+    },
+    "heroGradient": true,
+    "heroImage": false
+  }
+}

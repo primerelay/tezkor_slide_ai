@@ -1,0 +1,90 @@
+{
+  "spec": {
+    "key": "modern_dark",
+    "name": "Zamonaviy qorongʻi",
+    "emoji": "🌙",
+    "primary": "818cf8",
+    "accent": "a5b4fc",
+    "gradFrom": "312e81",
+    "gradTo": "4f46e5",
+    "secondary": "a5b4fc",
+    "bg": "0f172a",
+    "bgAlt": "1e293b",
+    "text": "f1f5f9",
+    "textMuted": "94a3b8",
+    "textInverse": "f8fafc",
+    "border": "e2e8f0",
+    "mode": "dark",
+    "decor": "geometric",
+    "heroGradient": true,
+    "heroImage": false,
+    "serif": false
+  },
+  "config": {
+    "name": "modern_dark",
+    "colors": {
+      "primary": "818cf8",
+      "secondary": "a5b4fc",
+      "accent": "a5b4fc",
+      "background": "0f172a",
+      "backgroundAlt": "1e293b",
+      "text": "f1f5f9",
+      "textMuted": "94a3b8",
+      "textInverse": "f8fafc",
+      "border": "e2e8f0",
+      "success": "16a34a",
+      "warning": "d97706",
+      "error": "dc2626"
+    },
+    "fonts": {
+      "title": {
+        "face": "Arial",
+        "size": 46,
+        "bold": true,
+        "color": "818cf8"
+      },
+      "subtitle": {
+        "face": "Arial",
+        "size": 23,
+        "bold": false,
+        "color": "94a3b8"
+      },
+      "heading": {
+        "face": "Arial",
+        "size": 32,
+        "bold": true,
+        "color": "818cf8"
+      },
+      "body": {
+        "face": "Arial",
+        "size": 18,
+        "bold": false,
+        "color": "f1f5f9"
+      },
+      "caption": {
+        "face": "Arial",
+        "size": 14,
+        "bold": false,
+        "color": "94a3b8"
+      }
+    },
+    "slideWidth": 10,
+    "slideHeight": 5.625,
+    "margin": {
+      "top": 0.5,
+      "right": 0.5,
+      "bottom": 0.5,
+      "left": 0.5
+    },
+    "gridUnit": 0.125,
+    "mode": "dark",
+    "decor": "geometric",
+    "gradient": {
+      "from": "312e81",
+      "to": "4f46e5",
+      "angle": 135
+    },
+    "heroGradient": true,
+    "heroImage": false
+  }
+}
