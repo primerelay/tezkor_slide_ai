@@ -35,3 +35,6 @@ uploads/
 # Temporary files
 tmp/
 temp/
+
+# Claude local settings (machine-specific allowlist; may contain secrets)
+.claude/settings.local.json

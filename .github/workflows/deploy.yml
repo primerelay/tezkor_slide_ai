@@ -1,0 +1,28 @@
+name: Deploy to Timeweb VPS
+
+# `main` branchga push qilinganda avtomatik deploy.
+# Qo'lda ham ishga tushirish mumkin (Actions tab -> Run workflow).
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Deploy over SSH
+        uses: appleboy/ssh-action@v1.2.0
+        with:
+          host: ${{ secrets.VPS_HOST }}        # VPS IP manzili
+          username: ${{ secrets.VPS_USER }}    # odatda: root
+          key: ${{ secrets.VPS_SSH_KEY }}      # SSH private key (to'liq matn)
+          port: ${{ secrets.VPS_PORT }}        # odatda: 22
+          command_timeout: 30m                 # build uzoq davom etishi mumkin
+          script_stop: true
+          script: |
+            set -e
+            export PATH=$PATH:/usr/bin:/usr/local/bin
+            cd /var/www/tezkor-slide
+            git pull origin main
+            bash deploy.sh

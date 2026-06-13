@@ -177,7 +177,7 @@ NODE_ENV=production
 PORT=3000
 
 # Telegram Bot
-TELEGRAM_BOT_TOKEN=8887703637:AAFeAbauUc2NG1Ic3MxOswDXUS68J3zsp9E
+TELEGRAM_BOT_TOKEN=<BOTFATHER_TOKEN>   # @BotFather'dan oling, hech qachon git'ga commit qilmang
 
 # Database
 DATABASE_HOST=localhost
@@ -191,26 +191,26 @@ REDIS_HOST=localhost
 REDIS_PORT=6379
 
 # AI Providers
-GEMINI_API_KEY=AIzaSyAs4P92_bwBhtCeEPPSfkq3qHctTdCN_ao
-OPENROUTER_API_KEY=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
+GEMINI_API_KEY=<GEMINI_API_KEY>
+OPENROUTER_API_KEY=<OPENROUTER_API_KEY>
 
 # Images
-UNSPLASH_ACCESS_KEY=qw2INuodOnqegT8jNs-rAuBFBOF_wW5kuBtdQssBI0w
-PEXELS_API_KEY=U9xxKGR0dxrA5K6zGXcYtpw8qmSAgOQ5K6P1jn2OwKG3YCtnd64isFph
+UNSPLASH_ACCESS_KEY=<UNSPLASH_ACCESS_KEY>
+PEXELS_API_KEY=<PEXELS_API_KEY>
 IMAGE_OPENROUTER_ENABLED=false
 
 # Storage
 STORAGE_PATH=/var/www/tezkor-slide/storage
 
 # Admin
-ADMIN_TELEGRAM_IDS=7827740215
-ADMIN_USERNAME=fast_admin_1
+ADMIN_TELEGRAM_IDS=<SIZNING_TELEGRAM_ID>
+ADMIN_USERNAME=<admin_username>
 
 # Payment Cards
-HUMO_CARD_NUMBER=9860 1234 5678 9012
-HUMO_CARD_OWNER=Dilnoza Turdaliyeva
-UZCARD_CARD_NUMBER=8600 1234 5678 9012
-UZCARD_CARD_OWNER=Dilnoza Turdaliyeva
+HUMO_CARD_NUMBER=<HUMO_KARTA_RAQAMI>
+HUMO_CARD_OWNER=<KARTA_EGASI>
+UZCARD_CARD_NUMBER=<UZCARD_KARTA_RAQAMI>
+UZCARD_CARD_OWNER=<KARTA_EGASI>
 
 # Pricing
 CREDITS_PER_PRESENTATION=1
@@ -223,8 +223,8 @@ REQUIRED_CHANNEL_URL=https://t.me/sliderai
 # Mini App URL (domeningizni yozing)
 MINI_APP_URL=https://slide.yourdomain.uz/mini-app
 
-# JWT
-JWT_SECRET=tezkor-slide-jwt-super-secret-key-2024-production
+# JWT (tasodifiy uzun satr generatsiya qiling: `openssl rand -hex 32`)
+JWT_SECRET=<TASODIFIY_UZUN_MAXFIY_SATR>
 ```
 
 **Ctrl+O** - saqlash, **Ctrl+X** - chiqish
@@ -335,13 +335,13 @@ pm2 startup
 ## 12-qadam: Telegram Webhook sozlash
 
 ```bash
-# Webhook o'rnatish
-curl -X POST "https://api.telegram.org/bot8887703637:AAFeAbauUc2NG1Ic3MxOswDXUS68J3zsp9E/setWebhook" \
+# Webhook o'rnatish (<BOT_TOKEN> o'rniga o'zingiznikini qo'ying)
+curl -X POST "https://api.telegram.org/bot<BOT_TOKEN>/setWebhook" \
      -H "Content-Type: application/json" \
      -d '{"url": "https://slide.yourdomain.uz/telegram/webhook"}'
 
 # Tekshirish
-curl "https://api.telegram.org/bot8887703637:AAFeAbauUc2NG1Ic3MxOswDXUS68J3zsp9E/getWebhookInfo"
+curl "https://api.telegram.org/bot<BOT_TOKEN>/getWebhookInfo"
 ```
 
 ---
