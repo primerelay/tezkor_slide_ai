@@ -28,9 +28,9 @@ npm-debug.log*
 # Test coverage
 coverage/
 
-# Storage (local files)
-storage/
-uploads/
+# Storage (local files - not source code!)
+/storage/
+/uploads/
 
 # Temporary files
 tmp/
