@@ -1,4 +1,4 @@
-name: Deploy to Timeweb VPS
+name: Deploy to DigitalOcean
 
 # `main` branchga push qilinganda avtomatik deploy.
 # Qo'lda ham ishga tushirish mumkin (Actions tab -> Run workflow).
@@ -14,15 +14,35 @@ jobs:
       - name: Deploy over SSH
         uses: appleboy/ssh-action@v1.2.0
         with:
-          host: ${{ secrets.VPS_HOST }}        # VPS IP manzili
-          username: ${{ secrets.VPS_USER }}    # odatda: root
-          key: ${{ secrets.VPS_SSH_KEY }}      # SSH private key (to'liq matn)
-          port: ${{ secrets.VPS_PORT }}        # odatda: 22
-          command_timeout: 30m                 # build uzoq davom etishi mumkin
+          host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USER }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          port: 22
+          command_timeout: 30m
           script_stop: true
           script: |
             set -e
             export PATH=$PATH:/usr/bin:/usr/local/bin
-            cd /var/www/tezkor-slide
+
+            cd /var/www/tezkor_slide_ai
+
+            echo "📥 Pulling latest changes from GitHub..."
             git pull origin main
-            bash deploy.sh
+
+            echo "📦 Installing backend dependencies..."
+            npm install
+
+            echo "🔨 Building backend..."
+            npm run build
+
+            echo "🎨 Building mini-app..."
+            cd mini-app
+            npm install
+            npm run build
+            cd ..
+
+            echo "🔄 Restarting PM2..."
+            pm2 restart tezkor-slide
+
+            echo "✅ Deployment completed successfully!"
+            pm2 status tezkor-slide
