@@ -41,6 +41,12 @@ jobs:
             npm run build
             cd ..
 
+            echo "🌐 Building web app (admin panel)..."
+            cd web
+            npm install
+            npm run build
+            cd ..
+
             echo "🔄 Restarting PM2..."
             pm2 restart tezkor-slide
 
