@@ -2,7 +2,7 @@
 
 ## Tavsiya etilgan: Hetzner VPS (€4.51/oy)
 
-### 1. Hetzner Cloud'da VPS yaratish
+##1. Hetzner Cloud'da VPS yaratish
 
 1. https://www.hetzner.com/cloud ga kiring
 2. "Add Server" bosing
@@ -47,6 +47,7 @@ apt install certbot python3-certbot-nginx -y
 ### 4. Projectni serverga ko'chirish
 
 **Lokal kompyuterda:**
+
 ```bash
 # Build mini-app
 cd mini-app && npm run build && cd ..
@@ -60,6 +61,7 @@ scp tezkor-slide.tar.gz root@YOUR_SERVER_IP:/root/
 ```
 
 **Serverda:**
+
 ```bash
 mkdir -p /var/www/tezkor-slide
 cd /var/www/tezkor-slide
@@ -80,6 +82,7 @@ nano .env
 ```
 
 **.env faylini to'ldiring:**
+
 ```env
 NODE_ENV=production
 PORT=3000
@@ -292,10 +295,10 @@ docker exec -it tezkor-slide-redis-1 redis-cli
 
 ## Narxlar xulosasi
 
-| Xizmat | Narx/oy |
-|--------|---------|
-| Hetzner CX22 VPS | €4.51 |
-| Domain (.com) | ~$1 |
-| **Jami** | **~$6/oy** |
+| Xizmat           | Narx/oy    |
+| ---------------- | ---------- |
+| Hetzner CX22 VPS | €4.51      |
+| Domain (.com)    | ~$1        |
+| **Jami**         | **~$6/oy** |
 
 Bu narxda 10,000+ foydalanuvchini ko'tara olasiz!
