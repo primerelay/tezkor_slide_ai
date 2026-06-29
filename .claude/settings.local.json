@@ -59,7 +59,10 @@
       "mcp__Claude_Preview__preview_start",
       "Bash(npx ts-node:*)",
       "Bash(ls:*)",
-      "Bash(chmod +x deploy.sh)"
+      "Bash(chmod +x deploy.sh)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }
