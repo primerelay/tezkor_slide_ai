@@ -59,10 +59,10 @@ export class TelegramUpdate {
 
     const i18n = this.telegramService.getI18n(user.language);
 
-    // Set persistent reply keyboard with all menu buttons
+    // Send welcome message with inline keyboard showing all features
     await ctx.reply(i18n.t('welcome', { name: user.firstName || 'User' }), {
       parse_mode: 'HTML',
-      reply_markup: ReplyKeyboards.mainMenu(i18n),
+      reply_markup: InlineKeyboards.featuresMenu(i18n, this.miniAppUrl),
     });
   }
 
@@ -728,6 +728,39 @@ export class TelegramUpdate {
     await ctx.reply(i18n.t('mainMenuText'), {
       reply_markup: ReplyKeyboards.mainMenu(i18n),
     });
+  }
+
+  @Action('quiz_create')
+  async onQuizCreate(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    if (!user) return;
+
+    const i18n = this.telegramService.getI18n(user.language);
+
+    if (!this.miniAppUrl) {
+      await ctx.answerCbQuery();
+      await ctx.reply('Web app hozircha mavjud emas.');
+      return;
+    }
+
+    // Open Quiz Generator page in web app
+    const quizUrl = this.miniAppUrl.replace('/mini-app', '/admin/quiz/create');
+
+    await ctx.answerCbQuery();
+    await ctx.reply(
+      '🧠 <b>Quiz Bot Yaratish</b>\n\n✨ Quiz yaratish uchun quyidagi tugmani bosing!\n\n📝 Matn yoki fayl yuklang, sozlamalarni tanlang va AI avtomatik ravishda professional test savollarini yaratadi.',
+      {
+        parse_mode: 'HTML',
+        reply_markup: Markup.inlineKeyboard([
+          [Markup.button.webApp('🧠 Quiz Yaratish', quizUrl)],
+        ]).reply_markup,
+      }
+    );
   }
 
   @On('text')

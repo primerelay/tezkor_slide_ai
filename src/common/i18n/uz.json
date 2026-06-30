@@ -48,7 +48,10 @@
     "no": "❌ Yo'q",
     "downloadPptx": "📥 PPTX yuklash",
     "downloadPdf": "📥 PDF yuklash",
-    "backToMenu": "🔙 Menyuga qaytish"
+    "backToMenu": "🔙 Menyuga qaytish",
+    "openWebApp": "🚀 Barcha funksiyalar",
+    "slideCreate": "📊 Slide Yaratish",
+    "quizCreate": "🧠 Quiz Bot yaratish"
   },
   "quizBot": {
     "contactAdmin": "🤖 <b>Quiz Bot yaratish</b>\n\nQuiz Bot buyurtma qilish uchun admin bilan bog'laning:\n\n👉 https://t.me/{adminUsername}"

@@ -158,4 +158,33 @@ export class InlineKeyboards {
       [Markup.button.callback("✅ Qo'shildim, tekshirish", 'check_channel_membership')],
     ]).reply_markup;
   }
+
+  static featuresMenu(i18n: I18nService, webAppUrl?: string) {
+    const buttons: any[] = [];
+
+    // Main "Open Web App" button at the top (opens dashboard)
+    if (webAppUrl) {
+      // Remove /mini-app from URL and add /admin for dashboard
+      const dashboardUrl = webAppUrl.replace('/mini-app', '/admin');
+      buttons.push([
+        Markup.button.webApp(i18n.t('buttons.openWebApp'), dashboardUrl),
+      ]);
+    }
+
+    // Feature buttons below
+    buttons.push(
+      [Markup.button.callback(i18n.t('buttons.slideCreate'), 'new_presentation')],
+      [Markup.button.callback(i18n.t('buttons.quizCreate'), 'quiz_create')],
+      [
+        Markup.button.callback(i18n.t('buttons.balance'), 'check_balance'),
+        Markup.button.callback(i18n.t('buttons.language'), 'change_language'),
+      ],
+      [
+        Markup.button.callback(i18n.t('buttons.myPresentations'), 'my_presentations'),
+        Markup.button.callback(i18n.t('buttons.addBalance'), 'add_balance'),
+      ],
+    );
+
+    return Markup.inlineKeyboard(buttons).reply_markup;
+  }
 }
