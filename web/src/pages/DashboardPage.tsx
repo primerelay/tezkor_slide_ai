@@ -2,8 +2,9 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Users, FileText, DollarSign, TrendingUp, TrendingDown,
-  LogOut, BarChart3, Bot, RefreshCw
+  LogOut, BarChart3, Bot, RefreshCw, Brain, Zap, BookOpen
 } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 import {
   AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
   BarChart, Bar, Legend
@@ -21,6 +22,7 @@ const filterOptions: { value: DateFilter; label: string }[] = [
 
 export default function DashboardPage() {
   const { admin, logout } = useAuth();
+  const navigate = useNavigate();
   const [filter, setFilter] = useState<DateFilter>('1m');
   const [stats, setStats] = useState<StatsResponse | null>(null);
   const [chartData, setChartData] = useState<ChartData[]>([]);
@@ -162,6 +164,84 @@ export default function DashboardPage() {
             subtext={`Foyda: ${formatCurrency(stats?.profit || 0)}`}
             color="orange"
           />
+        </div>
+
+        {/* Quick Actions */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <Zap className="w-6 h-6 text-yellow-500" />
+            Tezkor harakatlar
+          </h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            {/* Quiz Generator Card */}
+            <button
+              onClick={() => navigate('/admin/quiz/create')}
+              className="card hover:shadow-lg transition-all duration-200 text-left group cursor-pointer border-2 border-transparent hover:border-indigo-500"
+            >
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-indigo-100 rounded-xl group-hover:bg-indigo-600 transition-colors">
+                  <Brain className="w-8 h-8 text-indigo-600 group-hover:text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-indigo-600">
+                    🎯 Test Yaratish
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    AI yordamida professional testlar yarating
+                  </p>
+                  <div className="mt-3 text-xs text-indigo-600 font-medium">
+                    Yangi test →
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            {/* View Quizzes Card */}
+            <button
+              onClick={() => navigate('/admin/quizzes')}
+              className="card hover:shadow-lg transition-all duration-200 text-left group cursor-pointer border-2 border-transparent hover:border-purple-500"
+            >
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-purple-100 rounded-xl group-hover:bg-purple-600 transition-colors">
+                  <BookOpen className="w-8 h-8 text-purple-600 group-hover:text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-purple-600">
+                    📚 Testlarim
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Yaratilgan testlarni ko'ring va boshqaring
+                  </p>
+                  <div className="mt-3 text-xs text-purple-600 font-medium">
+                    Testlarni ko'rish →
+                  </div>
+                </div>
+              </div>
+            </button>
+
+            {/* Presentations Card */}
+            <button
+              onClick={() => navigate('/admin')}
+              className="card hover:shadow-lg transition-all duration-200 text-left group cursor-pointer border-2 border-transparent hover:border-green-500"
+            >
+              <div className="flex items-start gap-4">
+                <div className="p-3 bg-green-100 rounded-xl group-hover:bg-green-600 transition-colors">
+                  <FileText className="w-8 h-8 text-green-600 group-hover:text-white" />
+                </div>
+                <div className="flex-1">
+                  <h3 className="font-semibold text-gray-900 mb-1 group-hover:text-green-600">
+                    📊 Prezentatsiyalar
+                  </h3>
+                  <p className="text-sm text-gray-500">
+                    Barcha yaratilgan prezentatsiyalar
+                  </p>
+                  <div className="mt-3 text-xs text-green-600 font-medium">
+                    Ko'rish →
+                  </div>
+                </div>
+              </div>
+            </button>
+          </div>
         </div>
 
         {/* Charts */}
