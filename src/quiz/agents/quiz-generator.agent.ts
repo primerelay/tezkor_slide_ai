@@ -21,7 +21,7 @@ export class QuizGeneratorAgent {
   private readonly baseURL = 'https://openrouter.ai/api/v1';
 
   constructor(private configService: ConfigService) {
-    this.openRouterApiKey = this.configService.get<string>('OPENROUTER_API_KEY');
+    this.openRouterApiKey = this.configService.get<string>('OPENROUTER_API_KEY') || '';
   }
 
   /**
@@ -30,7 +30,7 @@ export class QuizGeneratorAgent {
    */
   private async analyzeContent(content: string, language: string = 'uz'): Promise<{
     mainTopics: string[];
-    keyC oncepts: string[];
+    keyConcepts: string[];
     difficulty: string;
     contentLength: number;
   }> {
@@ -116,7 +116,7 @@ Provide JSON response with:
 - Cover diverse aspects of the content
 - Follow Bloom's Taxonomy principles
 
-${languageInstructions[language] || languageInstructions.en}`;
+${languageInstructions[language as keyof typeof languageInstructions] || languageInstructions.en}`;
 
     const userPrompt = `Based on this content, generate ${numberOfQuestions} quiz questions.
 
