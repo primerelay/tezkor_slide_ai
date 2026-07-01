@@ -17,8 +17,8 @@ export class QuizCreateScene {
       'Test yaratish uchun darslik matnini yoki mavzuni yuboring.\n\n' +
       '💡 Masalan:\n' +
       '• Darslik matni\n' +
-      '• PDF fayl\n' +
-      '• Mavzu nomi\n\n' +
+      '• Mavzu nomi\n' +
+      '• Qisqacha tavsif\n\n' +
       '❌ Bekor qilish uchun /cancel ni bosing',
       { parse_mode: 'HTML' }
     );
@@ -42,8 +42,8 @@ export class QuizCreateScene {
     }
 
     // Check minimum length
-    if (text.length < 50) {
-      await ctx.reply('⚠️ Matn juda qisqa. Kamida 50 belgi kiriting.');
+    if (text.length < 10) {
+      await ctx.reply('⚠️ Matn juda qisqa. Kamida 10 belgi kiriting.');
       return;
     }
 
