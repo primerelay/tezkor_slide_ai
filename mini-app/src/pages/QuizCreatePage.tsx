@@ -111,8 +111,8 @@ export default function QuizCreatePage() {
         if (quiz.status === 'completed') {
           clearInterval(poll);
           haptic('success');
-          // Navigate to quiz list or results page
-          setTimeout(() => navigate('/'), 1000);
+          // Navigate to quiz view page
+          setTimeout(() => navigate(`/quiz/${id}`), 1000);
         } else if (quiz.status === 'failed') {
           clearInterval(poll);
           alert('Quiz yaratishda xatolik yuz berdi');
