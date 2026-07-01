@@ -356,7 +356,11 @@ export class TelegramService {
    * Get referral link for a user
    */
   getReferralLink(user: User): string {
-    const botUsername = this.configService.get<string>('telegram.botUsername') || '';
+    const botUsername = this.configService.get<string>('telegram.botUsername');
+    if (!botUsername) {
+      this.logger.warn('TELEGRAM_BOT_USERNAME not set in environment variables');
+      return `https://t.me/YOUR_BOT?start=${user.referralCode}`;
+    }
     return `https://t.me/${botUsername}?start=${user.referralCode}`;
   }
 
