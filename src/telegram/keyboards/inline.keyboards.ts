@@ -6,13 +6,21 @@ export class ReplyKeyboards {
   /**
    * Persistent main menu keyboard (always visible at bottom)
    */
-  static mainMenu(i18n: I18nService) {
-    return Markup.keyboard([
-      [i18n.t('buttons.openMiniApp')],
+  static mainMenu(i18n: I18nService, webAppUrl?: string) {
+    const keyboard: any[] = [];
+
+    // Add Web App button if URL is provided
+    if (webAppUrl) {
+      keyboard.push([Markup.button.webApp(i18n.t('buttons.openMiniApp'), webAppUrl)]);
+    }
+
+    keyboard.push(
       [i18n.t('buttons.newPresentation'), i18n.t('buttons.myPresentations')],
       [i18n.t('buttons.balance'), i18n.t('buttons.addBalance')],
       [i18n.t('buttons.quizBot'), i18n.t('buttons.language')],
-    ]).resize().reply_markup;
+    );
+
+    return Markup.keyboard(keyboard).resize().reply_markup;
   }
 }
 

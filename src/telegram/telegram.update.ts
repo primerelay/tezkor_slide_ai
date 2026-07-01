@@ -72,7 +72,7 @@ export class TelegramUpdate {
 
     // Send reply keyboard (persistent buttons at bottom)
     await ctx.reply(i18n.t('mainMenuText'), {
-      reply_markup: ReplyKeyboards.mainMenu(i18n),
+      reply_markup: ReplyKeyboards.mainMenu(i18n, this.miniAppUrl),
     });
   }
 
@@ -406,7 +406,7 @@ export class TelegramUpdate {
 
     // Update reply keyboard with new language
     await ctx.reply(i18n.t('mainMenuText'), {
-      reply_markup: ReplyKeyboards.mainMenu(i18n),
+      reply_markup: ReplyKeyboards.mainMenu(i18n, this.miniAppUrl),
     });
   }
 
@@ -479,7 +479,7 @@ export class TelegramUpdate {
 
       // Show reply keyboard
       await ctx.reply(i18n.t('mainMenuText'), {
-        reply_markup: ReplyKeyboards.mainMenu(i18n),
+        reply_markup: ReplyKeyboards.mainMenu(i18n, this.miniAppUrl),
       });
     } else {
       await ctx.answerCbQuery(
@@ -747,7 +747,7 @@ export class TelegramUpdate {
     await ctx.editMessageText(i18n.t('generationCancelled'));
 
     await ctx.reply(i18n.t('mainMenuText'), {
-      reply_markup: ReplyKeyboards.mainMenu(i18n),
+      reply_markup: ReplyKeyboards.mainMenu(i18n, this.miniAppUrl),
     });
   }
 
