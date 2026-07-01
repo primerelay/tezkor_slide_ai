@@ -162,12 +162,10 @@ export class InlineKeyboards {
   static featuresMenu(i18n: I18nService, webAppUrl?: string) {
     const buttons: any[] = [];
 
-    // Main "Open Web App" button at the top (opens dashboard)
+    // Main "Open Web App" button at the top (opens home page)
     if (webAppUrl) {
-      // Remove /mini-app from URL and add /admin for dashboard
-      const dashboardUrl = webAppUrl.replace('/mini-app', '/admin');
       buttons.push([
-        Markup.button.webApp(i18n.t('buttons.openWebApp'), dashboardUrl),
+        Markup.button.webApp(i18n.t('buttons.openWebApp'), webAppUrl),
       ]);
     }
 

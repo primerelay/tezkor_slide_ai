@@ -741,25 +741,19 @@ export class TelegramUpdate {
     if (!user) return;
 
     const i18n = this.telegramService.getI18n(user.language);
-
-    if (!this.miniAppUrl) {
-      await ctx.answerCbQuery();
-      await ctx.reply('Web app hozircha mavjud emas.');
-      return;
-    }
-
-    // Open Quiz Generator page in web app
-    const quizUrl = this.miniAppUrl.replace('/mini-app', '/admin/quiz/create');
+    const adminUsername = this.configService.get<string>('ADMIN_USERNAME') || 'admin';
 
     await ctx.answerCbQuery();
     await ctx.reply(
-      '🧠 <b>Quiz Bot Yaratish</b>\n\n✨ Quiz yaratish uchun quyidagi tugmani bosing!\n\n📝 Matn yoki fayl yuklang, sozlamalarni tanlang va AI avtomatik ravishda professional test savollarini yaratadi.',
-      {
-        parse_mode: 'HTML',
-        reply_markup: Markup.inlineKeyboard([
-          [Markup.button.webApp('🧠 Quiz Yaratish', quizUrl)],
-        ]).reply_markup,
-      }
+      '🧠 <b>Quiz Bot Yaratish</b>\n\n' +
+      '✨ AI yordamida professional test savollarini yaratish!\n\n' +
+      '📝 <b>Qanday ishlaydi:</b>\n' +
+      '• Matn yoki fayl yuklang\n' +
+      '• Savol turi va qiyinlik darajasini tanlang\n' +
+      '• AI avtomatik test savollarini yaratadi\n\n' +
+      '💡 Buyurtma berish uchun admin bilan bog\'laning:\n' +
+      `👉 @${adminUsername}`,
+      { parse_mode: 'HTML' }
     );
   }
 
