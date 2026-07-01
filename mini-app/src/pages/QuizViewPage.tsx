@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import { useTelegram } from '../hooks/useTelegram';
 import { motion } from 'framer-motion';
-import { CheckCircle, XCircle } from 'lucide-react';
+import { CheckCircle, XCircle, Send } from 'lucide-react';
 
 interface Question {
   id: number;
@@ -25,12 +25,13 @@ interface Quiz {
 export default function QuizViewPage() {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
-  const { haptic, showBackButton, hideBackButton } = useTelegram();
+  const { haptic, showBackButton, hideBackButton, user } = useTelegram();
   const [quiz, setQuiz] = useState<Quiz | null>(null);
   const [currentQuestion, setCurrentQuestion] = useState(0);
   const [selectedAnswers, setSelectedAnswers] = useState<Record<number, string>>({});
   const [showResults, setShowResults] = useState(false);
   const [loading, setLoading] = useState(true);
+  const [sending, setSending] = useState(false);
 
   useEffect(() => {
     showBackButton(() => {
@@ -81,6 +82,32 @@ export default function QuizViewPage() {
     });
     const percentage = (correct / quiz.questions.length) * 100;
     return { correct, total: quiz.questions.length, percentage };
+  };
+
+  const handleSendToTelegram = async () => {
+    if (!user?.id || !quiz) return;
+
+    try {
+      setSending(true);
+      haptic('light');
+
+      const response = await fetch(`/api/quiz/${quiz.id}/send-to-telegram`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ telegramId: user.id.toString() }),
+      });
+
+      if (!response.ok) throw new Error('Failed to send quiz');
+
+      haptic('success');
+      alert('✅ Quiz Telegram botga yuborildi! Endi uni forward qilishingiz mumkin.');
+    } catch (error) {
+      console.error('Error sending quiz:', error);
+      alert('❌ Yuborishda xatolik yuz berdi');
+      haptic('error');
+    } finally {
+      setSending(false);
+    }
   };
 
   if (loading) {
@@ -174,6 +201,14 @@ export default function QuizViewPage() {
           </div>
 
           <div className="mt-8 space-y-3">
+            <button
+              onClick={handleSendToTelegram}
+              disabled={sending}
+              className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold active:scale-[0.98] transition-transform flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <Send className="w-5 h-5" />
+              {sending ? 'Yuborilmoqda...' : 'Telegramga yuborish'}
+            </button>
             <button
               onClick={() => {
                 haptic('light');

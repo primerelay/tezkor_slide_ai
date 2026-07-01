@@ -40,4 +40,14 @@ export class QuizController {
     const userId = req.user?.id || 1;
     return this.quizService.deleteQuiz(id, userId);
   }
+
+  @Post(':id/send-to-telegram')
+  async sendQuizToTelegram(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() body: { telegramId: string },
+    @Req() req: any,
+  ) {
+    const userId = req.user?.id || 1;
+    return this.quizService.sendQuizToTelegram(id, userId, body.telegramId);
+  }
 }

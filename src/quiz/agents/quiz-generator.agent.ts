@@ -110,15 +110,18 @@ Provide JSON response with:
     };
 
     const systemPrompt = `You are an expert educational assessment creator. Generate high-quality quiz questions that:
-- Test understanding, not just memorization
+- Are DIRECTLY based on specific facts, figures, and details from the provided content
+- Test understanding of concrete information presented in the source material
+- Use exact terminology, names, dates, and concepts from the content
 - Are clear, unambiguous, and grammatically correct
 - Match the specified difficulty level
-- Cover diverse aspects of the content
 - Follow Bloom's Taxonomy principles
+
+CRITICAL: Every question MUST reference specific facts from the source content. Do NOT create generic questions.
 
 ${languageInstructions[language as keyof typeof languageInstructions] || languageInstructions.en}`;
 
-    const userPrompt = `Based on this content, generate ${numberOfQuestions} quiz questions.
+    const userPrompt = `Based on this content, generate ${numberOfQuestions} quiz questions that directly test knowledge of the specific facts, examples, and information provided below.
 
 Content:
 ${content.substring(0, 3000)}
@@ -129,9 +132,16 @@ Requirements:
 - Topics to cover: ${analysis.mainTopics.join(', ')}
 - Key concepts: ${analysis.keyConcepts.slice(0, 10).join(', ')}
 
+IMPORTANT: Each question must be based on SPECIFIC facts from the content above. Use:
+- Exact numbers, dates, formulas mentioned in the content
+- Specific examples given in the content
+- Precise definitions and terms from the content
+- Direct relationships and concepts explained in the content
+
 For Multiple Choice:
 - Provide exactly 4 options (A, B, C, D)
-- Make distractors (wrong answers) plausible
+- Base correct answer on facts from the content
+- Make distractors (wrong answers) plausible but clearly incorrect based on the content
 - Avoid "all of the above" or "none of the above"
 
 For each question, provide:
