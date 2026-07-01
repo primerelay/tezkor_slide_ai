@@ -42,6 +42,7 @@
     "addBalance": "➕ To'ldirish",
     "language": "🌐 Til",
     "quizBot": "🤖 Quiz Bot yaratish",
+    "inviteFriends": "🎁 Do'stlarni taklif qilish",
     "confirm": "✅ Tasdiqlash",
     "cancel": "❌ Bekor qilish",
     "yes": "✅ Ha",
@@ -197,6 +198,12 @@
   },
   "referral": {
     "bonus": "🎉 <b>Tabriklaymiz!</b>\n\n✅ Siz @{channel} kanaliga qo'shildingiz!\n💰 Bonus: +{amount} so'm\n💳 Yangi balans: {balance} so'm\n\nRahmat! 🙏",
-    "bonusDescription": "Kanalga qo'shilganlik uchun bonus"
+    "bonusDescription": "Kanalga qo'shilganlik uchun bonus",
+    "referrerBonus": "🎉 <b>Ajoyib!</b>\n\n✅ {name} sizning havolangiz orqali kanalga qo'shildi!\n💰 Sizga bonus: +{amount} so'm\n💳 Yangi balans: {balance} so'm\n\n🔗 Ko'proq do'stlaringizni taklif qiling va bonus oling!",
+    "referrerBonusDescription": "{name} ni taklif qilganlik uchun bonus",
+    "shareTitle": "🎁 <b>Do'stlaringizni taklif qiling!</b>\n\nDo'stingiz kanalga qo'shilsa:\n👉 Siz: <b>+1,000 so'm</b>\n👉 Do'stingiz: <b>+1,000 so'm</b>\n\n📊 Taklif qilganlar: {count} ta\n💰 Taklif orqali topilgan: {earned} so'm\n\n👇 Quyidagi havolani do'stlaringizga yuboring:",
+    "shareButton": "📤 Havolani ulashish",
+    "yourReferralLink": "Sizning referral havolangiz:\n<code>{link}</code>\n\nYoki quyidagi tugmani bosib ulashing 👇",
+    "invitedBy": "👋 Sizni {name} taklif qildi!"
   }
 }

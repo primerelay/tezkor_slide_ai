@@ -88,17 +88,23 @@ export class TelegramService {
     return SLIDE_PRICES[slideCount] || 2000;
   }
 
-  async findOrCreateUser(telegramUser: {
-    id: number;
-    username?: string;
-    first_name?: string;
-    last_name?: string;
-  }): Promise<User> {
+  async findOrCreateUser(
+    telegramUser: {
+      id: number;
+      username?: string;
+      first_name?: string;
+      last_name?: string;
+    },
+    referrerId?: number,
+  ): Promise<User> {
     let user = await this.userRepository.findOne({
       where: { telegramId: telegramUser.id.toString() },
     });
 
     if (!user) {
+      // Generate unique referral code
+      const referralCode = `ref_${telegramUser.id}_${Math.random().toString(36).substring(2, 10)}`;
+
       user = this.userRepository.create({
         telegramId: telegramUser.id.toString(),
         username: telegramUser.username,
@@ -106,12 +112,20 @@ export class TelegramService {
         lastName: telegramUser.last_name,
         credits: 2500, // Start with 2500 so'm
         language: 'uz',
+        referralCode,
+        referredBy: referrerId,
       });
       await this.userRepository.save(user);
     } else {
       user.username = telegramUser.username || user.username;
       user.firstName = telegramUser.first_name || user.firstName;
       user.lastName = telegramUser.last_name || user.lastName;
+
+      // Generate referral code if doesn't exist
+      if (!user.referralCode) {
+        user.referralCode = `ref_${telegramUser.id}_${Math.random().toString(36).substring(2, 10)}`;
+      }
+
       await this.userRepository.save(user);
     }
 
@@ -336,5 +350,46 @@ export class TelegramService {
         this.logger.error(`Failed to send Quiz Bot request to admin ${adminId}:`, error);
       }
     }
+  }
+
+  /**
+   * Get referral link for a user
+   */
+  getReferralLink(user: User): string {
+    const botUsername = this.configService.get<string>('telegram.botUsername') || '';
+    return `https://t.me/${botUsername}?start=${user.referralCode}`;
+  }
+
+  /**
+   * Find user by referral code
+   */
+  async getUserByReferralCode(referralCode: string): Promise<User | null> {
+    return this.userRepository.findOne({
+      where: { referralCode },
+    });
+  }
+
+  /**
+   * Get referral statistics for a user
+   */
+  async getReferralStats(userId: number): Promise<{
+    referralCount: number;
+    totalEarned: number;
+  }> {
+    const user = await this.userRepository.findOne({
+      where: { id: userId },
+    });
+
+    if (!user) {
+      return { referralCount: 0, totalEarned: 0 };
+    }
+
+    // Each successful referral earns 1000 som
+    const totalEarned = user.referralCount * 1000;
+
+    return {
+      referralCount: user.referralCount,
+      totalEarned,
+    };
   }
 }

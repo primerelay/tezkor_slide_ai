@@ -40,6 +40,15 @@ export class User {
   @Column({ default: false })
   isBanned: boolean;
 
+  @Column({ nullable: true })
+  referredBy?: number; // User ID of who invited them
+
+  @Column({ default: 0 })
+  referralCount: number; // How many people they invited
+
+  @Column({ nullable: true, unique: true })
+  referralCode?: string; // Unique referral code for sharing
+
   @OneToMany(() => Presentation, (presentation) => presentation.user)
   presentations: Presentation[];
 

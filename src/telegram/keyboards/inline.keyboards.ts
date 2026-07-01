@@ -189,6 +189,9 @@ export class InlineKeyboards {
         Markup.button.callback(i18n.t('buttons.myPresentations'), 'my_presentations'),
         Markup.button.callback(i18n.t('buttons.addBalance'), 'add_balance'),
       ],
+      [
+        Markup.button.callback(i18n.t('buttons.inviteFriends'), 'share_referral'),
+      ],
     );
 
     return Markup.inlineKeyboard(buttons).reply_markup;

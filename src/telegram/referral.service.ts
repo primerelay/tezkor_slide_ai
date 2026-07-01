@@ -135,6 +135,11 @@ export class ReferralService {
         `User ${userId} joined channel @${channelUsername} - awarded ${REFERRAL_REWARD_AMOUNT} som`,
       );
 
+      // Award referrer if this user was invited by someone
+      if (user.referredBy) {
+        await this.rewardReferrer(user.referredBy, user, i18n);
+      }
+
       return { rewarded: true, amount: REFERRAL_REWARD_AMOUNT };
     } catch (error) {
       this.logger.error(`Error handling channel join for user ${userId}:`, error);
@@ -197,5 +202,66 @@ export class ReferralService {
     });
 
     return !existingReward;
+  }
+
+  /**
+   * Reward the referrer when their invited friend joins the channel
+   */
+  private async rewardReferrer(
+    referrerId: number,
+    invitedUser: User,
+    invitedUserI18n: I18nService,
+  ): Promise<void> {
+    try {
+      const referrer = await this.userRepository.findOne({
+        where: { id: referrerId },
+      });
+
+      if (!referrer) {
+        this.logger.warn(`Referrer ${referrerId} not found`);
+        return;
+      }
+
+      // Add credits to referrer
+      referrer.credits += REFERRAL_REWARD_AMOUNT;
+      referrer.referralCount += 1;
+      await this.userRepository.save(referrer);
+
+      // Create transaction record for referrer
+      const referrerI18n = new I18nService(referrer.language);
+      const transaction = this.transactionRepository.create({
+        userId: referrer.id,
+        type: 'topup',
+        amount: REFERRAL_REWARD_AMOUNT,
+        status: 'approved',
+        description: referrerI18n.t('referral.referrerBonusDescription', {
+          name: invitedUser.firstName || 'User',
+        }),
+      });
+      await this.transactionRepository.save(transaction);
+
+      // Notify referrer
+      try {
+        const message = referrerI18n.t('referral.referrerBonus', {
+          name: invitedUser.firstName || 'Do\'stingiz',
+          amount: REFERRAL_REWARD_AMOUNT.toLocaleString(),
+          balance: referrer.credits.toLocaleString(),
+        });
+
+        await this.bot.telegram.sendMessage(
+          referrer.telegramId,
+          message,
+          { parse_mode: 'HTML' },
+        );
+      } catch (error) {
+        this.logger.error(`Failed to notify referrer ${referrerId}:`, error);
+      }
+
+      this.logger.log(
+        `Referrer ${referrerId} awarded ${REFERRAL_REWARD_AMOUNT} som for inviting user ${invitedUser.id}`,
+      );
+    } catch (error) {
+      this.logger.error(`Error rewarding referrer ${referrerId}:`, error);
+    }
   }
 }

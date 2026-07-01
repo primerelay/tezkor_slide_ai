@@ -53,18 +53,47 @@ export class TelegramUpdate {
     const telegramUser = ctx.from;
     if (!telegramUser) return;
 
-    const user = await this.telegramService.findOrCreateUser({
-      id: telegramUser.id,
-      username: telegramUser.username,
-      first_name: telegramUser.first_name,
-      last_name: telegramUser.last_name,
-    });
+    // Parse referral code from deep link (e.g., /start ref_123_abc)
+    let referrerId: number | undefined;
+    let referrerName: string | undefined;
+
+    if ('message' in ctx.update && 'text' in ctx.update.message) {
+      const text = ctx.update.message.text;
+      const parts = text.split(' ');
+      if (parts.length > 1) {
+        const startPayload = parts[1]; // Get the payload after /start
+        if (startPayload && startPayload.startsWith('ref_')) {
+          const referrer = await this.telegramService.getUserByReferralCode(startPayload);
+          if (referrer) {
+            referrerId = referrer.id;
+            referrerName = referrer.firstName || referrer.username;
+          }
+        }
+      }
+    }
+
+    const user = await this.telegramService.findOrCreateUser(
+      {
+        id: telegramUser.id,
+        username: telegramUser.username,
+        first_name: telegramUser.first_name,
+        last_name: telegramUser.last_name,
+      },
+      referrerId,
+    );
 
     ctx.session.userId = user.id;
     ctx.session.language = user.language;
     ctx.session.step = undefined;
 
     const i18n = this.telegramService.getI18n(user.language);
+
+    // If user was invited by someone, show special message
+    if (referrerName && user.referredBy) {
+      await ctx.reply(i18n.t('referral.invitedBy', { name: referrerName }), {
+        parse_mode: 'HTML',
+      });
+    }
 
     // Send welcome message with inline keyboard showing all features
     await ctx.reply(i18n.t('welcome', { name: user.firstName || 'User' }), {
@@ -572,6 +601,46 @@ export class TelegramUpdate {
 
     await ctx.answerCbQuery();
     await ctx.reply(i18n.t('paymentInstructions', { humoCard, humoOwner, uzcardCard, uzcardOwner }), { parse_mode: 'HTML' });
+  }
+
+  @Action('share_referral')
+  async onShareReferral(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    if (!user) return;
+
+    const i18n = this.telegramService.getI18n(user.language);
+    const referralLink = this.telegramService.getReferralLink(user);
+    const stats = await this.telegramService.getReferralStats(user.id);
+
+    await ctx.answerCbQuery();
+
+    const message = i18n.t('referral.shareTitle', {
+      count: stats.referralCount.toString(),
+      earned: stats.totalEarned.toLocaleString(),
+    });
+
+    await ctx.reply(message, {
+      parse_mode: 'HTML',
+      reply_markup: Markup.inlineKeyboard([
+        [
+          Markup.button.url(
+            i18n.t('referral.shareButton'),
+            `https://t.me/share/url?url=${encodeURIComponent(referralLink)}&text=${encodeURIComponent('🎁 Kanalga qo\'shiling va 1,000 so\'m bonus oling!')}`,
+          ),
+        ],
+        [Markup.button.callback(i18n.t('buttons.backToMenu'), 'back_to_menu')],
+      ]).reply_markup,
+    });
+
+    // Also send the link as copyable text
+    await ctx.reply(i18n.t('referral.yourReferralLink', { link: referralLink }), {
+      parse_mode: 'HTML',
+    });
   }
 
   @Action(/^reja_(yes|no)$/)

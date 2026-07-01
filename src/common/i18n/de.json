@@ -42,6 +42,7 @@
     "addBalance": "➕ Aufladen",
     "language": "🌐 Sprache",
     "quizBot": "🤖 Quiz Bot erstellen",
+    "inviteFriends": "🎁 Freunde einladen",
     "confirm": "✅ Bestätigen",
     "cancel": "❌ Abbrechen",
     "yes": "✅ Ja",
@@ -197,6 +198,12 @@
   },
   "referral": {
     "bonus": "🎉 <b>Glückwunsch!</b>\n\n✅ Sie sind @{channel} beigetreten!\n💰 Bonus: +{amount} Som\n💳 Neuer Kontostand: {balance} Som\n\nDanke! 🙏",
-    "bonusDescription": "Bonus für den Kanalbeitritt"
+    "bonusDescription": "Bonus für den Kanalbeitritt",
+    "referrerBonus": "🎉 <b>Großartig!</b>\n\n✅ {name} ist über Ihren Link beigetreten!\n💰 Ihr Bonus: +{amount} Som\n💳 Neuer Kontostand: {balance} Som\n\n🔗 Laden Sie mehr Freunde ein und verdienen Sie Boni!",
+    "referrerBonusDescription": "Bonus für die Einladung von {name}",
+    "shareTitle": "🎁 <b>Laden Sie Ihre Freunde ein!</b>\n\nWenn ein Freund dem Kanal beitritt:\n👉 Sie: <b>+1,000 Som</b>\n👉 Ihr Freund: <b>+1,000 Som</b>\n\n📊 Eingeladen: {count}\n💰 Verdient: {earned} Som\n\n👇 Senden Sie diesen Link an Freunde:",
+    "shareButton": "📤 Link teilen",
+    "yourReferralLink": "Ihr Empfehlungslink:\n<code>{link}</code>\n\nOder klicken Sie auf die Schaltfläche unten 👇",
+    "invitedBy": "👋 Sie wurden von {name} eingeladen!"
   }
 }
