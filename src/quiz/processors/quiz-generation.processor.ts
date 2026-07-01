@@ -7,10 +7,13 @@ import { Quiz, QuizStatus } from '../../database/entities/quiz.entity';
 import { Question } from '../../database/entities/question.entity';
 import { User } from '../../database/entities/user.entity';
 import { QuizGeneratorAgent } from '../agents/quiz-generator.agent';
+import { InjectBot } from 'nestjs-telegraf';
+import { Telegraf } from 'telegraf';
 
 @Processor('quiz-generation')
 export class QuizGenerationProcessor extends WorkerHost {
   private readonly logger = new Logger(QuizGenerationProcessor.name);
+  private progressMessageIds: Map<number, { chatId: string; messageId: number }> = new Map();
 
   constructor(
     @InjectRepository(Quiz)
@@ -20,6 +23,8 @@ export class QuizGenerationProcessor extends WorkerHost {
     @InjectRepository(User)
     private userRepository: Repository<User>,
     private quizGeneratorAgent: QuizGeneratorAgent,
+    @InjectBot()
+    private bot: Telegraf,
   ) {
     super();
   }
@@ -28,9 +33,18 @@ export class QuizGenerationProcessor extends WorkerHost {
     const { quizId } = job.data;
     this.logger.log(`Processing quiz generation job for quiz ${quizId}`);
 
-    const quiz = await this.quizRepository.findOne({ where: { id: quizId } });
+    const quiz = await this.quizRepository.findOne({
+      where: { id: quizId },
+      relations: ['user'],
+    });
     if (!quiz) {
       throw new Error(`Quiz ${quizId} not found`);
+    }
+
+    // Get user for notifications
+    const user = await this.userRepository.findOne({ where: { id: quiz.userId } });
+    if (!user) {
+      throw new Error(`User ${quiz.userId} not found`);
     }
 
     try {
@@ -38,7 +52,13 @@ export class QuizGenerationProcessor extends WorkerHost {
       quiz.status = QuizStatus.GENERATING;
       await this.quizRepository.save(quiz);
 
+      // Progress: 10% - Starting
+      await this.sendProgressMessage(quizId, user.telegramId, quiz.title, 10);
+
       const startTime = Date.now();
+
+      // Progress: 30% - Analyzing content
+      await this.sendProgressMessage(quizId, user.telegramId, quiz.title, 30);
 
       // Generate questions using multi-agent system
       const generatedQuestions = await this.quizGeneratorAgent.generateQuiz(
@@ -48,6 +68,9 @@ export class QuizGenerationProcessor extends WorkerHost {
         quiz.numberOfQuestions,
         quiz.metadata?.language || 'uz',
       );
+
+      // Progress: 70% - Questions generated
+      await this.sendProgressMessage(quizId, user.telegramId, quiz.title, 70);
 
       const endTime = Date.now();
       quiz.generationTimeMs = endTime - startTime;
@@ -72,10 +95,20 @@ export class QuizGenerationProcessor extends WorkerHost {
 
       await this.questionRepository.save(questions);
 
+      // Progress: 90% - Saving
+      await this.sendProgressMessage(quizId, user.telegramId, quiz.title, 90);
+
       // Update quiz status
       quiz.status = QuizStatus.COMPLETED;
       quiz.generationCost = this.estimateCost(quiz.sourceContent.length, generatedQuestions.length);
+      quiz.questions = questions; // Add questions for notification
       await this.quizRepository.save(quiz);
+
+      // Progress: 100% - Complete
+      await this.sendProgressMessage(quizId, user.telegramId, quiz.title, 100);
+
+      // Send completion notification
+      await this.sendCompletedQuiz(quiz, user);
 
       this.logger.log(`Quiz ${quizId} generated successfully with ${questions.length} questions`);
     } catch (error) {
@@ -84,13 +117,32 @@ export class QuizGenerationProcessor extends WorkerHost {
       // Refund credits if generation failed
       const price = quiz.metadata?.price;
       if (price && quiz.userId) {
-        const user = await this.userRepository.findOne({ where: { id: quiz.userId } });
-        if (user) {
-          user.credits += price;
-          await this.userRepository.save(user);
+        const refundUser = await this.userRepository.findOne({ where: { id: quiz.userId } });
+        if (refundUser) {
+          refundUser.credits += price;
+          await this.userRepository.save(refundUser);
           this.logger.log(`Refunded ${price} credits to user ${quiz.userId} due to failed generation`);
         }
       }
+
+      // Notify user of failure
+      if (user) {
+        try {
+          await this.bot.telegram.sendMessage(
+            user.telegramId,
+            `❌ <b>Quiz yaratishda xatolik!</b>\n\n` +
+            `📝 ${quiz.title}\n\n` +
+            `Xatolik: ${error.message || 'Noma\'lum xatolik'}\n\n` +
+            `💰 ${price ? `${price.toLocaleString()} so'm qaytarildi` : 'Pul qaytarildi'}`,
+            { parse_mode: 'HTML' },
+          );
+        } catch (notifyError) {
+          this.logger.error('Failed to send error notification:', notifyError);
+        }
+      }
+
+      // Clean up progress message
+      this.progressMessageIds.delete(quizId);
 
       quiz.status = QuizStatus.FAILED;
       quiz.errorMessage = error.message || 'Unknown error occurred';
@@ -105,5 +157,79 @@ export class QuizGenerationProcessor extends WorkerHost {
     const baseCost = 0.001;
     const lengthMultiplier = Math.min(contentLength / 5000, 2); // Scale with content length
     return baseCost * lengthMultiplier;
+  }
+
+  private async sendProgressMessage(
+    quizId: number,
+    telegramId: string,
+    title: string,
+    progress: number,
+  ): Promise<void> {
+    try {
+      const progressBar = this.getProgressBar(progress);
+      const message =
+        `⏳ <b>Quiz yaratilmoqda...</b>\n\n` +
+        `📝 ${title.substring(0, 50)}${title.length > 50 ? '...' : ''}\n\n` +
+        `${progressBar} ${progress}%\n\n` +
+        this.getProgressStage(progress);
+
+      const existing = this.progressMessageIds.get(quizId);
+
+      if (existing) {
+        // Update existing message
+        await this.bot.telegram.editMessageText(
+          existing.chatId,
+          existing.messageId,
+          undefined,
+          message,
+          { parse_mode: 'HTML' },
+        );
+      } else {
+        // Send new message
+        const sent = await this.bot.telegram.sendMessage(telegramId, message, {
+          parse_mode: 'HTML',
+        });
+        this.progressMessageIds.set(quizId, {
+          chatId: telegramId,
+          messageId: sent.message_id,
+        });
+      }
+    } catch (error) {
+      this.logger.error(`Failed to send progress message for quiz ${quizId}:`, error);
+    }
+  }
+
+  private getProgressBar(progress: number): string {
+    const filled = Math.floor(progress / 10);
+    const empty = 10 - filled;
+    return '▓'.repeat(filled) + '░'.repeat(empty);
+  }
+
+  private getProgressStage(progress: number): string {
+    if (progress < 20) return '🔍 Matn tahlil qilinmoqda...';
+    if (progress < 50) return '🧠 Savollar yaratilmoqda...';
+    if (progress < 80) return '✨ Savollar yaxshilanmoqda...';
+    if (progress < 100) return '✅ Tugallanmoqda...';
+    return '✅ Tayyor!';
+  }
+
+  private async sendCompletedQuiz(quiz: Quiz, user: User): Promise<void> {
+    try {
+      await this.bot.telegram.sendMessage(
+        user.telegramId,
+        `✅ <b>Quiz tayyor!</b>\n\n` +
+        `📝 ${quiz.title}\n` +
+        `🔢 Savollar: ${quiz.questions?.length || quiz.numberOfQuestions} ta\n` +
+        `📊 Qiyinlik: ${quiz.difficulty}\n\n` +
+        `Mini-appda ochish uchun:\n` +
+        `👉 /start → Mini App → Quiz ID: ${quiz.id}`,
+        { parse_mode: 'HTML' },
+      );
+
+      // Clean up progress message
+      this.progressMessageIds.delete(quiz.id);
+    } catch (error) {
+      this.logger.error(`Failed to send completed quiz notification:`, error);
+    }
   }
 }
