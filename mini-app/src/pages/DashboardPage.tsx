@@ -140,7 +140,7 @@ export default function DashboardPage() {
             <button
               onClick={() => {
                 haptic('light');
-                window.open('/admin/quiz/create', '_blank');
+                navigate('/quiz/create');
               }}
               className="card p-4 text-left active:bg-indigo-50 transition-colors"
             >

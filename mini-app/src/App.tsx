@@ -6,6 +6,7 @@ import DashboardPage from './pages/DashboardPage';
 import CreatePage from './pages/CreatePage';
 import PreviewPage from './pages/PreviewPage';
 import EditorPage from './pages/EditorPage';
+import QuizCreatePage from './pages/QuizCreatePage';
 
 function App() {
   const { webApp, ready } = useTelegram();
@@ -42,6 +43,7 @@ function App() {
       <Routes>
         <Route path="/" element={<DashboardPage />} />
         <Route path="/create" element={<CreatePage />} />
+        <Route path="/quiz/create" element={<QuizCreatePage />} />
         <Route path="/editor/:id" element={<EditorPage />} />
         <Route path="/preview/:id" element={<PreviewPage />} />
       </Routes>
