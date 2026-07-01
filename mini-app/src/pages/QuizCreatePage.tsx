@@ -121,7 +121,7 @@ export default function QuizCreatePage() {
     }, 3000);
   };
 
-  const canProceed = step === 'content' ? content.trim().length >= 20 : true;
+  const canProceed = step === 'content' ? content.trim().length >= 10 : true;
 
   return (
     <div className="flex-1 flex flex-col bg-gray-50">
@@ -168,14 +168,14 @@ export default function QuizCreatePage() {
                 <textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder="Test yaratish uchun darslik matni yoki mavzuni kiriting... (kamida 20 belgi)"
+                  placeholder="Test yaratish uchun darslik matni yoki mavzuni kiriting... (kamida 10 belgi)"
                   className="w-full h-64 px-4 py-3 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
                 <div className="flex items-center justify-between mt-2">
                   <span className="text-sm text-gray-500">
                     {content.length} belgi
                   </span>
-                  {content.length >= 20 && (
+                  {content.length >= 10 && (
                     <span className="text-sm text-green-600 font-medium">
                       ✓ Tayyor
                     </span>
