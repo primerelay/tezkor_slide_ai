@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios from 'axios';
 import { QuizType, QuizDifficulty } from '../../database/entities/quiz.entity';
 import { QuestionType } from '../../database/entities/question.entity';
+import { GeminiProvider } from '../../ai/providers/gemini.provider';
 
 interface GeneratedQuestion {
   type: QuestionType;
@@ -17,12 +17,11 @@ interface GeneratedQuestion {
 @Injectable()
 export class QuizGeneratorAgent {
   private readonly logger = new Logger(QuizGeneratorAgent.name);
-  private readonly openRouterApiKey: string;
-  private readonly baseURL = 'https://openrouter.ai/api/v1';
 
-  constructor(private configService: ConfigService) {
-    this.openRouterApiKey = this.configService.get<string>('OPENROUTER_API_KEY') || '';
-  }
+  constructor(
+    private configService: ConfigService,
+    private geminiProvider: GeminiProvider,
+  ) {}
 
   /**
    * AGENT 1: Content Analyzer
@@ -318,40 +317,28 @@ Return the same JSON structure with improved distractors.`;
   }
 
   /**
-   * Helper: Call AI model via OpenRouter
+   * Helper: Call AI model via Gemini
    */
   private async callAI(
     systemPrompt: string,
     userPrompt: string,
-    model: string = 'deepseek/deepseek-r1',
+    model: string = 'gemini-2.0-flash',
     maxTokens: number = 2000,
   ): Promise<string> {
     try {
-      const response = await axios.post(
-        `${this.baseURL}/chat/completions`,
+      const response = await this.geminiProvider.generateText(
+        userPrompt,
+        systemPrompt,
         {
           model,
-          messages: [
-            { role: 'system', content: systemPrompt },
-            { role: 'user', content: userPrompt },
-          ],
-          max_tokens: maxTokens,
+          maxTokens,
           temperature: 0.7,
-        },
-        {
-          headers: {
-            'Authorization': `Bearer ${this.openRouterApiKey}`,
-            'Content-Type': 'application/json',
-            'HTTP-Referer': 'https://tezhisobchi.uz',
-            'X-Title': 'Tezkor Slide AI - Quiz Generator',
-          },
-          timeout: 60000,
         },
       );
 
-      return response.data.choices[0].message.content;
+      return response.content;
     } catch (error) {
-      this.logger.error('AI API call failed', error.response?.data || error.message);
+      this.logger.error('AI API call failed', error.message);
       throw new Error('AI service temporarily unavailable');
     }
   }

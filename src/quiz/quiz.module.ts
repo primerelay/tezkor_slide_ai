@@ -9,6 +9,7 @@ import { Quiz } from '../database/entities/quiz.entity';
 import { Question } from '../database/entities/question.entity';
 import { QuizAttempt } from '../database/entities/quiz-attempt.entity';
 import { User } from '../database/entities/user.entity';
+import { AiModule } from '../ai/ai.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { User } from '../database/entities/user.entity';
     BullModule.registerQueue({
       name: 'quiz-generation',
     }),
+    AiModule,
   ],
   controllers: [QuizController],
   providers: [QuizService, QuizGeneratorAgent, QuizGenerationProcessor],
