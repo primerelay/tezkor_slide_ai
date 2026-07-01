@@ -256,6 +256,14 @@ export default function QuizViewPage() {
             style={{ width: `${progress}%` }}
           />
         </div>
+        <button
+          onClick={handleSendToTelegram}
+          disabled={sending}
+          className="w-full mt-3 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-lg text-sm font-medium active:scale-[0.98] transition-transform flex items-center justify-center gap-2 disabled:opacity-50"
+        >
+          <Send className="w-4 h-4" />
+          {sending ? 'Yuborilmoqda...' : 'Telegramga yuborish'}
+        </button>
       </header>
 
       <div className="flex-1 overflow-y-auto px-5 py-6">

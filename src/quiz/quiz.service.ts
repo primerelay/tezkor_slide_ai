@@ -128,6 +128,12 @@ export class QuizService {
     }
 
     try {
+      // Convert telegramId to number for Telegram API
+      const chatId = parseInt(telegramId, 10);
+      if (isNaN(chatId)) {
+        throw new Error('Invalid Telegram ID');
+      }
+
       // Send each question as a separate Telegram quiz
       for (const question of quiz.questions) {
         // Only send multiple choice questions as Telegram quiz
@@ -136,7 +142,7 @@ export class QuizService {
           const correctOptionIndex = Object.keys(question.options).indexOf(question.correctAnswer);
 
           await this.bot.telegram.sendPoll(
-            telegramId,
+            chatId,
             question.questionText,
             options,
             {
@@ -154,18 +160,19 @@ export class QuizService {
 
       // Send completion message
       await this.bot.telegram.sendMessage(
-        telegramId,
+        chatId,
         `✅ Quiz "${quiz.title}" yuborildi!\n\n` +
         `📊 Jami ${quiz.questions.length} ta savol\n` +
         `🎯 Qiyinlik: ${quiz.difficulty}\n\n` +
         `Bu quizni boshqalarga forward qilishingiz mumkin!`,
       );
 
-      this.logger.log(`Quiz ${quizId} sent to Telegram user ${telegramId}`);
+      this.logger.log(`Quiz ${quizId} sent to Telegram user ${chatId}`);
       return { success: true, message: 'Quiz Telegramga yuborildi' };
     } catch (error) {
       this.logger.error(`Failed to send quiz ${quizId} to Telegram:`, error);
-      throw new Error('Telegram orqali yuborishda xatolik');
+      this.logger.error('Error details:', error.message, error.stack);
+      throw new Error('Telegram orqali yuborishda xatolik: ' + (error.message || 'Unknown error'));
     }
   }
 }
