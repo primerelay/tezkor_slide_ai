@@ -154,6 +154,17 @@ export default function QuizViewPage() {
             </p>
           </motion.div>
 
+          <div className="mb-6">
+            <button
+              onClick={handleSendToTelegram}
+              disabled={sending}
+              className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold active:scale-[0.98] transition-transform flex items-center justify-center gap-2 disabled:opacity-50"
+            >
+              <Send className="w-5 h-5" />
+              {sending ? 'Yuborilmoqda...' : 'Telegramga yuborish'}
+            </button>
+          </div>
+
           <div className="space-y-4">
             {quiz.questions.map((question, index) => {
               const userAnswer = selectedAnswers[question.id];
@@ -201,14 +212,6 @@ export default function QuizViewPage() {
           </div>
 
           <div className="mt-8 space-y-3">
-            <button
-              onClick={handleSendToTelegram}
-              disabled={sending}
-              className="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-xl font-semibold active:scale-[0.98] transition-transform flex items-center justify-center gap-2 disabled:opacity-50"
-            >
-              <Send className="w-5 h-5" />
-              {sending ? 'Yuborilmoqda...' : 'Telegramga yuborish'}
-            </button>
             <button
               onClick={() => {
                 haptic('light');
