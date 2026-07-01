@@ -215,21 +215,58 @@ export class QuizGenerationProcessor extends WorkerHost {
 
   private async sendCompletedQuiz(quiz: Quiz, user: User): Promise<void> {
     try {
+      // Send header message
       await this.bot.telegram.sendMessage(
         user.telegramId,
         `✅ <b>Quiz tayyor!</b>\n\n` +
         `📝 ${quiz.title}\n` +
         `🔢 Savollar: ${quiz.questions?.length || quiz.numberOfQuestions} ta\n` +
         `📊 Qiyinlik: ${quiz.difficulty}\n\n` +
-        `Mini-appda ochish uchun:\n` +
-        `👉 /start → Mini App → Quiz ID: ${quiz.id}`,
+        `Endi sizga savollar yuboriladi...`,
         { parse_mode: 'HTML' },
       );
+
+      // Send each question as native Telegram quiz
+      if (quiz.questions && quiz.questions.length > 0) {
+        for (const question of quiz.questions) {
+          // Only send multiple choice questions as Telegram quiz
+          if (question.options && Object.keys(question.options).length >= 2) {
+            const options = Object.values(question.options);
+            const correctOptionIndex = Object.keys(question.options).indexOf(question.correctAnswer);
+
+            if (correctOptionIndex >= 0) {
+              await this.bot.telegram.sendPoll(
+                user.telegramId,
+                question.questionText,
+                options,
+                {
+                  type: 'quiz',
+                  correct_option_id: correctOptionIndex,
+                  explanation: question.explanation || undefined,
+                  is_anonymous: false,
+                } as any,
+              );
+
+              // Small delay to avoid rate limiting
+              await new Promise(resolve => setTimeout(resolve, 500));
+            }
+          }
+        }
+
+        // Send completion message
+        await this.bot.telegram.sendMessage(
+          user.telegramId,
+          `🎉 <b>Barcha savollar yuborildi!</b>\n\n` +
+          `📊 Jami ${quiz.questions.length} ta savol\n` +
+          `💡 Bu quizlarni forward qilib boshqalarga ham ulashishingiz mumkin!`,
+          { parse_mode: 'HTML' },
+        );
+      }
 
       // Clean up progress message
       this.progressMessageIds.delete(quiz.id);
     } catch (error) {
-      this.logger.error(`Failed to send completed quiz notification:`, error);
+      this.logger.error(`Failed to send completed quiz:`, error);
     }
   }
 }
