@@ -21,12 +21,25 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
         const telegramId = tg?.initDataUnsafe?.user?.id;
 
         if (telegramId) {
-          const response = await fetch(`/api/mini-app/user/${telegramId}`);
-          if (response.ok) {
-            const user = await response.json();
-            if (user.language && ['uz', 'ru', 'en', 'de'].includes(user.language)) {
-              setLanguage(user.language as SupportedLanguage);
+          // Add timeout to prevent hanging
+          const controller = new AbortController();
+          const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+          try {
+            const response = await fetch(`/api/mini-app/user/${telegramId}`, {
+              signal: controller.signal,
+            });
+            clearTimeout(timeoutId);
+
+            if (response.ok) {
+              const user = await response.json();
+              if (user.language && ['uz', 'ru', 'en', 'de'].includes(user.language)) {
+                setLanguage(user.language as SupportedLanguage);
+              }
             }
+          } catch (fetchError) {
+            clearTimeout(timeoutId);
+            // Ignore timeout/abort errors, just use default language
           }
         } else {
           // Try to get language from Telegram WebApp
@@ -53,6 +66,13 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
     };
 
     fetchUserLanguage();
+
+    // Fallback: ensure loading state is cleared after 5 seconds max
+    const fallbackTimeout = setTimeout(() => {
+      setIsLoading(false);
+    }, 5000);
+
+    return () => clearTimeout(fallbackTimeout);
   }, []);
 
   const t = getTranslations(language);
