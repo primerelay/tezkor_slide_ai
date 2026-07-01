@@ -139,9 +139,9 @@ export default function QuizCreatePage() {
   const canProceed = step === 'content' ? content.trim().length >= 10 : true;
 
   return (
-    <div className="flex-1 flex flex-col bg-gray-50">
+    <div className="h-screen flex flex-col bg-gray-50 overflow-hidden">
       {/* Header */}
-      <header className="bg-white border-b border-gray-200 px-5 py-4">
+      <header className="bg-white border-b border-gray-200 px-5 py-4 flex-shrink-0">
         <div className="flex items-center gap-3">
           <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center">
             <Brain className="w-5 h-5 text-indigo-600" />
@@ -284,12 +284,7 @@ export default function QuizCreatePage() {
 
               {/* Number of Questions */}
               <div className="card p-3">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="font-medium text-gray-900 text-sm">Savollar soni</h3>
-                  <span className="text-sm font-semibold text-indigo-600">
-                    {calculatePrice(numberOfQuestions).toLocaleString()} so'm
-                  </span>
-                </div>
+                <h3 className="font-medium text-gray-900 text-sm mb-2">Savollar soni</h3>
                 <input
                   type="number"
                   value={numberOfQuestions}
@@ -299,10 +294,28 @@ export default function QuizCreatePage() {
                   className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
                 <p className="text-xs text-gray-500 mt-1">5 dan 30 gacha</p>
-                <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
-                  <p className="text-xs text-blue-800">
-                    💡 5 savol = 500, 10 = 800, 15 = 1,200, 20 = 1,500, 30 = 2,000 so'm
-                  </p>
+              </div>
+
+              {/* Pricing Summary */}
+              <div className="card p-4 bg-gradient-to-br from-indigo-50 to-purple-50 border-2 border-indigo-200">
+                <div className="flex items-center justify-between mb-3">
+                  <h3 className="font-semibold text-gray-900">Jami narx</h3>
+                  <div className="text-right">
+                    <div className="text-2xl font-bold text-indigo-600">
+                      {calculatePrice(numberOfQuestions).toLocaleString()} so'm
+                    </div>
+                    <div className="text-xs text-gray-500">{numberOfQuestions} ta savol</div>
+                  </div>
+                </div>
+                <div className="pt-3 border-t border-indigo-200">
+                  <p className="text-xs font-medium text-gray-700 mb-2">📋 Narxlar:</p>
+                  <div className="grid grid-cols-2 gap-2 text-xs text-gray-600">
+                    <div>• 5 savol - 500</div>
+                    <div>• 10 savol - 800</div>
+                    <div>• 15 savol - 1,200</div>
+                    <div>• 20 savol - 1,500</div>
+                    <div className="col-span-2">• 30 savol - 2,000</div>
+                  </div>
                 </div>
               </div>
             </motion.div>
