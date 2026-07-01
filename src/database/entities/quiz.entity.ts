@@ -100,6 +100,7 @@ export class Quiz {
     topic?: string;
     tags?: string[];
     aiModel?: string; // deepseek-r1, gemini-flash, etc.
+    price?: number; // Quiz price in credits
   };
 
   @OneToMany(() => Question, (question) => question.quiz, { cascade: true })

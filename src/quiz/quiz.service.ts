@@ -30,10 +30,42 @@ export class QuizService {
   ) {}
 
   /**
+   * Calculate quiz price based on number of questions
+   */
+  private calculateQuizPrice(numberOfQuestions: number): number {
+    // Pricing tiers
+    if (numberOfQuestions <= 5) return 500;
+    if (numberOfQuestions <= 10) return 800;
+    if (numberOfQuestions <= 15) return 1200;
+    if (numberOfQuestions <= 20) return 1500;
+    if (numberOfQuestions <= 30) return 2000;
+    return 2000; // Max price for 30+ questions
+  }
+
+  /**
    * Create quiz and queue for generation
    */
   async createQuiz(userId: number, createQuizDto: CreateQuizDto): Promise<Quiz> {
     this.logger.log(`Creating quiz for user ${userId}`);
+
+    // Calculate price
+    const price = this.calculateQuizPrice(createQuizDto.numberOfQuestions);
+
+    // Get user and check balance
+    const user = await this.userRepository.findOne({ where: { id: userId } });
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    if (user.credits < price) {
+      throw new Error(`Balans yetarli emas. Kerak: ${price} so'm, Mavjud: ${user.credits} so'm`);
+    }
+
+    // Deduct credits immediately
+    user.credits -= price;
+    await this.userRepository.save(user);
+
+    this.logger.log(`Deducted ${price} credits from user ${userId}. New balance: ${user.credits}`);
 
     // Create quiz record
     const quiz = this.quizRepository.create({
@@ -51,6 +83,7 @@ export class QuizService {
         language: createQuizDto.language || 'uz',
         subject: createQuizDto.subject,
         topic: createQuizDto.topic,
+        price, // Store price in metadata
       },
     });
 
@@ -61,7 +94,7 @@ export class QuizService {
       quizId: savedQuiz.id,
     });
 
-    this.logger.log(`Quiz ${savedQuiz.id} queued for generation`);
+    this.logger.log(`Quiz ${savedQuiz.id} queued for generation (price: ${price})`);
     return savedQuiz;
   }
 

@@ -34,6 +34,15 @@ export default function QuizCreatePage() {
     return () => hideBackButton();
   }, [step, showBackButton, hideBackButton, navigate, haptic]);
 
+  const calculatePrice = (numQuestions: number): number => {
+    if (numQuestions <= 5) return 500;
+    if (numQuestions <= 10) return 800;
+    if (numQuestions <= 15) return 1200;
+    if (numQuestions <= 20) return 1500;
+    if (numQuestions <= 30) return 2000;
+    return 2000;
+  };
+
   const handleNext = () => {
     haptic('light');
     if (step === 'content' && content.trim()) {
@@ -75,7 +84,10 @@ export default function QuizCreatePage() {
         }),
       });
 
-      if (!response.ok) throw new Error('Failed to create quiz');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Failed to create quiz' }));
+        throw new Error(errorData.message || 'Failed to create quiz');
+      }
 
       const data = await response.json();
       clearInterval(progressInterval);
@@ -83,10 +95,10 @@ export default function QuizCreatePage() {
 
       // Poll for quiz completion
       pollQuizStatus(data.id);
-    } catch (error) {
+    } catch (error: any) {
       clearInterval(progressInterval);
       console.error('Quiz generation failed:', error);
-      alert('Quiz yaratishda xatolik yuz berdi');
+      alert(error.message || 'Quiz yaratishda xatolik yuz berdi');
       navigate('/');
     }
   };
@@ -272,7 +284,12 @@ export default function QuizCreatePage() {
 
               {/* Number of Questions */}
               <div className="card p-3">
-                <h3 className="font-medium text-gray-900 text-sm mb-2">Savollar soni</h3>
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="font-medium text-gray-900 text-sm">Savollar soni</h3>
+                  <span className="text-sm font-semibold text-indigo-600">
+                    {calculatePrice(numberOfQuestions).toLocaleString()} so'm
+                  </span>
+                </div>
                 <input
                   type="number"
                   value={numberOfQuestions}
@@ -282,6 +299,11 @@ export default function QuizCreatePage() {
                   className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
                 <p className="text-xs text-gray-500 mt-1">5 dan 30 gacha</p>
+                <div className="mt-2 p-2 bg-blue-50 border border-blue-200 rounded-lg">
+                  <p className="text-xs text-blue-800">
+                    💡 5 savol = 500, 10 = 800, 15 = 1,200, 20 = 1,500, 30 = 2,000 so'm
+                  </p>
+                </div>
               </div>
             </motion.div>
           )}

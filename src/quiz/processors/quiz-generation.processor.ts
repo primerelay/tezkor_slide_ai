@@ -5,6 +5,7 @@ import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { Quiz, QuizStatus } from '../../database/entities/quiz.entity';
 import { Question } from '../../database/entities/question.entity';
+import { User } from '../../database/entities/user.entity';
 import { QuizGeneratorAgent } from '../agents/quiz-generator.agent';
 
 @Processor('quiz-generation')
@@ -16,6 +17,8 @@ export class QuizGenerationProcessor extends WorkerHost {
     private quizRepository: Repository<Quiz>,
     @InjectRepository(Question)
     private questionRepository: Repository<Question>,
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
     private quizGeneratorAgent: QuizGeneratorAgent,
   ) {
     super();
@@ -77,6 +80,17 @@ export class QuizGenerationProcessor extends WorkerHost {
       this.logger.log(`Quiz ${quizId} generated successfully with ${questions.length} questions`);
     } catch (error) {
       this.logger.error(`Quiz ${quizId} generation failed`, error);
+
+      // Refund credits if generation failed
+      const price = quiz.metadata?.price;
+      if (price && quiz.userId) {
+        const user = await this.userRepository.findOne({ where: { id: quiz.userId } });
+        if (user) {
+          user.credits += price;
+          await this.userRepository.save(user);
+          this.logger.log(`Refunded ${price} credits to user ${quiz.userId} due to failed generation`);
+        }
+      }
 
       quiz.status = QuizStatus.FAILED;
       quiz.errorMessage = error.message || 'Unknown error occurred';
