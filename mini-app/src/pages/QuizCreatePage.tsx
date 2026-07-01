@@ -149,7 +149,7 @@ export default function QuizCreatePage() {
       </header>
 
       {/* Content */}
-      <div className="flex-1 overflow-auto p-5">
+      <div className="flex-1 overflow-y-auto p-5" style={{ WebkitOverflowScrolling: 'touch' }}>
         <AnimatePresence mode="wait">
           {/* Step 1: Content Input */}
           {step === 'content' && (
@@ -225,26 +225,45 @@ export default function QuizCreatePage() {
               <div className="card p-4">
                 <h3 className="font-semibold text-gray-900 mb-3">Qiyinlik darajasi</h3>
                 <div className="grid grid-cols-3 gap-2">
-                  {[
-                    { value: 'easy', label: 'Oson', color: 'green' },
-                    { value: 'medium', label: 'O\'rta', color: 'yellow' },
-                    { value: 'hard', label: 'Qiyin', color: 'red' },
-                  ].map((diff) => (
-                    <button
-                      key={diff.value}
-                      onClick={() => {
-                        haptic('light');
-                        setDifficulty(diff.value as QuizDifficulty);
-                      }}
-                      className={`p-3 rounded-xl border-2 transition-colors ${
-                        difficulty === diff.value
-                          ? `border-${diff.color}-600 bg-${diff.color}-50`
-                          : 'border-gray-200 bg-white'
-                      }`}
-                    >
-                      <span className="text-sm font-medium text-gray-900">{diff.label}</span>
-                    </button>
-                  ))}
+                  <button
+                    onClick={() => {
+                      haptic('light');
+                      setDifficulty('easy');
+                    }}
+                    className={`p-3 rounded-xl border-2 transition-colors ${
+                      difficulty === 'easy'
+                        ? 'border-green-600 bg-green-50'
+                        : 'border-gray-200 bg-white'
+                    }`}
+                  >
+                    <span className="text-sm font-medium text-gray-900">Oson</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      haptic('light');
+                      setDifficulty('medium');
+                    }}
+                    className={`p-3 rounded-xl border-2 transition-colors ${
+                      difficulty === 'medium'
+                        ? 'border-yellow-600 bg-yellow-50'
+                        : 'border-gray-200 bg-white'
+                    }`}
+                  >
+                    <span className="text-sm font-medium text-gray-900">O'rta</span>
+                  </button>
+                  <button
+                    onClick={() => {
+                      haptic('light');
+                      setDifficulty('hard');
+                    }}
+                    className={`p-3 rounded-xl border-2 transition-colors ${
+                      difficulty === 'hard'
+                        ? 'border-red-600 bg-red-50'
+                        : 'border-gray-200 bg-white'
+                    }`}
+                  >
+                    <span className="text-sm font-medium text-gray-900">Qiyin</span>
+                  </button>
                 </div>
               </div>
 
