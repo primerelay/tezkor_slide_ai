@@ -194,5 +194,9 @@
     "joinRequired": "📢 <b>Join our channel to use the bot!</b>\n\nClick the button below to join @{channel}, then click \"I joined\".",
     "joined": "✅ Thank you! You can now use the bot.",
     "notJoined": "❌ You haven't joined the channel yet. Please join @{channel} first."
+  },
+  "referral": {
+    "bonus": "🎉 <b>Congratulations!</b>\n\n✅ You joined @{channel}!\n💰 Bonus: +{amount} som\n💳 New balance: {balance} som\n\nThank you! 🙏",
+    "bonusDescription": "Bonus for joining the channel"
   }
 }

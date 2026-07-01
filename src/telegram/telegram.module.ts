@@ -7,8 +7,10 @@ import { User } from '../database/entities/user.entity';
 import { Presentation } from '../database/entities/presentation.entity';
 import { GenerationJob } from '../database/entities/generation-job.entity';
 import { Transaction } from '../database/entities/transaction.entity';
+import { ChannelMembership } from '../database/entities/channel-membership.entity';
 import { TelegramService } from './telegram.service';
 import { TelegramUpdate } from './telegram.update';
+import { ReferralService } from './referral.service';
 import { StartScene } from './scenes/start.scene';
 import { LanguageScene } from './scenes/language.scene';
 import { TopicScene } from './scenes/topic.scene';
@@ -27,12 +29,13 @@ import { QuizModule } from '../quiz/quiz.module';
         include: [TelegramModule],
       }),
     }),
-    TypeOrmModule.forFeature([User, Presentation, GenerationJob, Transaction]),
+    TypeOrmModule.forFeature([User, Presentation, GenerationJob, Transaction, ChannelMembership]),
     forwardRef(() => QuizModule),
   ],
   providers: [
     TelegramService,
     TelegramUpdate,
+    ReferralService,
     StartScene,
     LanguageScene,
     TopicScene,

@@ -194,5 +194,9 @@
     "joinRequired": "📢 <b>Treten Sie unserem Kanal bei, um den Bot zu nutzen!</b>\n\nKlicken Sie auf die Schaltfläche unten, um @{channel} beizutreten, und dann auf \"Beigetreten\".",
     "joined": "✅ Danke! Sie können jetzt den Bot verwenden.",
     "notJoined": "❌ Sie sind dem Kanal noch nicht beigetreten. Bitte treten Sie zuerst @{channel} bei."
+  },
+  "referral": {
+    "bonus": "🎉 <b>Glückwunsch!</b>\n\n✅ Sie sind @{channel} beigetreten!\n💰 Bonus: +{amount} Som\n💳 Neuer Kontostand: {balance} Som\n\nDanke! 🙏",
+    "bonusDescription": "Bonus für den Kanalbeitritt"
   }
 }

@@ -194,5 +194,9 @@
     "joinRequired": "📢 <b>Botdan foydalanish uchun kanalga qo'shiling!</b>\n\nQuyidagi tugmani bosib @{channel} kanaliga qo'shiling, so'ng \"Qo'shildim\" tugmasini bosing.",
     "joined": "✅ Rahmat! Endi botdan foydalanishingiz mumkin.",
     "notJoined": "❌ Siz hali kanalga qo'shilmagansiz. Iltimos, avval @{channel} kanaliga qo'shiling."
+  },
+  "referral": {
+    "bonus": "🎉 <b>Tabriklaymiz!</b>\n\n✅ Siz @{channel} kanaliga qo'shildingiz!\n💰 Bonus: +{amount} so'm\n💳 Yangi balans: {balance} so'm\n\nRahmat! 🙏",
+    "bonusDescription": "Kanalga qo'shilganlik uchun bonus"
   }
 }

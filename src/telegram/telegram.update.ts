@@ -2,6 +2,7 @@ import { Update, Ctx, Start, Command, On, Action, Hears } from 'nestjs-telegraf'
 import { Context, Scenes, Markup } from 'telegraf';
 import { ConfigService } from '@nestjs/config';
 import { TelegramService } from './telegram.service';
+import { ReferralService } from './referral.service';
 import { InlineKeyboards, ReplyKeyboards } from './keyboards/inline.keyboards';
 import { JobEventsService } from '../queue/events/job.events';
 import { SupportedLanguage } from '../common/i18n/i18n.service';
@@ -40,6 +41,7 @@ export class TelegramUpdate {
 
   constructor(
     private readonly telegramService: TelegramService,
+    private readonly referralService: ReferralService,
     private readonly jobEventsService: JobEventsService,
     private readonly configService: ConfigService,
   ) {
@@ -74,6 +76,62 @@ export class TelegramUpdate {
     await ctx.reply(i18n.t('mainMenuText'), {
       reply_markup: ReplyKeyboards.mainMenu(i18n, this.miniAppUrl),
     });
+  }
+
+  /**
+   * Handler for chat member updates (when users join/leave channels)
+   * This is used for the referral system to award bonuses
+   */
+  @On('chat_member')
+  async onChatMember(@Ctx() ctx: any) {
+    try {
+      const update = ctx.update.chat_member;
+      if (!update) return;
+
+      const { chat, from, new_chat_member, old_chat_member } = update;
+
+      // Only handle required channel updates
+      const requiredChannel = this.telegramService.getRequiredChannel();
+      if (!requiredChannel) return;
+
+      const channelUsername = chat.username || requiredChannel.username.replace('@', '');
+
+      // Skip if this is not the required channel
+      if (channelUsername !== requiredChannel.username.replace('@', '')) {
+        return;
+      }
+
+      // Get or create user
+      const user = await this.telegramService.findOrCreateUser({
+        id: from.id,
+        username: from.username,
+        first_name: from.first_name,
+        last_name: from.last_name,
+      });
+
+      // Check status changes
+      const oldStatus = old_chat_member.status;
+      const newStatus = new_chat_member.status;
+
+      // User joined the channel
+      if (
+        ['left', 'kicked'].includes(oldStatus) &&
+        ['member', 'administrator', 'creator'].includes(newStatus)
+      ) {
+        await this.referralService.handleChannelJoin(user.id, channelUsername);
+      }
+
+      // User left the channel
+      if (
+        ['member', 'administrator', 'creator'].includes(oldStatus) &&
+        ['left', 'kicked', 'banned'].includes(newStatus)
+      ) {
+        const status = newStatus === 'banned' ? 'banned' : newStatus === 'kicked' ? 'kicked' : 'left';
+        await this.referralService.handleChannelLeave(user.id, channelUsername, status);
+      }
+    } catch (error) {
+      console.error('Error handling chat_member update:', error);
+    }
   }
 
   /**
@@ -475,6 +533,11 @@ export class TelegramUpdate {
 
     if (isMember) {
       await ctx.answerCbQuery(i18n.t('channel.joined'));
+
+      // Award referral bonus if eligible
+      const channelUsername = requiredChannel.username.replace('@', '');
+      await this.referralService.handleChannelJoin(user.id, channelUsername);
+
       await ctx.editMessageText(i18n.t('channel.joined'), { parse_mode: 'HTML' });
 
       // Show reply keyboard
