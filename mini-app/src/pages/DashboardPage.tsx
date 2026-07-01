@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTelegram } from '../hooks/useTelegram';
 import { useLanguage } from '../contexts/LanguageContext';
 import { PRICING } from '../i18n/translations';
-import { Plus, FileText, Clock, ChevronRight, Wallet, Sparkles, Gift } from 'lucide-react';
+import { Plus, FileText, Clock, ChevronRight, Wallet, Sparkles, Gift, Brain, BookOpen } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface RecentPresentation {
@@ -111,6 +111,73 @@ export default function DashboardPage() {
             <ChevronRight className="w-5 h-5 text-purple-200" />
           </div>
         </motion.button>
+
+        {/* Features Section */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.15 }}
+          className="mb-6"
+        >
+          <h2 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
+            <Sparkles className="w-4 h-4 text-gray-400" />
+            Barcha funksiyalar
+          </h2>
+          <div className="grid grid-cols-2 gap-3">
+            {/* Slide Create */}
+            <button
+              onClick={handleCreate}
+              className="card p-4 text-left active:bg-purple-50 transition-colors"
+            >
+              <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center mb-3">
+                <FileText className="w-5 h-5 text-purple-600" />
+              </div>
+              <div className="font-medium text-gray-900 text-sm mb-1">Slide yaratish</div>
+              <div className="text-xs text-gray-500">AI yordamida</div>
+            </button>
+
+            {/* Quiz Generator */}
+            <button
+              onClick={() => {
+                haptic('light');
+                window.open('/admin/quiz/create', '_blank');
+              }}
+              className="card p-4 text-left active:bg-indigo-50 transition-colors"
+            >
+              <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center mb-3">
+                <Brain className="w-5 h-5 text-indigo-600" />
+              </div>
+              <div className="font-medium text-gray-900 text-sm mb-1">Quiz yaratish</div>
+              <div className="text-xs text-gray-500">Test savollar</div>
+            </button>
+
+            {/* My Presentations */}
+            <button
+              onClick={() => {
+                haptic('light');
+                window.open('/admin', '_blank');
+              }}
+              className="card p-4 text-left active:bg-emerald-50 transition-colors"
+            >
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center mb-3">
+                <BookOpen className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div className="font-medium text-gray-900 text-sm mb-1">Boshqarish paneli</div>
+              <div className="text-xs text-gray-500">Barcha ma'lumotlar</div>
+            </button>
+
+            {/* Balance */}
+            <div className="card p-4 bg-gradient-to-br from-amber-50 to-orange-50">
+              <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center mb-3">
+                <Wallet className="w-5 h-5 text-amber-600" />
+              </div>
+              <div className="font-medium text-gray-900 text-sm mb-1">Balans</div>
+              <div className="text-xs text-amber-700 font-semibold">
+                {userData ? userData.credits.toLocaleString() : '---'} so'm
+              </div>
+            </div>
+          </div>
+        </motion.div>
 
         {/* Recent — last presentation */}
         <motion.div
