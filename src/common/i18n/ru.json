@@ -36,7 +36,7 @@
   "yourPresentations": "📑 <b>Ваши презентации:</b>",
   "buttons": {
     "openMiniApp": "🎨 Создать Слайд",
-    "newPresentation": "📊 Через бота Слайд",
+    "newPresentation": "📊 Создать через бот",
     "myPresentations": "📑 Мои презентации",
     "balance": "💰 Баланс",
     "addBalance": "➕ Пополнить",
@@ -48,7 +48,55 @@
     "no": "❌ Нет",
     "downloadPptx": "📥 Скачать PPTX",
     "downloadPdf": "📥 Скачать PDF",
-    "backToMenu": "🔙 В меню"
+    "backToMenu": "🔙 В меню",
+    "openWebApp": "🚀 Открыть веб-приложение",
+    "slideCreate": "📊 Создать слайд",
+    "quizCreate": "🧠 Создать тест"
+  },
+  "quiz": {
+    "createTitle": "📝 <b>Создание теста</b>",
+    "enterContent": "📝 <b>Создание теста</b>\n\nОтправьте текст учебника или тему для создания теста.\n\n💡 Например:\n• Текст учебника\n• Название темы\n• Краткое описание\n\n❌ Для отмены введите /cancel",
+    "contentTooShort": "⚠️ Текст слишком короткий. Введите минимум 10 символов.",
+    "contentReceived": "✅ Текст получен!\n\n📋 Выберите тип вопроса:",
+    "selectType": "📋 Выберите тип вопроса:",
+    "selectDifficulty": "✅ Тип вопроса выбран!\n\n📊 Выберите уровень сложности:",
+    "selectQuestionCount": "✅ Сложность выбрана!\n\n🔢 Выберите количество вопросов:",
+    "insufficientBalance": "⚠️ Недостаточно средств!\nТребуется: {price} сум\nДоступно: {balance} сум",
+    "topupInstruction": "💰 Для пополнения баланса нажмите /start и выберите \"Пополнить баланс\".",
+    "confirmCreation": "📋 <b>Подтвердить создание теста?</b>\n\n📝 Тип вопроса: {type}\n📊 Сложность: {difficulty}\n🔢 Вопросов: {count}\n💰 Цена: <b>{price} сум</b>\n\n💵 Ваш баланс: {balance} сум",
+    "dataIncomplete": "⚠️ Данные неполные!",
+    "creating": "⏳ Создание теста...\n\nЭто займет 1-2 минуты. Пожалуйста, подождите...",
+    "creationStarted": "✅ <b>Создание теста началось!</b>\n\n🆔 ID теста: <code>{id}</code>\n📝 Вопросов: {count}\n\n⏳ Мы сообщим вам, когда будет готово.\nЭто займет 1-2 минуты.",
+    "creationError": "❌ Произошла ошибка!\n\n{error}",
+    "cancelled": "❌ Создание теста отменено.",
+    "types": {
+      "multiple_choice": "Множественный выбор",
+      "true_false": "Верно/Неверно",
+      "mixed": "Смешанный"
+    },
+    "difficulties": {
+      "easy": "Легкий",
+      "medium": "Средний",
+      "hard": "Сложный"
+    },
+    "progress": {
+      "generating": "⏳ <b>Создание теста...</b>",
+      "analyzing": "🔍 Анализ текста...",
+      "creating": "🧠 Создание вопросов...",
+      "improving": "✨ Улучшение вопросов...",
+      "finalizing": "✅ Завершение...",
+      "ready": "✅ Готово!"
+    },
+    "completed": {
+      "title": "✅ <b>Тест готов!</b>",
+      "info": "📝 {title}\n🔢 Вопросов: {count}\n📊 Сложность: {difficulty}\n\nСейчас вам будут отправлены вопросы...",
+      "allSent": "🎉 <b>Все вопросы отправлены!</b>\n\n📊 Всего {count} вопросов\n💡 Вы можете переслать эти тесты другим!"
+    },
+    "failed": {
+      "title": "❌ <b>Ошибка создания теста!</b>",
+      "info": "📝 {title}\n\nОшибка: {error}\n\n💰 {price} сум возвращено"
+    },
+    "adminNotification": "🤖 <b>Новый запрос Quiz Bot</b>\n\n👤 Имя: {name}\n📱 Username: @{username}\n🆔 Telegram ID: {telegramId}\n\n⏰ {time}"
   },
   "quizBot": {
     "contactAdmin": "🤖 <b>Создать Quiz Bot</b>\n\nДля заказа Quiz Bot свяжитесь с админом:\n\n👉 https://t.me/{adminUsername}"

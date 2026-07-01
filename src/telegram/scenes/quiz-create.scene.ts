@@ -13,13 +13,7 @@ export class QuizCreateScene {
   async onEnter(@Ctx() ctx: BotContext) {
     const i18n = this.telegramService.getI18n(ctx.session.language || 'uz');
     await ctx.reply(
-      '📝 <b>Quiz yaratish</b>\n\n' +
-      'Test yaratish uchun darslik matnini yoki mavzuni yuboring.\n\n' +
-      '💡 Masalan:\n' +
-      '• Darslik matni\n' +
-      '• Mavzu nomi\n' +
-      '• Qisqacha tavsif\n\n' +
-      '❌ Bekor qilish uchun /cancel ni bosing',
+      i18n.t('quiz.enterContent'),
       { parse_mode: 'HTML' }
     );
   }
@@ -41,9 +35,11 @@ export class QuizCreateScene {
       return;
     }
 
+    const i18n = this.telegramService.getI18n(ctx.session.language || 'uz');
+
     // Check minimum length
     if (text.length < 10) {
-      await ctx.reply('⚠️ Matn juda qisqa. Kamida 10 belgi kiriting.');
+      await ctx.reply(i18n.t('quiz.contentTooShort'));
       return;
     }
 
@@ -52,13 +48,12 @@ export class QuizCreateScene {
 
     // Ask for quiz type
     await ctx.reply(
-      '✅ Matn qabul qilindi!\n\n' +
-      '📋 Savol turini tanlang:',
+      i18n.t('quiz.contentReceived'),
       {
         reply_markup: Markup.inlineKeyboard([
-          [Markup.button.callback('🔘 Ko\'p tanlovli', 'quiz_type_multiple_choice')],
-          [Markup.button.callback('✅ To\'g\'ri/Noto\'g\'ri', 'quiz_type_true_false')],
-          [Markup.button.callback('🎲 Aralash', 'quiz_type_mixed')],
+          [Markup.button.callback(`🔘 ${i18n.t('quiz.types.multiple_choice')}`, 'quiz_type_multiple_choice')],
+          [Markup.button.callback(`✅ ${i18n.t('quiz.types.true_false')}`, 'quiz_type_true_false')],
+          [Markup.button.callback(`🎲 ${i18n.t('quiz.types.mixed')}`, 'quiz_type_mixed')],
         ]).reply_markup,
       }
     );
@@ -72,15 +67,16 @@ export class QuizCreateScene {
     const quizType = match[1]; // multiple_choice, true_false, or mixed
     ctx.session.quizType = quizType;
 
+    const i18n = this.telegramService.getI18n(ctx.session.language || 'uz');
+
     await ctx.answerCbQuery();
     await ctx.editMessageText(
-      '✅ Savol turi tanlandi!\n\n' +
-      '📊 Qiyinlik darajasini tanlang:',
+      i18n.t('quiz.selectDifficulty'),
       {
         reply_markup: Markup.inlineKeyboard([
-          [Markup.button.callback('🟢 Oson', 'quiz_diff_easy')],
-          [Markup.button.callback('🟡 O\'rta', 'quiz_diff_medium')],
-          [Markup.button.callback('🔴 Qiyin', 'quiz_diff_hard')],
+          [Markup.button.callback(`🟢 ${i18n.t('quiz.difficulties.easy')}`, 'quiz_diff_easy')],
+          [Markup.button.callback(`🟡 ${i18n.t('quiz.difficulties.medium')}`, 'quiz_diff_medium')],
+          [Markup.button.callback(`🔴 ${i18n.t('quiz.difficulties.hard')}`, 'quiz_diff_hard')],
         ]).reply_markup,
       }
     );
@@ -94,10 +90,11 @@ export class QuizCreateScene {
     const difficulty = match[1]; // easy, medium, or hard
     ctx.session.quizDifficulty = difficulty;
 
+    const i18n = this.telegramService.getI18n(ctx.session.language || 'uz');
+
     await ctx.answerCbQuery();
     await ctx.editMessageText(
-      '✅ Qiyinlik tanlandi!\n\n' +
-      '🔢 Savollar sonini tanlang:',
+      i18n.t('quiz.selectQuestionCount'),
       {
         reply_markup: Markup.inlineKeyboard([
           [
@@ -147,29 +144,28 @@ export class QuizCreateScene {
     // Check if user has enough credits
     if (user.credits < price) {
       await ctx.answerCbQuery(
-        `⚠️ Balans yetarli emas!\nKerak: ${price} so'm\nMavjud: ${user.credits} so'm`,
+        i18n.t('quiz.insufficientBalance', { price, balance: user.credits }),
         { show_alert: true }
       );
-      await ctx.reply(
-        `💰 Balans to'ldirish uchun /start bosing va "Balans to'ldirish" tugmasini tanlang.`,
-      );
+      await ctx.reply(i18n.t('quiz.topupInstruction'));
       await ctx.scene.leave();
       return;
     }
 
     await ctx.answerCbQuery();
     await ctx.editMessageText(
-      '📋 <b>Quiz yaratish tasdiqlansinmi?</b>\n\n' +
-      `📝 Savol turi: ${this.getQuizTypeName(ctx.session.quizType || '')}\n` +
-      `📊 Qiyinlik: ${this.getDifficultyName(ctx.session.quizDifficulty || '')}\n` +
-      `🔢 Savollar: ${numberOfQuestions} ta\n` +
-      `💰 Narx: <b>${price.toLocaleString()} so'm</b>\n\n` +
-      `💵 Sizning balansingiz: ${user.credits.toLocaleString()} so'm`,
+      i18n.t('quiz.confirmCreation', {
+        type: this.getQuizTypeName(ctx.session.quizType || '', i18n),
+        difficulty: this.getDifficultyName(ctx.session.quizDifficulty || '', i18n),
+        count: numberOfQuestions,
+        price: price.toLocaleString(),
+        balance: user.credits.toLocaleString()
+      }),
       {
         parse_mode: 'HTML',
         reply_markup: Markup.inlineKeyboard([
-          [Markup.button.callback('✅ Tasdiqlash', 'quiz_confirm')],
-          [Markup.button.callback('❌ Bekor qilish', 'quiz_cancel')],
+          [Markup.button.callback(i18n.t('buttons.confirm'), 'quiz_confirm')],
+          [Markup.button.callback(i18n.t('buttons.cancel'), 'quiz_cancel')],
         ]).reply_markup,
       }
     );
@@ -190,16 +186,13 @@ export class QuizCreateScene {
     const { quizContent, quizType, quizDifficulty, quizQuestionCount } = ctx.session;
 
     if (!quizContent || !quizType || !quizDifficulty || !quizQuestionCount) {
-      await ctx.answerCbQuery('⚠️ Ma\'lumotlar to\'liq emas!', { show_alert: true });
+      await ctx.answerCbQuery(i18n.t('quiz.dataIncomplete'), { show_alert: true });
       await ctx.scene.leave();
       return;
     }
 
     await ctx.answerCbQuery();
-    await ctx.editMessageText(
-      '⏳ Quiz yaratilmoqda...\n\n' +
-      'Bu 1-2 daqiqa vaqt olishi mumkin. Iltimos kuting...',
-    );
+    await ctx.editMessageText(i18n.t('quiz.creating'));
 
     try {
       // Map string values to enum values
@@ -227,11 +220,7 @@ export class QuizCreateScene {
       });
 
       await ctx.reply(
-        '✅ <b>Quiz yaratish boshlandi!</b>\n\n' +
-        `🆔 Quiz ID: <code>${quiz.id}</code>\n` +
-        `📝 Savollar: ${quizQuestionCount} ta\n\n` +
-        '⏳ Jarayon tugagach sizga xabar beramiz.\n' +
-        'Bu 1-2 daqiqa vaqt olishi mumkin.',
+        i18n.t('quiz.creationStarted', { id: quiz.id, count: quizQuestionCount }),
         {
           parse_mode: 'HTML',
           reply_markup: InlineKeyboards.featuresMenu(i18n, this.telegramService.getMiniAppUrl()),
@@ -239,8 +228,7 @@ export class QuizCreateScene {
       );
     } catch (error) {
       await ctx.reply(
-        '❌ Xatolik yuz berdi!\n\n' +
-        error.message || 'Quiz yaratishda muammo bo\'ldi.',
+        i18n.t('quiz.creationError', { error: error.message || 'Quiz yaratishda muammo bo\'ldi.' }),
         {
           reply_markup: InlineKeyboards.featuresMenu(i18n, this.telegramService.getMiniAppUrl()),
         }
@@ -254,9 +242,9 @@ export class QuizCreateScene {
   async onCancel(@Ctx() ctx: BotContext) {
     const i18n = this.telegramService.getI18n(ctx.session.language || 'uz');
     await ctx.answerCbQuery();
-    await ctx.editMessageText('❌ Quiz yaratish bekor qilindi.');
+    await ctx.editMessageText(i18n.t('quiz.cancelled'));
     await ctx.reply(
-      'Bosh menyu:',
+      i18n.t('mainMenuText'),
       {
         reply_markup: InlineKeyboards.featuresMenu(i18n, this.telegramService.getMiniAppUrl()),
       }
@@ -264,21 +252,11 @@ export class QuizCreateScene {
     await ctx.scene.leave();
   }
 
-  private getQuizTypeName(type: string): string {
-    const names: Record<string, string> = {
-      multiple_choice: 'Ko\'p tanlovli',
-      true_false: 'To\'g\'ri/Noto\'g\'ri',
-      mixed: 'Aralash',
-    };
-    return names[type] || type;
+  private getQuizTypeName(type: string, i18n: any): string {
+    return i18n.t(`quiz.types.${type}`) || type;
   }
 
-  private getDifficultyName(difficulty: string): string {
-    const names: Record<string, string> = {
-      easy: 'Oson',
-      medium: 'O\'rta',
-      hard: 'Qiyin',
-    };
-    return names[difficulty] || difficulty;
+  private getDifficultyName(difficulty: string, i18n: any): string {
+    return i18n.t(`quiz.difficulties.${difficulty}`) || difficulty;
   }
 }

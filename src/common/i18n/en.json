@@ -36,7 +36,7 @@
   "yourPresentations": "📑 <b>Your presentations:</b>",
   "buttons": {
     "openMiniApp": "🎨 Create Slides",
-    "newPresentation": "📊 Via Bot Slide",
+    "newPresentation": "📊 Create via Bot",
     "myPresentations": "📑 My presentations",
     "balance": "💰 Balance",
     "addBalance": "➕ Top up",
@@ -48,7 +48,55 @@
     "no": "❌ No",
     "downloadPptx": "📥 Download PPTX",
     "downloadPdf": "📥 Download PDF",
-    "backToMenu": "🔙 Back to menu"
+    "backToMenu": "🔙 Back to menu",
+    "openWebApp": "🚀 Open Web App",
+    "slideCreate": "📊 Create Slide",
+    "quizCreate": "🧠 Create Quiz"
+  },
+  "quiz": {
+    "createTitle": "📝 <b>Create Quiz</b>",
+    "enterContent": "📝 <b>Create Quiz</b>\n\nSend textbook text or topic to create a quiz.\n\n💡 For example:\n• Textbook text\n• Topic name\n• Brief description\n\n❌ To cancel, type /cancel",
+    "contentTooShort": "⚠️ Text is too short. Enter at least 10 characters.",
+    "contentReceived": "✅ Text received!\n\n📋 Select question type:",
+    "selectType": "📋 Select question type:",
+    "selectDifficulty": "✅ Question type selected!\n\n📊 Select difficulty level:",
+    "selectQuestionCount": "✅ Difficulty selected!\n\n🔢 Select number of questions:",
+    "insufficientBalance": "⚠️ Insufficient balance!\nRequired: {price} sum\nAvailable: {balance} sum",
+    "topupInstruction": "💰 To top up balance, press /start and select \"Top up balance\".",
+    "confirmCreation": "📋 <b>Confirm quiz creation?</b>\n\n📝 Question type: {type}\n📊 Difficulty: {difficulty}\n🔢 Questions: {count}\n💰 Price: <b>{price} sum</b>\n\n💵 Your balance: {balance} sum",
+    "dataIncomplete": "⚠️ Data incomplete!",
+    "creating": "⏳ Creating quiz...\n\nThis will take 1-2 minutes. Please wait...",
+    "creationStarted": "✅ <b>Quiz creation started!</b>\n\n🆔 Quiz ID: <code>{id}</code>\n📝 Questions: {count}\n\n⏳ We'll notify you when it's ready.\nThis will take 1-2 minutes.",
+    "creationError": "❌ An error occurred!\n\n{error}",
+    "cancelled": "❌ Quiz creation cancelled.",
+    "types": {
+      "multiple_choice": "Multiple Choice",
+      "true_false": "True/False",
+      "mixed": "Mixed"
+    },
+    "difficulties": {
+      "easy": "Easy",
+      "medium": "Medium",
+      "hard": "Hard"
+    },
+    "progress": {
+      "generating": "⏳ <b>Creating quiz...</b>",
+      "analyzing": "🔍 Analyzing text...",
+      "creating": "🧠 Creating questions...",
+      "improving": "✨ Improving questions...",
+      "finalizing": "✅ Finalizing...",
+      "ready": "✅ Ready!"
+    },
+    "completed": {
+      "title": "✅ <b>Quiz is ready!</b>",
+      "info": "📝 {title}\n🔢 Questions: {count}\n📊 Difficulty: {difficulty}\n\nQuestions will be sent to you now...",
+      "allSent": "🎉 <b>All questions sent!</b>\n\n📊 Total {count} questions\n💡 You can forward these quizzes to others!"
+    },
+    "failed": {
+      "title": "❌ <b>Quiz creation failed!</b>",
+      "info": "📝 {title}\n\nError: {error}\n\n💰 {price} sum refunded"
+    },
+    "adminNotification": "🤖 <b>New Quiz Bot Request</b>\n\n👤 Name: {name}\n📱 Username: @{username}\n🆔 Telegram ID: {telegramId}\n\n⏰ {time}"
   },
   "quizBot": {
     "contactAdmin": "🤖 <b>Create Quiz Bot</b>\n\nTo order a Quiz Bot, contact the admin:\n\n👉 https://t.me/{adminUsername}"

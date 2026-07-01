@@ -36,7 +36,7 @@
   "yourPresentations": "📑 <b>Ihre Präsentationen:</b>",
   "buttons": {
     "openMiniApp": "🎨 Folien Erstellen",
-    "newPresentation": "📊 Via Bot Folien",
+    "newPresentation": "📊 Über Bot erstellen",
     "myPresentations": "📑 Meine Präsentationen",
     "balance": "💰 Guthaben",
     "addBalance": "➕ Aufladen",
@@ -48,7 +48,55 @@
     "no": "❌ Nein",
     "downloadPptx": "📥 PPTX herunterladen",
     "downloadPdf": "📥 PDF herunterladen",
-    "backToMenu": "🔙 Zurück zum Menü"
+    "backToMenu": "🔙 Zurück zum Menü",
+    "openWebApp": "🚀 Web-App öffnen",
+    "slideCreate": "📊 Folie erstellen",
+    "quizCreate": "🧠 Quiz erstellen"
+  },
+  "quiz": {
+    "createTitle": "📝 <b>Quiz erstellen</b>",
+    "enterContent": "📝 <b>Quiz erstellen</b>\n\nSenden Sie Lehrbuchtext oder Thema, um ein Quiz zu erstellen.\n\n💡 Zum Beispiel:\n• Lehrbuchtext\n• Themenname\n• Kurze Beschreibung\n\n❌ Zum Abbrechen geben Sie /cancel ein",
+    "contentTooShort": "⚠️ Text ist zu kurz. Geben Sie mindestens 10 Zeichen ein.",
+    "contentReceived": "✅ Text erhalten!\n\n📋 Fragetyp wählen:",
+    "selectType": "📋 Fragetyp wählen:",
+    "selectDifficulty": "✅ Fragetyp ausgewählt!\n\n📊 Schwierigkeitsgrad wählen:",
+    "selectQuestionCount": "✅ Schwierigkeit ausgewählt!\n\n🔢 Anzahl der Fragen wählen:",
+    "insufficientBalance": "⚠️ Unzureichendes Guthaben!\nBenötigt: {price} sum\nVerfügbar: {balance} sum",
+    "topupInstruction": "💰 Um das Guthaben aufzuladen, drücken Sie /start und wählen Sie \"Guthaben aufladen\".",
+    "confirmCreation": "📋 <b>Quiz-Erstellung bestätigen?</b>\n\n📝 Fragetyp: {type}\n📊 Schwierigkeit: {difficulty}\n🔢 Fragen: {count}\n💰 Preis: <b>{price} sum</b>\n\n💵 Ihr Guthaben: {balance} sum",
+    "dataIncomplete": "⚠️ Daten unvollständig!",
+    "creating": "⏳ Quiz wird erstellt...\n\nDies dauert 1-2 Minuten. Bitte warten...",
+    "creationStarted": "✅ <b>Quiz-Erstellung gestartet!</b>\n\n🆔 Quiz-ID: <code>{id}</code>\n📝 Fragen: {count}\n\n⏳ Wir benachrichtigen Sie, wenn es fertig ist.\nDies dauert 1-2 Minuten.",
+    "creationError": "❌ Ein Fehler ist aufgetreten!\n\n{error}",
+    "cancelled": "❌ Quiz-Erstellung abgebrochen.",
+    "types": {
+      "multiple_choice": "Multiple Choice",
+      "true_false": "Richtig/Falsch",
+      "mixed": "Gemischt"
+    },
+    "difficulties": {
+      "easy": "Einfach",
+      "medium": "Mittel",
+      "hard": "Schwer"
+    },
+    "progress": {
+      "generating": "⏳ <b>Quiz wird erstellt...</b>",
+      "analyzing": "🔍 Text wird analysiert...",
+      "creating": "🧠 Fragen werden erstellt...",
+      "improving": "✨ Fragen werden verbessert...",
+      "finalizing": "✅ Abschluss...",
+      "ready": "✅ Fertig!"
+    },
+    "completed": {
+      "title": "✅ <b>Quiz ist fertig!</b>",
+      "info": "📝 {title}\n🔢 Fragen: {count}\n📊 Schwierigkeit: {difficulty}\n\nFragen werden Ihnen jetzt gesendet...",
+      "allSent": "🎉 <b>Alle Fragen gesendet!</b>\n\n📊 Insgesamt {count} Fragen\n💡 Sie können diese Quizze an andere weiterleiten!"
+    },
+    "failed": {
+      "title": "❌ <b>Quiz-Erstellung fehlgeschlagen!</b>",
+      "info": "📝 {title}\n\nFehler: {error}\n\n💰 {price} sum erstattet"
+    },
+    "adminNotification": "🤖 <b>Neue Quiz Bot Anfrage</b>\n\n👤 Name: {name}\n📱 Benutzername: @{username}\n🆔 Telegram ID: {telegramId}\n\n⏰ {time}"
   },
   "quizBot": {
     "contactAdmin": "🤖 <b>Quiz Bot erstellen</b>\n\nUm einen Quiz Bot zu bestellen, kontaktieren Sie den Admin:\n\n👉 https://t.me/{adminUsername}"

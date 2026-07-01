@@ -36,7 +36,7 @@
   "yourPresentations": "📑 <b>Sizning prezentatsiyalaringiz:</b>",
   "buttons": {
     "openMiniApp": "🎨 Slide Yaratish",
-    "newPresentation": "📊 Bot orqali Slide",
+    "newPresentation": "📊 Bot orqali yaratish",
     "myPresentations": "📑 Mening prezentatsiyalarim",
     "balance": "💰 Balans",
     "addBalance": "➕ To'ldirish",
@@ -49,9 +49,54 @@
     "downloadPptx": "📥 PPTX yuklash",
     "downloadPdf": "📥 PDF yuklash",
     "backToMenu": "🔙 Menyuga qaytish",
-    "openWebApp": "🚀 Barcha funksiyalar",
-    "slideCreate": "📊 Slide Yaratish",
-    "quizCreate": "🧠 Quiz Bot yaratish"
+    "openWebApp": "🚀 Web ilovani ochish",
+    "slideCreate": "📊 Slide yaratish",
+    "quizCreate": "🧠 Quiz yaratish"
+  },
+  "quiz": {
+    "createTitle": "📝 <b>Quiz yaratish</b>",
+    "enterContent": "📝 <b>Quiz yaratish</b>\n\nTest yaratish uchun darslik matnini yoki mavzuni yuboring.\n\n💡 Masalan:\n• Darslik matni\n• Mavzu nomi\n• Qisqacha tavsif\n\n❌ Bekor qilish uchun /cancel ni bosing",
+    "contentTooShort": "⚠️ Matn juda qisqa. Kamida 10 belgi kiriting.",
+    "contentReceived": "✅ Matn qabul qilindi!\n\n📋 Savol turini tanlang:",
+    "selectType": "📋 Savol turini tanlang:",
+    "selectDifficulty": "✅ Savol turi tanlandi!\n\n📊 Qiyinlik darajasini tanlang:",
+    "selectQuestionCount": "✅ Qiyinlik tanlandi!\n\n🔢 Savollar sonini tanlang:",
+    "insufficientBalance": "⚠️ Balans yetarli emas!\nKerak: {price} so'm\nMavjud: {balance} so'm",
+    "topupInstruction": "💰 Balans to'ldirish uchun /start bosing va \"Balans to'ldirish\" tugmasini tanlang.",
+    "confirmCreation": "📋 <b>Quiz yaratish tasdiqlansinmi?</b>\n\n📝 Savol turi: {type}\n📊 Qiyinlik: {difficulty}\n🔢 Savollar: {count} ta\n💰 Narx: <b>{price} so'm</b>\n\n💵 Sizning balansingiz: {balance} so'm",
+    "dataIncomplete": "⚠️ Ma'lumotlar to'liq emas!",
+    "creating": "⏳ Quiz yaratilmoqda...\n\nBu 1-2 daqiqa vaqt olishi mumkin. Iltimos kuting...",
+    "creationStarted": "✅ <b>Quiz yaratish boshlandi!</b>\n\n🆔 Quiz ID: <code>{id}</code>\n📝 Savollar: {count} ta\n\n⏳ Jarayon tugagach sizga xabar beramiz.\nBu 1-2 daqiqa vaqt olishi mumkin.",
+    "creationError": "❌ Xatolik yuz berdi!\n\n{error}",
+    "cancelled": "❌ Quiz yaratish bekor qilindi.",
+    "types": {
+      "multiple_choice": "Ko'p tanlovli",
+      "true_false": "To'g'ri/Noto'g'ri",
+      "mixed": "Aralash"
+    },
+    "difficulties": {
+      "easy": "Oson",
+      "medium": "O'rta",
+      "hard": "Qiyin"
+    },
+    "progress": {
+      "generating": "⏳ <b>Quiz yaratilmoqda...</b>",
+      "analyzing": "🔍 Matn tahlil qilinmoqda...",
+      "creating": "🧠 Savollar yaratilmoqda...",
+      "improving": "✨ Savollar yaxshilanmoqda...",
+      "finalizing": "✅ Tugallanmoqda...",
+      "ready": "✅ Tayyor!"
+    },
+    "completed": {
+      "title": "✅ <b>Quiz tayyor!</b>",
+      "info": "📝 {title}\n🔢 Savollar: {count} ta\n📊 Qiyinlik: {difficulty}\n\nEndi sizga savollar yuboriladi...",
+      "allSent": "🎉 <b>Barcha savollar yuborildi!</b>\n\n📊 Jami {count} ta savol\n💡 Bu quizlarni forward qilib boshqalarga ham ulashishingiz mumkin!"
+    },
+    "failed": {
+      "title": "❌ <b>Quiz yaratishda xatolik!</b>",
+      "info": "📝 {title}\n\nXatolik: {error}\n\n💰 {price} so'm qaytarildi"
+    },
+    "adminNotification": "🤖 <b>Yangi Quiz Bot so'rovi</b>\n\n👤 Ism: {name}\n📱 Username: @{username}\n🆔 Telegram ID: {telegramId}\n\n⏰ {time}"
   },
   "quizBot": {
     "contactAdmin": "🤖 <b>Quiz Bot yaratish</b>\n\nQuiz Bot buyurtma qilish uchun admin bilan bog'laning:\n\n👉 https://t.me/{adminUsername}"

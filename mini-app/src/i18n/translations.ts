@@ -36,6 +36,8 @@ export interface Translations {
   createProfessional: string;
   newPresentation: string;
   createWithAI: string;
+  createQuiz: string;
+  testQuestions: string;
   recentWorks: string;
   slides: string;
   noPresentation: string;
@@ -153,6 +155,8 @@ const uz: Translations = {
   createProfessional: 'Professional prezentatsiyalar yarating',
   newPresentation: 'Yangi prezentatsiya',
   createWithAI: 'AI yordamida yarating',
+  createQuiz: 'Quiz yaratish',
+  testQuestions: 'Test savollar',
   recentWorks: "So'nggi ishlar",
   slides: 'slayd',
   noPresentation: "Hali prezentatsiya yo'q",
@@ -266,6 +270,8 @@ const ru: Translations = {
   createProfessional: 'Создавайте профессиональные презентации',
   newPresentation: 'Новая презентация',
   createWithAI: 'Создайте с помощью AI',
+  createQuiz: 'Создать тест',
+  testQuestions: 'Тестовые вопросы',
   recentWorks: 'Последние работы',
   slides: 'слайдов',
   noPresentation: 'Презентаций пока нет',
@@ -379,6 +385,8 @@ const en: Translations = {
   createProfessional: 'Create professional presentations',
   newPresentation: 'New presentation',
   createWithAI: 'Create with AI',
+  createQuiz: 'Create Quiz',
+  testQuestions: 'Test questions',
   recentWorks: 'Recent works',
   slides: 'slides',
   noPresentation: 'No presentations yet',
@@ -492,6 +500,8 @@ const de: Translations = {
   createProfessional: 'Erstellen Sie professionelle Präsentationen',
   newPresentation: 'Neue Präsentation',
   createWithAI: 'Mit KI erstellen',
+  createQuiz: 'Quiz erstellen',
+  testQuestions: 'Testfragen',
   recentWorks: 'Letzte Arbeiten',
   slides: 'Folien',
   noPresentation: 'Noch keine Präsentationen',

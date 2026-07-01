@@ -68,7 +68,8 @@
       "Bash(cloudflared tunnel:*)",
       "Bash(npm start)",
       "Bash(journalctl:*)",
-      "Bash(xargs:*)"
+      "Bash(xargs:*)",
+      "Bash(find:*)"
     ]
   }
 }

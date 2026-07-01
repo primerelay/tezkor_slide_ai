@@ -9,6 +9,7 @@ import { User } from '../../database/entities/user.entity';
 import { QuizGeneratorAgent } from '../agents/quiz-generator.agent';
 import { InjectBot } from 'nestjs-telegraf';
 import { Telegraf } from 'telegraf';
+import { I18nService } from '../../common/i18n/i18n.service';
 
 @Processor('quiz-generation')
 export class QuizGenerationProcessor extends WorkerHost {
@@ -53,12 +54,12 @@ export class QuizGenerationProcessor extends WorkerHost {
       await this.quizRepository.save(quiz);
 
       // Progress: 10% - Starting
-      await this.sendProgressMessage(quizId, user.telegramId, quiz.title, 10);
+      await this.sendProgressMessage(quizId, user.telegramId, quiz.title, 10, user.language);
 
       const startTime = Date.now();
 
       // Progress: 30% - Analyzing content
-      await this.sendProgressMessage(quizId, user.telegramId, quiz.title, 30);
+      await this.sendProgressMessage(quizId, user.telegramId, quiz.title, 30, user.language);
 
       // Generate questions using multi-agent system
       const generatedQuestions = await this.quizGeneratorAgent.generateQuiz(
@@ -70,7 +71,7 @@ export class QuizGenerationProcessor extends WorkerHost {
       );
 
       // Progress: 70% - Questions generated
-      await this.sendProgressMessage(quizId, user.telegramId, quiz.title, 70);
+      await this.sendProgressMessage(quizId, user.telegramId, quiz.title, 70, user.language);
 
       const endTime = Date.now();
       quiz.generationTimeMs = endTime - startTime;
@@ -96,7 +97,7 @@ export class QuizGenerationProcessor extends WorkerHost {
       await this.questionRepository.save(questions);
 
       // Progress: 90% - Saving
-      await this.sendProgressMessage(quizId, user.telegramId, quiz.title, 90);
+      await this.sendProgressMessage(quizId, user.telegramId, quiz.title, 90, user.language);
 
       // Update quiz status
       quiz.status = QuizStatus.COMPLETED;
@@ -105,7 +106,7 @@ export class QuizGenerationProcessor extends WorkerHost {
       await this.quizRepository.save(quiz);
 
       // Progress: 100% - Complete
-      await this.sendProgressMessage(quizId, user.telegramId, quiz.title, 100);
+      await this.sendProgressMessage(quizId, user.telegramId, quiz.title, 100, user.language);
 
       // Send completion notification
       await this.sendCompletedQuiz(quiz, user);
@@ -128,12 +129,15 @@ export class QuizGenerationProcessor extends WorkerHost {
       // Notify user of failure
       if (user) {
         try {
+          const i18n = new I18nService(user.language as any);
           await this.bot.telegram.sendMessage(
             user.telegramId,
-            `❌ <b>Quiz yaratishda xatolik!</b>\n\n` +
-            `📝 ${quiz.title}\n\n` +
-            `Xatolik: ${error.message || 'Noma\'lum xatolik'}\n\n` +
-            `💰 ${price ? `${price.toLocaleString()} so'm qaytarildi` : 'Pul qaytarildi'}`,
+            `${i18n.t('quiz.failed.title')}\n\n` +
+            i18n.t('quiz.failed.info', {
+              title: quiz.title,
+              error: error.message || 'Unknown error',
+              price: price ? price.toLocaleString() : '0'
+            }),
             { parse_mode: 'HTML' },
           );
         } catch (notifyError) {
@@ -164,14 +168,16 @@ export class QuizGenerationProcessor extends WorkerHost {
     telegramId: string,
     title: string,
     progress: number,
+    language: string,
   ): Promise<void> {
     try {
+      const i18n = new I18nService(language as any);
       const progressBar = this.getProgressBar(progress);
       const message =
-        `⏳ <b>Quiz yaratilmoqda...</b>\n\n` +
+        `${i18n.t('quiz.progress.generating')}\n\n` +
         `📝 ${title.substring(0, 50)}${title.length > 50 ? '...' : ''}\n\n` +
         `${progressBar} ${progress}%\n\n` +
-        this.getProgressStage(progress);
+        this.getProgressStage(progress, i18n);
 
       const existing = this.progressMessageIds.get(quizId);
 
@@ -205,24 +211,27 @@ export class QuizGenerationProcessor extends WorkerHost {
     return '▓'.repeat(filled) + '░'.repeat(empty);
   }
 
-  private getProgressStage(progress: number): string {
-    if (progress < 20) return '🔍 Matn tahlil qilinmoqda...';
-    if (progress < 50) return '🧠 Savollar yaratilmoqda...';
-    if (progress < 80) return '✨ Savollar yaxshilanmoqda...';
-    if (progress < 100) return '✅ Tugallanmoqda...';
-    return '✅ Tayyor!';
+  private getProgressStage(progress: number, i18n: I18nService): string {
+    if (progress < 20) return i18n.t('quiz.progress.analyzing');
+    if (progress < 50) return i18n.t('quiz.progress.creating');
+    if (progress < 80) return i18n.t('quiz.progress.improving');
+    if (progress < 100) return i18n.t('quiz.progress.finalizing');
+    return i18n.t('quiz.progress.ready');
   }
 
   private async sendCompletedQuiz(quiz: Quiz, user: User): Promise<void> {
     try {
+      const i18n = new I18nService(user.language as any);
+
       // Send header message
       await this.bot.telegram.sendMessage(
         user.telegramId,
-        `✅ <b>Quiz tayyor!</b>\n\n` +
-        `📝 ${quiz.title}\n` +
-        `🔢 Savollar: ${quiz.questions?.length || quiz.numberOfQuestions} ta\n` +
-        `📊 Qiyinlik: ${quiz.difficulty}\n\n` +
-        `Endi sizga savollar yuboriladi...`,
+        `${i18n.t('quiz.completed.title')}\n\n` +
+        i18n.t('quiz.completed.info', {
+          title: quiz.title,
+          count: quiz.questions?.length || quiz.numberOfQuestions,
+          difficulty: quiz.difficulty
+        }),
         { parse_mode: 'HTML' },
       );
 
@@ -256,9 +265,7 @@ export class QuizGenerationProcessor extends WorkerHost {
         // Send completion message
         await this.bot.telegram.sendMessage(
           user.telegramId,
-          `🎉 <b>Barcha savollar yuborildi!</b>\n\n` +
-          `📊 Jami ${quiz.questions.length} ta savol\n` +
-          `💡 Bu quizlarni forward qilib boshqalarga ham ulashishingiz mumkin!`,
+          i18n.t('quiz.completed.allSent', { count: quiz.questions.length }),
           { parse_mode: 'HTML' },
         );
       }
