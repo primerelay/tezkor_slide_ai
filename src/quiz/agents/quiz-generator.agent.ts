@@ -1,8 +1,8 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import axios from 'axios';
 import { QuizType, QuizDifficulty } from '../../database/entities/quiz.entity';
 import { QuestionType } from '../../database/entities/question.entity';
-import { GeminiProvider } from '../../ai/providers/gemini.provider';
 
 interface GeneratedQuestion {
   type: QuestionType;
@@ -17,11 +17,12 @@ interface GeneratedQuestion {
 @Injectable()
 export class QuizGeneratorAgent {
   private readonly logger = new Logger(QuizGeneratorAgent.name);
+  private readonly openRouterApiKey: string;
+  private readonly baseURL = 'https://openrouter.ai/api/v1';
 
-  constructor(
-    private configService: ConfigService,
-    private geminiProvider: GeminiProvider,
-  ) {}
+  constructor(private configService: ConfigService) {
+    this.openRouterApiKey = this.configService.get<string>('OPENROUTER_API_KEY') || '';
+  }
 
   /**
    * AGENT 1: Content Analyzer
@@ -59,7 +60,7 @@ Provide JSON response with:
 }`;
 
     try {
-      const response = await this.callAI(systemPrompt, userPrompt, 'deepseek/deepseek-r1');
+      const response = await this.callAI(systemPrompt, userPrompt);
       const analysis = JSON.parse(response);
       this.logger.log(`[Agent 1] Analysis complete: ${analysis.mainTopics.length} topics found`);
       return analysis;
@@ -155,7 +156,7 @@ Respond with valid JSON array:
 ]`;
 
     try {
-      const response = await this.callAI(systemPrompt, userPrompt, 'deepseek/deepseek-r1', 4000);
+      const response = await this.callAI(systemPrompt, userPrompt, 'google/gemma-4-31b-it:free', 4000);
 
       // Extract JSON from response (handle markdown code blocks)
       let jsonStr = response.trim();
@@ -208,7 +209,7 @@ ${JSON.stringify(batch, null, 2)}
 Return the same JSON structure with improved distractors.`;
 
       try {
-        const response = await this.callAI(systemPrompt, userPrompt, 'deepseek/deepseek-r1');
+        const response = await this.callAI(systemPrompt, userPrompt);
         let jsonStr = response.trim();
         if (jsonStr.startsWith('```json')) {
           jsonStr = jsonStr.replace(/```json\n?/g, '').replace(/```\n?$/g, '');
@@ -317,28 +318,40 @@ Return the same JSON structure with improved distractors.`;
   }
 
   /**
-   * Helper: Call AI model via Gemini
+   * Helper: Call AI model via OpenRouter
    */
   private async callAI(
     systemPrompt: string,
     userPrompt: string,
-    model: string = 'gemini-2.0-flash',
+    model: string = 'google/gemma-4-31b-it:free',
     maxTokens: number = 2000,
   ): Promise<string> {
     try {
-      const response = await this.geminiProvider.generateText(
-        userPrompt,
-        systemPrompt,
+      const response = await axios.post(
+        `${this.baseURL}/chat/completions`,
         {
           model,
-          maxTokens,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt },
+          ],
+          max_tokens: maxTokens,
           temperature: 0.7,
+        },
+        {
+          headers: {
+            'Authorization': `Bearer ${this.openRouterApiKey}`,
+            'Content-Type': 'application/json',
+            'HTTP-Referer': 'https://tezhisobchi.uz',
+            'X-Title': 'Tezkor Slide AI - Quiz Generator',
+          },
+          timeout: 60000,
         },
       );
 
-      return response.content;
+      return response.data.choices[0].message.content;
     } catch (error) {
-      this.logger.error('AI API call failed', error.message);
+      this.logger.error('AI API call failed', error.response?.data || error.message);
       throw new Error('AI service temporarily unavailable');
     }
   }
