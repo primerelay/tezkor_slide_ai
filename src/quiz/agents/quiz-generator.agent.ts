@@ -156,7 +156,7 @@ Respond with valid JSON array:
 ]`;
 
     try {
-      const response = await this.callAI(systemPrompt, userPrompt, 'google/gemma-4-31b-it:free', 4000);
+      const response = await this.callAI(systemPrompt, userPrompt, 'openai/gpt-4o-mini', 4000);
 
       // Extract JSON from response (handle markdown code blocks)
       let jsonStr = response.trim();
@@ -323,7 +323,7 @@ Return the same JSON structure with improved distractors.`;
   private async callAI(
     systemPrompt: string,
     userPrompt: string,
-    model: string = 'google/gemma-4-31b-it:free',
+    model: string = 'openai/gpt-4o-mini',
     maxTokens: number = 2000,
   ): Promise<string> {
     try {
