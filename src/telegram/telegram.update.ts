@@ -69,6 +69,11 @@ export class TelegramUpdate {
       parse_mode: 'HTML',
       reply_markup: InlineKeyboards.featuresMenu(i18n, this.miniAppUrl),
     });
+
+    // Send reply keyboard (persistent buttons at bottom)
+    await ctx.reply(i18n.t('mainMenuText'), {
+      reply_markup: ReplyKeyboards.mainMenu(i18n),
+    });
   }
 
   /**
