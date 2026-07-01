@@ -150,7 +150,7 @@ export class QuizService {
               correct_option_id: correctOptionIndex,
               explanation: question.explanation || undefined,
               is_anonymous: false,
-            }
+            } as any
           );
 
           // Small delay to avoid rate limiting
