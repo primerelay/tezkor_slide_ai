@@ -59,16 +59,19 @@ export default function QuizCreatePage() {
     }, 800);
 
     try {
+      // Generate title from first 50 chars of content
+      const title = content.trim().substring(0, 50) + (content.length > 50 ? '...' : '');
+
       const response = await fetch('/api/quiz', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          content,
+          title,
+          sourceContent: content,
           quizType,
           difficulty,
           numberOfQuestions,
           language: quizLanguage,
-          userId: 1, // Temporary - should be from Telegram user
         }),
       });
 
@@ -88,7 +91,7 @@ export default function QuizCreatePage() {
     }
   };
 
-  const pollQuizStatus = async (id: string) => {
+  const pollQuizStatus = async (id: number) => {
     const maxAttempts = 60; // 3 minutes max
     let attempts = 0;
 
