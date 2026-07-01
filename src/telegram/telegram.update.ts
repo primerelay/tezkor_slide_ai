@@ -220,7 +220,7 @@ export class TelegramUpdate {
   }
 
   /**
-   * Handler for "Quiz Bot" button (🤖)
+   * Handler for "Quiz Bot" button (🤖) - starts quiz creation
    */
   @Hears(/^🤖.+$/)
   async onQuizBotButton(@Ctx() ctx: BotContext) {
@@ -232,11 +232,22 @@ export class TelegramUpdate {
     );
     if (!user) return;
 
-    const i18n = this.telegramService.getI18n(user.language);
-    const adminUsername = this.configService.get<string>('ADMIN_USERNAME') || 'admin';
+    // Check channel membership
+    const requiredChannel = this.telegramService.getRequiredChannel();
+    if (requiredChannel) {
+      const isMember = await this.telegramService.isChannelMember(telegramUser.id);
+      if (!isMember) {
+        const i18n = this.telegramService.getI18n(user.language);
+        await ctx.reply(i18n.t('channel.joinRequired', { channel: requiredChannel.username }), {
+          parse_mode: 'HTML',
+          reply_markup: InlineKeyboards.joinChannel(requiredChannel.url, requiredChannel.username),
+        });
+        return;
+      }
+    }
 
-    // Just show admin contact info
-    await ctx.reply(i18n.t('quizBot.contactAdmin', { adminUsername }), { parse_mode: 'HTML' });
+    // Start quiz creation scene
+    await ctx.scene.enter('quiz-create');
   }
 
   /**
