@@ -97,13 +97,17 @@ export default function QuizViewPage() {
         body: JSON.stringify({ telegramId: user.id.toString() }),
       });
 
-      if (!response.ok) throw new Error('Failed to send quiz');
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({ message: 'Unknown error' }));
+        console.error('Server error:', errorData);
+        throw new Error(errorData.message || 'Failed to send quiz');
+      }
 
       haptic('success');
       alert('✅ Quiz Telegram botga yuborildi! Endi uni forward qilishingiz mumkin.');
-    } catch (error) {
+    } catch (error: any) {
       console.error('Error sending quiz:', error);
-      alert('❌ Yuborishda xatolik yuz berdi');
+      alert('❌ Xatolik: ' + (error.message || 'Yuborishda xatolik yuz berdi'));
       haptic('error');
     } finally {
       setSending(false);

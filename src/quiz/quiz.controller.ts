@@ -8,6 +8,8 @@ import {
   UseGuards,
   Req,
   ParseIntPipe,
+  HttpException,
+  HttpStatus,
 } from '@nestjs/common';
 import { QuizService } from './quiz.service';
 import { CreateQuizDto } from './dto/create-quiz.dto';
@@ -47,7 +49,14 @@ export class QuizController {
     @Body() body: { telegramId: string },
     @Req() req: any,
   ) {
-    const userId = req.user?.id || 1;
-    return this.quizService.sendQuizToTelegram(id, userId, body.telegramId);
+    try {
+      const userId = req.user?.id || 1;
+      return await this.quizService.sendQuizToTelegram(id, userId, body.telegramId);
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Telegram orqali yuborishda xatolik',
+        HttpStatus.INTERNAL_SERVER_ERROR,
+      );
+    }
   }
 }
