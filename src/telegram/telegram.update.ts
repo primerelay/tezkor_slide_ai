@@ -22,6 +22,11 @@ interface SessionData extends Scenes.SceneSession {
   step?: 'topic' | 'student_name' | 'teacher_name' | 'reja' | 'slides' | 'theme' | 'confirm';
   awaitingPaymentScreenshot?: boolean;
   adminApprovingUserId?: number;
+  // Quiz properties
+  quizContent?: string;
+  quizType?: string;
+  quizDifficulty?: string;
+  quizQuestionCount?: number;
 }
 
 export interface BotContext extends Context {
@@ -740,21 +745,29 @@ export class TelegramUpdate {
     );
     if (!user) return;
 
-    const i18n = this.telegramService.getI18n(user.language);
-    const adminUsername = this.configService.get<string>('ADMIN_USERNAME') || 'admin';
+    // Check channel membership
+    const requiredChannel = this.telegramService.getRequiredChannel();
+    if (requiredChannel) {
+      const isMember = await this.telegramService.isChannelMember(telegramUser.id);
+      if (!isMember) {
+        await ctx.answerCbQuery();
+        const i18n = this.telegramService.getI18n(user.language);
+        await ctx.reply(
+          i18n.t('channel.joinRequired', { channel: requiredChannel.username }),
+          {
+            parse_mode: 'HTML',
+            reply_markup: InlineKeyboards.joinChannel(requiredChannel.url, requiredChannel.username),
+          }
+        );
+        return;
+      }
+    }
+
+    ctx.session.userId = user.id;
+    ctx.session.language = user.language;
 
     await ctx.answerCbQuery();
-    await ctx.reply(
-      '🧠 <b>Quiz Bot Yaratish</b>\n\n' +
-      '✨ AI yordamida professional test savollarini yaratish!\n\n' +
-      '📝 <b>Qanday ishlaydi:</b>\n' +
-      '• Matn yoki fayl yuklang\n' +
-      '• Savol turi va qiyinlik darajasini tanlang\n' +
-      '• AI avtomatik test savollarini yaratadi\n\n' +
-      '💡 Buyurtma berish uchun admin bilan bog\'laning:\n' +
-      `👉 @${adminUsername}`,
-      { parse_mode: 'HTML' }
-    );
+    await ctx.scene.enter('quiz-create');
   }
 
   @On('text')

@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { Module, forwardRef } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { TelegrafModule } from 'nestjs-telegraf';
 import { session } from 'telegraf';
@@ -14,6 +14,8 @@ import { LanguageScene } from './scenes/language.scene';
 import { TopicScene } from './scenes/topic.scene';
 import { OptionsScene } from './scenes/options.scene';
 import { GenerationScene } from './scenes/generation.scene';
+import { QuizCreateScene } from './scenes/quiz-create.scene';
+import { QuizModule } from '../quiz/quiz.module';
 
 @Module({
   imports: [
@@ -26,6 +28,7 @@ import { GenerationScene } from './scenes/generation.scene';
       }),
     }),
     TypeOrmModule.forFeature([User, Presentation, GenerationJob, Transaction]),
+    forwardRef(() => QuizModule),
   ],
   providers: [
     TelegramService,
@@ -35,6 +38,7 @@ import { GenerationScene } from './scenes/generation.scene';
     TopicScene,
     OptionsScene,
     GenerationScene,
+    QuizCreateScene,
   ],
   exports: [TelegramService],
 })

@@ -1,4 +1,4 @@
-import { Injectable, Logger } from '@nestjs/common';
+import { Injectable, Logger, Inject, forwardRef } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
 import { InjectBot } from 'nestjs-telegraf';
@@ -10,6 +10,8 @@ import { I18nService, SupportedLanguage } from '../common/i18n/i18n.service';
 import { InlineKeyboards } from './keyboards/inline.keyboards';
 import { ConfigService } from '@nestjs/config';
 import { PresentationTheme } from '../renderer/themes/theme-registry';
+import { QuizService } from '../quiz/quiz.service';
+import { CreateQuizDto } from '../quiz/dto/create-quiz.dto';
 
 // Pricing in so'm
 const SLIDE_PRICES: Record<number, number> = {
@@ -39,6 +41,8 @@ export class TelegramService {
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
     private readonly configService: ConfigService,
+    @Inject(forwardRef(() => QuizService))
+    private readonly quizService: QuizService,
   ) {
     this.adminTelegramIds = this.configService.get<number[]>('admin.telegramIds') || [];
     this.requiredChannelUsername = this.configService.get<string>('requiredChannel.username') || '';
@@ -206,6 +210,14 @@ export class TelegramService {
     return this.presentationRepository.findOne({
       where: { id },
     });
+  }
+
+  async createQuiz(data: CreateQuizDto & { userId: number }) {
+    return this.quizService.createQuiz(data.userId, data);
+  }
+
+  getMiniAppUrl(): string | undefined {
+    return this.configService.get<string>('MINI_APP_URL');
   }
 
   async getUserPresentations(userId: number): Promise<Presentation[]> {
