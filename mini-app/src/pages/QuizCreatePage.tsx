@@ -149,7 +149,7 @@ export default function QuizCreatePage() {
       </header>
 
       {/* Content */}
-      <div className="flex-1 overflow-y-auto p-5" style={{ WebkitOverflowScrolling: 'touch' }}>
+      <div className="flex-1 overflow-y-auto px-5 pb-24" style={{ WebkitOverflowScrolling: 'touch' }}>
         <AnimatePresence mode="wait">
           {/* Step 1: Content Input */}
           {step === 'content' && (
@@ -158,25 +158,25 @@ export default function QuizCreatePage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="space-y-4"
+              className="py-4"
             >
-              <div className="card p-4">
-                <div className="flex items-center gap-3 mb-3">
-                  <FileText className="w-5 h-5 text-indigo-600" />
-                  <h3 className="font-semibold text-gray-900">Matn kiriting</h3>
+              <div className="card p-3">
+                <div className="flex items-center gap-2 mb-2">
+                  <FileText className="w-4 h-4 text-indigo-600" />
+                  <h3 className="font-medium text-gray-900 text-sm">Matn kiriting</h3>
                 </div>
                 <textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
                   placeholder="Test yaratish uchun darslik matni yoki mavzuni kiriting... (kamida 10 belgi)"
-                  className="w-full h-64 px-4 py-3 border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full h-48 px-3 py-2 text-sm border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-sm text-gray-500">
+                  <span className="text-xs text-gray-500">
                     {content.length} belgi
                   </span>
                   {content.length >= 10 && (
-                    <span className="text-sm text-green-600 font-medium">
+                    <span className="text-xs text-green-600 font-medium">
                       ✓ Tayyor
                     </span>
                   )}
@@ -192,11 +192,11 @@ export default function QuizCreatePage() {
               initial={{ opacity: 0, x: 20 }}
               animate={{ opacity: 1, x: 0 }}
               exit={{ opacity: 0, x: -20 }}
-              className="space-y-4"
+              className="space-y-3 py-4"
             >
               {/* Quiz Type */}
-              <div className="card p-4">
-                <h3 className="font-semibold text-gray-900 mb-3">Savol turi</h3>
+              <div className="card p-3">
+                <h3 className="font-medium text-gray-900 text-sm mb-2">Savol turi</h3>
                 <div className="space-y-2">
                   {[
                     { value: 'multiple_choice', label: 'Ko\'p tanlovli' },
@@ -209,76 +209,76 @@ export default function QuizCreatePage() {
                         haptic('light');
                         setQuizType(type.value as QuizType);
                       }}
-                      className={`w-full p-3 rounded-xl border-2 transition-colors ${
+                      className={`w-full p-2 rounded-lg border-2 transition-colors ${
                         quizType === type.value
                           ? 'border-indigo-600 bg-indigo-50'
                           : 'border-gray-200 bg-white'
                       }`}
                     >
-                      <span className="font-medium text-gray-900">{type.label}</span>
+                      <span className="text-sm font-medium text-gray-900">{type.label}</span>
                     </button>
                   ))}
                 </div>
               </div>
 
               {/* Difficulty */}
-              <div className="card p-4">
-                <h3 className="font-semibold text-gray-900 mb-3">Qiyinlik darajasi</h3>
+              <div className="card p-3">
+                <h3 className="font-medium text-gray-900 text-sm mb-2">Qiyinlik darajasi</h3>
                 <div className="grid grid-cols-3 gap-2">
                   <button
                     onClick={() => {
                       haptic('light');
                       setDifficulty('easy');
                     }}
-                    className={`p-3 rounded-xl border-2 transition-colors ${
+                    className={`p-2 rounded-lg border-2 transition-colors ${
                       difficulty === 'easy'
                         ? 'border-green-600 bg-green-50'
                         : 'border-gray-200 bg-white'
                     }`}
                   >
-                    <span className="text-sm font-medium text-gray-900">Oson</span>
+                    <span className="text-xs font-medium text-gray-900">Oson</span>
                   </button>
                   <button
                     onClick={() => {
                       haptic('light');
                       setDifficulty('medium');
                     }}
-                    className={`p-3 rounded-xl border-2 transition-colors ${
+                    className={`p-2 rounded-lg border-2 transition-colors ${
                       difficulty === 'medium'
                         ? 'border-yellow-600 bg-yellow-50'
                         : 'border-gray-200 bg-white'
                     }`}
                   >
-                    <span className="text-sm font-medium text-gray-900">O'rta</span>
+                    <span className="text-xs font-medium text-gray-900">O'rta</span>
                   </button>
                   <button
                     onClick={() => {
                       haptic('light');
                       setDifficulty('hard');
                     }}
-                    className={`p-3 rounded-xl border-2 transition-colors ${
+                    className={`p-2 rounded-lg border-2 transition-colors ${
                       difficulty === 'hard'
                         ? 'border-red-600 bg-red-50'
                         : 'border-gray-200 bg-white'
                     }`}
                   >
-                    <span className="text-sm font-medium text-gray-900">Qiyin</span>
+                    <span className="text-xs font-medium text-gray-900">Qiyin</span>
                   </button>
                 </div>
               </div>
 
               {/* Number of Questions */}
-              <div className="card p-4">
-                <h3 className="font-semibold text-gray-900 mb-3">Savollar soni</h3>
+              <div className="card p-3">
+                <h3 className="font-medium text-gray-900 text-sm mb-2">Savollar soni</h3>
                 <input
                   type="number"
                   value={numberOfQuestions}
                   onChange={(e) => setNumberOfQuestions(Math.max(5, Math.min(30, parseInt(e.target.value) || 10)))}
                   min={5}
                   max={30}
-                  className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-indigo-500"
+                  className="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500"
                 />
-                <p className="text-sm text-gray-500 mt-2">5 dan 30 gacha</p>
+                <p className="text-xs text-gray-500 mt-1">5 dan 30 gacha</p>
               </div>
             </motion.div>
           )}
@@ -314,13 +314,13 @@ export default function QuizCreatePage() {
         </AnimatePresence>
       </div>
 
-      {/* Footer Button */}
+      {/* Footer Button - Fixed at bottom */}
       {step !== 'generating' && (
-        <div className="p-5 bg-white border-t border-gray-200">
+        <div className="fixed bottom-0 left-0 right-0 p-4 bg-white border-t border-gray-200 z-50">
           <button
             onClick={handleNext}
             disabled={!canProceed}
-            className={`w-full py-4 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
+            className={`w-full py-3 rounded-xl font-semibold flex items-center justify-center gap-2 transition-all ${
               canProceed
                 ? 'bg-indigo-600 text-white active:scale-[0.98]'
                 : 'bg-gray-200 text-gray-400 cursor-not-allowed'
