@@ -1,7 +1,13 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { DocAiClient } from './doc-ai.client';
 import { SupportedLanguage } from '../../common/i18n/i18n.service';
-import { DocumentPlan, DocSectionPlan } from './doc-planner.agent';
+import { DocumentPlan, DocSectionPlan, WORDS_PER_PAGE } from './doc-planner.agent';
+
+// Empirically the model writes ~72 words per paragraph regardless of the
+// requested length, so we provision paragraph COUNT against a slightly lower
+// figure — this makes the document meet (or slightly exceed) the requested
+// page count instead of falling ~20% short.
+const WORDS_PER_PARAGRAPH = 65;
 
 export interface WrittenBlock {
   /** Subsection heading (e.g. "Fotosintez jarayonining bosqichlari"); null for kirish/xulosa. */
@@ -84,25 +90,39 @@ QUALITY BAR (non-negotiable):
     // Essays are always continuous prose blocks with no headings.
     const isChapter = section.type === 'bob' && !isEssay && section.subsections.length > 0;
 
+    // Paragraph counts are derived from the section's word target so the final
+    // document actually reaches the number of pages the user paid for. Models
+    // obey explicit paragraph counts far more reliably than raw word targets.
+    const target = section.targetWords || WORDS_PER_PAGE;
+    const totalParas = Math.max(Math.ceil(target / WORDS_PER_PARAGRAPH), 2);
+    const paraSpec =
+      'Every paragraph MUST be a substantial 6-9 full sentences (~90-120 words) of detailed content — this length is REQUIRED to reach the target.';
+
     let structureSpec: string;
     if (isChapter) {
-      structureSpec = `Write this chapter with EXACTLY these subsections as blocks:
-${section.subsections.map((s) => `- ${s}`).join('\n')}
+      const subs = section.subsections;
+      const perSub = Math.max(Math.ceil(totalParas / subs.length), 2);
+      structureSpec = `Write this chapter as ${subs.length} blocks, one per subsection (in this order):
+${subs.map((s) => `- ${s}`).join('\n')}
 
-Each block: {"heading": "<subsection title>", "paragraphs": ["...", "..."]} with 2-4 paragraphs per subsection.`;
+Each block: {"heading": "<subsection title>", "paragraphs": [...]} with EXACTLY ${perSub} paragraphs. ${paraSpec}`;
     } else if (isEssay) {
+      const paras = Math.max(totalParas, 2);
       const role =
         section.type === 'kirish'
           ? ' This is the OPENING — hook the reader and introduce the central idea.'
           : section.type === 'xulosa'
             ? ' This is the CLOSING — leave a memorable final impression, do not merely summarize.'
             : ' This is a body movement — develop one distinct angle with examples.';
-      structureSpec = `Write it as a single block: {"heading": null, "paragraphs": ["...", "..."]} with 2-3 flowing paragraphs.${role}`;
+      structureSpec = `Write it as a single block: {"heading": null, "paragraphs": [...]} with EXACTLY ${paras} flowing paragraphs (each 5-8 sentences).${role}`;
     } else {
-      structureSpec = `Write it as a single block: {"heading": null, "paragraphs": ["...", "...", "..."]} with 3-5 paragraphs.${
+      const paras = Math.max(totalParas, 3);
+      structureSpec = `Write it as a single block: {"heading": null, "paragraphs": [...]} with EXACTLY ${paras} paragraphs. ${paraSpec}${
         section.type === 'kirish'
           ? ' The introduction must state the relevance (dolzarbligi) of the topic, the aim (maqsad) and tasks (vazifalar) of the work.'
-          : ' The conclusion must synthesize the main findings of ALL chapters and end with practical significance.'
+          : section.type === 'xulosa'
+            ? ' The conclusion must synthesize the main findings of ALL chapters and end with practical significance.'
+            : ''
       }`;
     }
 

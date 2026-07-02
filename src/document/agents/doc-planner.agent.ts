@@ -62,7 +62,7 @@ export class DocPlannerAgent {
     const contentPages = Math.max(pageCount - OVERHEAD_PAGES, 4);
     // Intro and conclusion take ~1 page each; the rest is split into chapters.
     const chapterPages = contentPages - 2;
-    const chapterCount = Math.min(Math.max(Math.round(chapterPages / 2), 2), 6);
+    const chapterCount = Math.min(Math.max(Math.round(chapterPages / 2), 2), 8);
     const wordsPerChapter = Math.round((chapterPages * WORDS_PER_PAGE) / chapterCount);
 
     const docTypeName =
