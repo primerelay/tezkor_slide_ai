@@ -127,11 +127,14 @@ export class TelegramUpdate {
       });
     }
 
-    // Single welcome message with the inline features menu below it. No
-    // separate "Asosiy menyu" message and no persistent reply keyboard.
+    // Welcome message with the inline menu below it, plus the persistent
+    // bottom reply keyboard (same ordering) via a short follow-up message.
     await ctx.reply(i18n.t('welcome', { name: user.firstName || 'User' }), {
       parse_mode: 'HTML',
       reply_markup: InlineKeyboards.featuresMenu(i18n, this.miniAppUrl),
+    });
+    await ctx.reply(i18n.t('mainMenuText'), {
+      reply_markup: ReplyKeyboards.mainMenu(i18n, this.miniAppUrl),
     });
 
     // Opened via a shared flashcard link — show the deck interactively.
@@ -182,6 +185,9 @@ export class TelegramUpdate {
     await ctx.reply(i18n.t('welcome', { name: user.firstName || 'User' }), {
       parse_mode: 'HTML',
       reply_markup: InlineKeyboards.featuresMenu(i18n, this.miniAppUrl),
+    });
+    await ctx.reply(i18n.t('mainMenuText'), {
+      reply_markup: ReplyKeyboards.mainMenu(i18n, this.miniAppUrl),
     });
   }
 

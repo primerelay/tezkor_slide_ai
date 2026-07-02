@@ -9,21 +9,23 @@ export class ReplyKeyboards {
   static mainMenu(i18n: I18nService, webAppUrl?: string) {
     const keyboard: any[] = [];
 
-    // Web App opener at the top (only works when an HTTPS URL is configured).
+    // Row 1: Web App opener + Start (same layout as the inline menu).
+    const topRow: any[] = [];
     if (webAppUrl) {
-      keyboard.push([Markup.button.webApp(i18n.t('buttons.openWebApp'), webAppUrl)]);
+      topRow.push(Markup.button.webApp(i18n.t('buttons.openWebApp'), webAppUrl));
     }
+    topRow.push(i18n.t('buttons.start'));
+    keyboard.push(topRow);
 
     keyboard.push(
-      [i18n.t('buttons.start')],
+      [i18n.t('buttons.balance'), i18n.t('buttons.addBalance')],
+      [i18n.t('buttons.inviteFriends'), i18n.t('buttons.language')],
       [i18n.t('buttons.mustaqilIsh'), i18n.t('buttons.referat')],
       [i18n.t('buttons.kursIshi'), i18n.t('buttons.maqola')],
       [i18n.t('buttons.tezis'), i18n.t('buttons.insho')],
       [i18n.t('buttons.flashcard'), i18n.t('buttons.quizBot')],
       [i18n.t('buttons.glossary'), i18n.t('buttons.crossword')],
       [i18n.t('buttons.resume'), i18n.t('buttons.translator')],
-      [i18n.t('buttons.balance'), i18n.t('buttons.addBalance')],
-      [i18n.t('buttons.inviteFriends'), i18n.t('buttons.language')],
     );
 
     return Markup.keyboard(keyboard).resize().reply_markup;
