@@ -15,7 +15,7 @@ export class ReplyKeyboards {
     }
 
     keyboard.push(
-      [i18n.t('buttons.newPresentation'), i18n.t('buttons.myPresentations')],
+      [i18n.t('buttons.start')],
       [i18n.t('buttons.mustaqilIsh'), i18n.t('buttons.referat')],
       [i18n.t('buttons.kursIshi'), i18n.t('buttons.maqola')],
       [i18n.t('buttons.tezis'), i18n.t('buttons.insho')],

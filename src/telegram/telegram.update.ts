@@ -125,11 +125,12 @@ export class TelegramUpdate {
       });
     }
 
-    // Send only the welcome message with the inline features menu — no separate
-    // "Asosiy menyu" message / persistent reply keyboard.
+    // Single welcome message that also carries the persistent menu (reply
+    // keyboard). This updates the keyboard with no separate "Asosiy menyu"
+    // message and no duplicated inline menu.
     await ctx.reply(i18n.t('welcome', { name: user.firstName || 'User' }), {
       parse_mode: 'HTML',
-      reply_markup: InlineKeyboards.featuresMenu(i18n, this.miniAppUrl),
+      reply_markup: ReplyKeyboards.mainMenu(i18n, this.miniAppUrl),
     });
 
     // Opened via a shared flashcard link — show the deck interactively.
@@ -149,17 +150,27 @@ export class TelegramUpdate {
   }
 
   /**
-   * "Start" inline button — re-runs the /start welcome (inline menu only).
+   * "Start" reply-keyboard button (🔄) — re-runs the /start welcome.
    */
+  @Hears(/^🔄/)
+  async onStartButton(@Ctx() ctx: BotContext) {
+    await this.sendWelcome(ctx);
+  }
+
+  /** "Start" inline button — re-runs the /start welcome. */
   @Action('run_start')
   async onRunStart(@Ctx() ctx: BotContext) {
+    await ctx.answerCbQuery();
+    await this.sendWelcome(ctx);
+  }
+
+  /** Send the welcome message with the persistent menu (reply keyboard). */
+  private async sendWelcome(ctx: BotContext) {
     const telegramUser = ctx.from;
     if (!telegramUser) return;
-
     const user = await this.telegramService.getUserByTelegramId(
       telegramUser.id.toString(),
     );
-    await ctx.answerCbQuery();
     if (!user) return;
 
     ctx.session.userId = user.id;
@@ -169,7 +180,7 @@ export class TelegramUpdate {
     const i18n = this.telegramService.getI18n(user.language);
     await ctx.reply(i18n.t('welcome', { name: user.firstName || 'User' }), {
       parse_mode: 'HTML',
-      reply_markup: InlineKeyboards.featuresMenu(i18n, this.miniAppUrl),
+      reply_markup: ReplyKeyboards.mainMenu(i18n, this.miniAppUrl),
     });
   }
 
