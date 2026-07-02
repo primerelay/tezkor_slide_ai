@@ -3,7 +3,7 @@ import { Markup } from 'telegraf';
 import { BotContext } from '../telegram.update';
 import { TelegramService } from '../telegram.service';
 import { InlineKeyboards } from '../keyboards/inline.keyboards';
-import { DocumentService, DOC_PRICES } from '../../document/document.service';
+import { DocumentService, priceTableFor } from '../../document/document.service';
 import { DocumentType } from '../../database/entities/document.entity';
 
 @Scene('document-create')
@@ -61,8 +61,18 @@ export class DocumentCreateScene {
       }
 
       ctx.session.docTopic = text;
-      ctx.session.docStep = 'institution';
 
+      // Essays are pure prose — skip institution/student/teacher, go to length.
+      if (ctx.session.docType === 'insho') {
+        ctx.session.docStep = 'pages';
+        await ctx.reply(i18n.t('document.selectPageCount'), {
+          parse_mode: 'HTML',
+          reply_markup: this.pageCountKeyboard(i18n, 'insho'),
+        });
+        return;
+      }
+
+      ctx.session.docStep = 'institution';
       await ctx.reply(i18n.t('document.enterInstitution'), {
         parse_mode: 'HTML',
         reply_markup: Markup.inlineKeyboard([
@@ -100,15 +110,18 @@ export class DocumentCreateScene {
 
       await ctx.reply(i18n.t('document.selectPageCount'), {
         parse_mode: 'HTML',
-        reply_markup: this.pageCountKeyboard(i18n),
+        reply_markup: this.pageCountKeyboard(i18n, ctx.session.docType || 'mustaqil_ish'),
       });
       return;
     }
   }
 
-  private pageCountKeyboard(i18n: ReturnType<TelegramService['getI18n']>) {
+  private pageCountKeyboard(
+    i18n: ReturnType<TelegramService['getI18n']>,
+    docType: DocumentType,
+  ) {
     const pagesWord = i18n.t('document.pagesShort');
-    const entries = Object.entries(DOC_PRICES);
+    const entries = Object.entries(priceTableFor(docType));
     const rows = [];
     for (let i = 0; i < entries.length; i += 2) {
       rows.push(
@@ -150,7 +163,8 @@ export class DocumentCreateScene {
     const pageCount = parseInt(match[1], 10);
     ctx.session.docPageCount = pageCount;
 
-    const price = this.documentService.getPriceForPageCount(pageCount);
+    const docType = ctx.session.docType || 'mustaqil_ish';
+    const price = this.documentService.getPrice(docType, pageCount);
     const i18n = this.telegramService.getI18n(user.language);
 
     if (user.credits < price) {
@@ -162,8 +176,6 @@ export class DocumentCreateScene {
       await ctx.scene.leave();
       return;
     }
-
-    const docType = ctx.session.docType || 'mustaqil_ish';
 
     await ctx.answerCbQuery();
     await ctx.editMessageText(
@@ -203,7 +215,7 @@ export class DocumentCreateScene {
       return;
     }
 
-    const price = this.documentService.getPriceForPageCount(docPageCount);
+    const price = this.documentService.getPrice(docType as DocumentType, docPageCount);
 
     const deducted = await this.telegramService.deductCredits(user.id, price);
     if (!deducted) {

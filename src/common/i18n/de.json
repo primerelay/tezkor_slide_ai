@@ -54,16 +54,19 @@
     "slideCreate": "📊 Folie erstellen",
     "quizCreate": "🧠 Quiz erstellen",
     "mustaqilIsh": "📄 Selbstständige Arbeit",
-    "referat": "📚 Referat"
+    "referat": "📚 Referat",
+    "insho": "✍️ Essay"
   },
   "document": {
     "typeNames": {
       "mustaqil_ish": "Selbstständige Arbeit",
-      "referat": "Referat"
+      "referat": "Referat",
+      "insho": "Essay"
     },
     "typeLabel": {
       "mustaqil_ish": "SELBSTSTÄNDIGE ARBEIT",
-      "referat": "REFERAT"
+      "referat": "REFERAT",
+      "insho": "ESSAY"
     },
     "ministryHeader": "MINISTERIUM FÜR HOCHSCHULBILDUNG, WISSENSCHAFT UND INNOVATION DER REPUBLIK USBEKISTAN",
     "topicLabel": "Thema",

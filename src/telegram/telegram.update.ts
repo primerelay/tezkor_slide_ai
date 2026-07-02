@@ -29,7 +29,7 @@ interface SessionData extends Scenes.SceneSession {
   quizDifficulty?: string;
   quizQuestionCount?: number;
   // Document (mustaqil ish / referat) properties
-  docType?: 'mustaqil_ish' | 'referat';
+  docType?: 'mustaqil_ish' | 'referat' | 'insho';
   docStep?: 'topic' | 'institution' | 'student_name' | 'teacher_name' | 'pages';
   docTopic?: string;
   docInstitution?: string;
@@ -366,6 +366,14 @@ export class TelegramUpdate {
     await this.startDocumentFlow(ctx, 'referat');
   }
 
+  /**
+   * Handler for "Insho/Essey" button (✍️)
+   */
+  @Hears(/^✍️.+$/)
+  async onInshoButton(@Ctx() ctx: BotContext) {
+    await this.startDocumentFlow(ctx, 'insho');
+  }
+
   @Action('doc_create_mustaqil_ish')
   async onDocCreateMustaqilIsh(@Ctx() ctx: BotContext) {
     await ctx.answerCbQuery();
@@ -378,9 +386,15 @@ export class TelegramUpdate {
     await this.startDocumentFlow(ctx, 'referat');
   }
 
+  @Action('doc_create_insho')
+  async onDocCreateInsho(@Ctx() ctx: BotContext) {
+    await ctx.answerCbQuery();
+    await this.startDocumentFlow(ctx, 'insho');
+  }
+
   private async startDocumentFlow(
     ctx: BotContext,
-    docType: 'mustaqil_ish' | 'referat',
+    docType: 'mustaqil_ish' | 'referat' | 'insho',
   ) {
     const telegramUser = ctx.from;
     if (!telegramUser) return;

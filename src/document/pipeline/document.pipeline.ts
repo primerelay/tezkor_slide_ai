@@ -21,6 +21,8 @@ export interface DocPipelineInput {
 export interface DocPipelineOutput {
   title: string;
   docType: DocumentType;
+  /** Layout family: essays render as clean prose, academic docs get title page/TOC/refs. */
+  format: 'academic' | 'essay';
   language: SupportedLanguage;
   institution?: string;
   studentName?: string;
@@ -54,6 +56,7 @@ export class DocumentPipeline {
     onProgress?: (progress: DocPipelineProgress) => void,
   ): Promise<DocPipelineOutput> {
     this.logger.log(`Starting document pipeline for: ${input.topic}`);
+    const isEssay = input.docType === 'insho';
     let totalCost = 0;
 
     onProgress?.({ progress: 10, message: 'Planning document structure...' });
@@ -81,6 +84,7 @@ export class DocumentPipeline {
         plan.sections[i],
         i,
         input.language,
+        isEssay,
       );
       sections.push(writeResult.section);
       totalCost += writeResult.cost;
@@ -92,11 +96,11 @@ export class DocumentPipeline {
       });
     }
 
-    onProgress?.({ progress: 85, message: 'Fetching illustrations...' });
-
-    // Attach a free stock illustration to the first few chapters. Failures are
-    // non-fatal — the document still renders without images.
-    await this.attachImages(input.topic, sections);
+    // Essays are pure prose — no illustrations. Academic docs get chapter images.
+    if (!isEssay) {
+      onProgress?.({ progress: 85, message: 'Fetching illustrations...' });
+      await this.attachImages(input.topic, sections);
+    }
 
     this.logger.log(
       `Document pipeline complete, total AI cost: $${totalCost.toFixed(6)}`,
@@ -105,6 +109,7 @@ export class DocumentPipeline {
     return {
       title: plan.title,
       docType: input.docType,
+      format: isEssay ? 'essay' : 'academic',
       language: input.language,
       institution: input.institution,
       studentName: input.studentName,

@@ -54,16 +54,19 @@
     "slideCreate": "📊 Create Slide",
     "quizCreate": "🧠 Create Quiz",
     "mustaqilIsh": "📄 Independent work",
-    "referat": "📚 Report (Referat)"
+    "referat": "📚 Report (Referat)",
+    "insho": "✍️ Essay"
   },
   "document": {
     "typeNames": {
       "mustaqil_ish": "Independent work",
-      "referat": "Report (Referat)"
+      "referat": "Report (Referat)",
+      "insho": "Essay"
     },
     "typeLabel": {
       "mustaqil_ish": "INDEPENDENT WORK",
-      "referat": "REPORT"
+      "referat": "REPORT",
+      "insho": "ESSAY"
     },
     "ministryHeader": "MINISTRY OF HIGHER EDUCATION, SCIENCE AND INNOVATION OF THE REPUBLIC OF UZBEKISTAN",
     "topicLabel": "Topic",

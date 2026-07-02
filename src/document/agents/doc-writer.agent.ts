@@ -54,12 +54,23 @@ export class DocWriterAgent {
     section: DocSectionPlan,
     sectionIndex: number,
     language: SupportedLanguage,
+    isEssay = false,
   ): Promise<SectionWriteResult> {
     const outline = plan.sections
       .map((s, i) => `${i + 1}. ${s.title}${s.subsections.length ? ` (${s.subsections.join('; ')})` : ''}`)
       .join('\n');
 
-    const systemPrompt = `You are a distinguished academic author writing university papers in ${LANGUAGE_NAMES[language]} for students in Uzbekistan. Your writing is what makes this service 2x better than competitors, so hold a high bar:
+    const systemPrompt = isEssay
+      ? `You are a masterful essayist writing a school/university essay (insho) in ${LANGUAGE_NAMES[language]} for students in Uzbekistan. This is flowing, persuasive, reflective prose — NOT a report.
+
+QUALITY BAR (non-negotiable):
+1. Vivid, engaging, emotionally resonant prose with a clear personal voice
+2. Use concrete examples, imagery, and thoughtful reasoning
+3. Flowing connected paragraphs (NOT bullet lists, NO subheadings)
+4. Smooth transitions so the whole essay reads as one continuous piece
+5. Each paragraph 4-6 full sentences; no filler or repetition
+6. Write ONLY in ${LANGUAGE_NAMES[language]}`
+      : `You are a distinguished academic author writing university papers in ${LANGUAGE_NAMES[language]} for students in Uzbekistan. Your writing is what makes this service 2x better than competitors, so hold a high bar:
 
 QUALITY BAR (non-negotiable):
 1. Rich, substantive academic prose — every paragraph teaches something concrete
@@ -70,18 +81,30 @@ QUALITY BAR (non-negotiable):
 6. NEVER fabricate quotes or statistics you are unsure of — prefer well-established facts
 7. Write ONLY in ${LANGUAGE_NAMES[language]}`;
 
-    const isChapter = section.type === 'bob';
+    // Essays are always continuous prose blocks with no headings.
+    const isChapter = section.type === 'bob' && !isEssay && section.subsections.length > 0;
 
-    const structureSpec = isChapter
-      ? `Write this chapter with EXACTLY these subsections as blocks:
+    let structureSpec: string;
+    if (isChapter) {
+      structureSpec = `Write this chapter with EXACTLY these subsections as blocks:
 ${section.subsections.map((s) => `- ${s}`).join('\n')}
 
-Each block: {"heading": "<subsection title>", "paragraphs": ["...", "..."]} with 2-4 paragraphs per subsection.`
-      : `Write it as a single block: {"heading": null, "paragraphs": ["...", "...", "..."]} with 3-5 paragraphs.${
-          section.type === 'kirish'
-            ? ' The introduction must state the relevance (dolzarbligi) of the topic, the aim (maqsad) and tasks (vazifalar) of the work.'
-            : ' The conclusion must synthesize the main findings of ALL chapters and end with practical significance.'
-        }`;
+Each block: {"heading": "<subsection title>", "paragraphs": ["...", "..."]} with 2-4 paragraphs per subsection.`;
+    } else if (isEssay) {
+      const role =
+        section.type === 'kirish'
+          ? ' This is the OPENING — hook the reader and introduce the central idea.'
+          : section.type === 'xulosa'
+            ? ' This is the CLOSING — leave a memorable final impression, do not merely summarize.'
+            : ' This is a body movement — develop one distinct angle with examples.';
+      structureSpec = `Write it as a single block: {"heading": null, "paragraphs": ["...", "..."]} with 2-3 flowing paragraphs.${role}`;
+    } else {
+      structureSpec = `Write it as a single block: {"heading": null, "paragraphs": ["...", "...", "..."]} with 3-5 paragraphs.${
+        section.type === 'kirish'
+          ? ' The introduction must state the relevance (dolzarbligi) of the topic, the aim (maqsad) and tasks (vazifalar) of the work.'
+          : ' The conclusion must synthesize the main findings of ALL chapters and end with practical significance.'
+      }`;
+    }
 
     const prompt = `PAPER TOPIC: ${topic}
 PAPER TITLE: ${plan.title}

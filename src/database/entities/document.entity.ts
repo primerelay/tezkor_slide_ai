@@ -8,7 +8,7 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 
-export type DocumentType = 'mustaqil_ish' | 'referat';
+export type DocumentType = 'mustaqil_ish' | 'referat' | 'insho';
 
 export type DocumentStatus = 'pending' | 'processing' | 'completed' | 'failed';
 

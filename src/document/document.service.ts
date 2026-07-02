@@ -11,13 +11,24 @@ import { DOCUMENT_QUEUE } from '../queue/constants';
 import { DocumentJobData } from './types/document-job.types';
 import { SupportedLanguage } from '../common/i18n/i18n.service';
 
-// Pricing in so'm by page count.
+// Pricing in so'm by page count, per document format.
 export const DOC_PRICES: Record<number, number> = {
   10: 2500,
   15: 3500,
   20: 4500,
   25: 5500,
 };
+
+// Essays (insho) are short prose — fewer pages, cheaper.
+export const ESSAY_PRICES: Record<number, number> = {
+  2: 1500,
+  3: 2000,
+  5: 2500,
+};
+
+export function priceTableFor(docType: DocumentType): Record<number, number> {
+  return docType === 'insho' ? ESSAY_PRICES : DOC_PRICES;
+}
 
 @Injectable()
 export class DocumentService {
@@ -30,8 +41,9 @@ export class DocumentService {
     private readonly documentQueue: Queue<DocumentJobData>,
   ) {}
 
-  getPriceForPageCount(pageCount: number): number {
-    return DOC_PRICES[pageCount] || 4500;
+  getPrice(docType: DocumentType, pageCount: number): number {
+    const table = priceTableFor(docType);
+    return table[pageCount] ?? (docType === 'insho' ? 2000 : 4500);
   }
 
   async createDocument(data: {

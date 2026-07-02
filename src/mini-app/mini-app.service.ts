@@ -50,7 +50,7 @@ export class MiniAppService {
       throw new Error('User not found');
     }
 
-    const price = this.documentService.getPriceForPageCount(dto.pageCount);
+    const price = this.documentService.getPrice(dto.docType, dto.pageCount);
     if (user.credits < price) {
       throw new Error(
         `Balansingiz yetarli emas. Kerak: ${price} so'm, Balans: ${user.credits} so'm`,

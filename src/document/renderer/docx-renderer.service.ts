@@ -39,12 +39,15 @@ export class DocxRendererService {
     const lang = (output.language || 'uz') as SupportedLanguage;
     const i18n = I18nService.create(lang);
 
-    const children: Paragraph[] = [
-      ...this.buildTitlePage(output, i18n),
-      ...this.buildTableOfContents(output, i18n),
-      ...this.buildBody(output, i18n),
-      ...this.buildReferences(output, i18n),
-    ];
+    const children: Paragraph[] =
+      output.format === 'essay'
+        ? this.buildEssay(output)
+        : [
+            ...this.buildTitlePage(output, i18n),
+            ...this.buildTableOfContents(output, i18n),
+            ...this.buildBody(output, i18n),
+            ...this.buildReferences(output, i18n),
+          ];
 
     const doc = new Document({
       creator: 'SliderAI UZ',
@@ -366,6 +369,54 @@ export class DocxRendererService {
         ],
       }),
     ];
+  }
+
+  /**
+   * Essay (insho) layout — clean and continuous: a centered title, an optional
+   * author line, then flowing justified prose with no headings, TOC, chapter
+   * numbers or references.
+   */
+  private buildEssay(output: DocPipelineOutput): Paragraph[] {
+    const paragraphs: Paragraph[] = [];
+
+    // Optional author / institution line, right-aligned above the title.
+    const authorBits = [output.institution, output.studentName].filter(Boolean);
+    for (const bit of authorBits) {
+      paragraphs.push(
+        new Paragraph({
+          alignment: AlignmentType.RIGHT,
+          spacing: { line: LINE_15 },
+          children: [new TextRun({ text: bit as string, italics: true, size: BODY_SIZE, font: FONT })],
+        }),
+      );
+    }
+
+    // Title.
+    paragraphs.push(
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        spacing: { before: authorBits.length ? 240 : 0, after: 300, line: LINE_15 },
+        children: [new TextRun({ text: output.title, bold: true, size: TITLE_SIZE, font: FONT })],
+      }),
+    );
+
+    // Continuous prose — every paragraph of every section, no headings.
+    for (const section of output.sections) {
+      for (const block of section.blocks) {
+        for (const text of block.paragraphs) {
+          paragraphs.push(
+            new Paragraph({
+              alignment: AlignmentType.JUSTIFIED,
+              indent: { firstLine: FIRST_LINE_INDENT },
+              spacing: { line: LINE_15 },
+              children: [new TextRun({ text, size: BODY_SIZE, font: FONT })],
+            }),
+          );
+        }
+      }
+    }
+
+    return paragraphs;
   }
 
   private buildReferences(output: DocPipelineOutput, i18n: I18nService): Paragraph[] {

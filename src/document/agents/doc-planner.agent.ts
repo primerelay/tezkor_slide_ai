@@ -48,6 +48,10 @@ export class DocPlannerAgent {
     pageCount: number,
     language: SupportedLanguage,
   ): Promise<DocPlanResult> {
+    if (docType === 'insho') {
+      return this.generateEssayPlan(topic, pageCount, language);
+    }
+
     const contentPages = Math.max(pageCount - OVERHEAD_PAGES, 4);
     // Intro and conclusion take ~1 page each; the rest is split into chapters.
     const chapterPages = contentPages - 2;
@@ -95,5 +99,56 @@ Return JSON:
     );
 
     return { plan: result.data, cost: result.cost };
+  }
+
+  /**
+   * Essay (insho) plan — flowing prose, no chapters/subsections/references.
+   * Sections are written as continuous paragraphs by the renderer.
+   */
+  private async generateEssayPlan(
+    topic: string,
+    pageCount: number,
+    language: SupportedLanguage,
+  ): Promise<DocPlanResult> {
+    const totalWords = pageCount * WORDS_PER_PAGE;
+    const bodyCount = pageCount <= 2 ? 2 : 3;
+    const wordsPerBody = Math.round((totalWords * 0.7) / bodyCount);
+    const introOutroWords = Math.round(totalWords * 0.15);
+
+    const systemPrompt = `You are a masterful essayist writing school/university essays (insho) in ${LANGUAGE_NAMES[language]} for students in Uzbekistan. An essay is flowing, persuasive, personal-yet-academic prose — NOT a report with chapters or citations.
+
+RULES:
+1. ALL content in ${LANGUAGE_NAMES[language]}
+2. A compelling, thoughtful essay title based on the topic
+3. Plan an introduction that hooks the reader and states the main idea, ${bodyCount} body movements that each develop one distinct angle with vivid examples, and a conclusion that leaves a lasting impression
+4. Body "title" fields are internal planning notes only (they will NOT be printed) — make them describe each movement's angle
+5. NO references, NO chapters, NO subsections.`;
+
+    const prompt = `Plan an essay (insho) for a student.
+
+TOPIC: ${topic}
+LENGTH: ~${pageCount} pages (~${totalWords} words)
+LANGUAGE: ${LANGUAGE_NAMES[language]}
+
+Return JSON:
+{
+  "title": "An evocative essay title (not just the raw topic)",
+  "sections": [
+    { "type": "kirish", "title": "intro", "subsections": [], "targetWords": ${introOutroWords} },
+    { "type": "bob", "title": "internal note: first angle", "subsections": [], "targetWords": ${wordsPerBody} },
+    // ... ${bodyCount} body movements total
+    { "type": "xulosa", "title": "conclusion", "subsections": [], "targetWords": ${introOutroWords} }
+  ],
+  "references": []
+}`;
+
+    this.logger.log(`Planning essay (${pageCount} pages) for: ${topic}`);
+
+    const result = await this.ai.generateJson<DocumentPlan>(prompt, systemPrompt, {
+      temperature: 0.8,
+      maxTokens: 2048,
+    });
+
+    return { plan: { ...result.data, references: [] }, cost: result.cost };
   }
 }

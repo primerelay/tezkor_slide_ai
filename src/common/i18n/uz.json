@@ -54,16 +54,19 @@
     "slideCreate": "📊 Slide yaratish",
     "quizCreate": "🧠 Quiz yaratish",
     "mustaqilIsh": "📄 Mustaqil ish",
-    "referat": "📚 Referat"
+    "referat": "📚 Referat",
+    "insho": "✍️ Insho/Essey"
   },
   "document": {
     "typeNames": {
       "mustaqil_ish": "Mustaqil ish",
-      "referat": "Referat"
+      "referat": "Referat",
+      "insho": "Insho"
     },
     "typeLabel": {
       "mustaqil_ish": "MUSTAQIL ISH",
-      "referat": "REFERAT"
+      "referat": "REFERAT",
+      "insho": "INSHO"
     },
     "ministryHeader": "O'ZBEKISTON RESPUBLIKASI OLIY TA'LIM, FAN VA INNOVATSIYALAR VAZIRLIGI",
     "topicLabel": "Mavzu",

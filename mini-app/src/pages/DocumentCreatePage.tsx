@@ -7,6 +7,7 @@ import {
   ArrowRight,
   FileText,
   BookOpen,
+  PenLine,
   Building2,
   User as UserIcon,
   Sparkles,
@@ -18,16 +19,33 @@ import { getTelegramUserId } from '../utils/telegram';
 
 type Step = 'topic' | 'details' | 'settings' | 'generating' | 'done';
 
-const PAGE_PRICES: { pages: number; price: number }[] = [
+type PriceOption = { pages: number; price: number };
+
+const ACADEMIC_PRICES: PriceOption[] = [
   { pages: 10, price: 2500 },
   { pages: 15, price: 3500 },
   { pages: 20, price: 4500 },
   { pages: 25, price: 5500 },
 ];
 
+const ESSAY_PRICES: PriceOption[] = [
+  { pages: 2, price: 1500 },
+  { pages: 3, price: 2000 },
+  { pages: 5, price: 2500 },
+];
+
 const DOC_META: Record<
   DocumentType,
-  { title: string; desc: string; icon: typeof FileText; iconBg: string; iconFg: string }
+  {
+    title: string;
+    desc: string;
+    icon: typeof FileText;
+    iconBg: string;
+    iconFg: string;
+    prices: PriceOption[];
+    defaultPages: number;
+    withDetails: boolean;
+  }
 > = {
   mustaqil_ish: {
     title: 'Mustaqil ish',
@@ -35,6 +53,9 @@ const DOC_META: Record<
     icon: FileText,
     iconBg: 'bg-blue-100',
     iconFg: 'text-blue-600',
+    prices: ACADEMIC_PRICES,
+    defaultPages: 15,
+    withDetails: true,
   },
   referat: {
     title: 'Referat',
@@ -42,6 +63,19 @@ const DOC_META: Record<
     icon: BookOpen,
     iconBg: 'bg-emerald-100',
     iconFg: 'text-emerald-600',
+    prices: ACADEMIC_PRICES,
+    defaultPages: 15,
+    withDetails: true,
+  },
+  insho: {
+    title: 'Insho',
+    desc: 'AI ravon, professional insho yozadi',
+    icon: PenLine,
+    iconBg: 'bg-rose-100',
+    iconFg: 'text-rose-600',
+    prices: ESSAY_PRICES,
+    defaultPages: 3,
+    withDetails: false,
   },
 };
 
@@ -59,26 +93,31 @@ export default function DocumentCreatePage() {
   const [institution, setInstitution] = useState('');
   const [studentName, setStudentName] = useState('');
   const [teacherName, setTeacherName] = useState('');
-  const [pageCount, setPageCount] = useState(15);
+  const [pageCount, setPageCount] = useState(meta.defaultPages);
   const [progress, setProgress] = useState(0);
 
-  const price = PAGE_PRICES.find((p) => p.pages === pageCount)?.price ?? 4500;
+  const price = meta.prices.find((p) => p.pages === pageCount)?.price ?? meta.prices[0].price;
 
   useEffect(() => {
     showBackButton(() => {
       haptic('light');
       if (step === 'topic') navigate('/');
       else if (step === 'details') setStep('topic');
-      else if (step === 'settings') setStep('details');
+      // Essays skip the details step, so 'settings' goes straight back to topic.
+      else if (step === 'settings') setStep(meta.withDetails ? 'details' : 'topic');
     });
     return () => hideBackButton();
-  }, [step, showBackButton, hideBackButton, navigate, haptic]);
+  }, [step, showBackButton, hideBackButton, navigate, haptic, meta.withDetails]);
 
   const handleNext = () => {
     haptic('light');
-    if (step === 'topic' && topic.trim().length >= 5) setStep('details');
-    else if (step === 'details') setStep('settings');
-    else if (step === 'settings') handleGenerate();
+    if (step === 'topic' && topic.trim().length >= 5) {
+      setStep(meta.withDetails ? 'details' : 'settings');
+    } else if (step === 'details') {
+      setStep('settings');
+    } else if (step === 'settings') {
+      handleGenerate();
+    }
   };
 
   const handleGenerate = async () => {
@@ -256,7 +295,7 @@ export default function DocumentCreatePage() {
               <div className="card p-3">
                 <h3 className="font-medium text-gray-900 text-sm mb-3">Hajmni tanlang</h3>
                 <div className="grid grid-cols-2 gap-2">
-                  {PAGE_PRICES.map((p) => (
+                  {meta.prices.map((p) => (
                     <button
                       key={p.pages}
                       onClick={() => { haptic('light'); setPageCount(p.pages); }}
@@ -280,10 +319,20 @@ export default function DocumentCreatePage() {
                   </div>
                 </div>
                 <div className="pt-3 mt-3 border-t border-blue-200 text-xs text-gray-600 space-y-1">
-                  <div>✓ Titul varaq va mundarija</div>
-                  <div>✓ Kirish, boblar, xulosa</div>
-                  <div>✓ Rasmlar va adabiyotlar ro'yxati</div>
-                  <div>✓ Times New Roman 14, 1.5 interval — topshirishga tayyor</div>
+                  {docType === 'insho' ? (
+                    <>
+                      <div>✓ Ravon, ta'sirchan insho matni</div>
+                      <div>✓ Kirish — asosiy qism — xulosa</div>
+                      <div>✓ Times New Roman 14, 1.5 interval — topshirishga tayyor</div>
+                    </>
+                  ) : (
+                    <>
+                      <div>✓ Titul varaq va mundarija</div>
+                      <div>✓ Kirish, boblar, xulosa</div>
+                      <div>✓ Rasmlar va adabiyotlar ro'yxati</div>
+                      <div>✓ Times New Roman 14, 1.5 interval — topshirishga tayyor</div>
+                    </>
+                  )}
                 </div>
               </div>
 
@@ -300,7 +349,10 @@ export default function DocumentCreatePage() {
                 <Icon className="w-10 h-10 text-blue-600" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">{meta.title} yaratilmoqda...</h3>
-              <p className="text-gray-500 mb-6 text-center">AI matn yozib, rasmlarni joylayapti.<br />Bu 2-4 daqiqa vaqt olishi mumkin.</p>
+              <p className="text-gray-500 mb-6 text-center">
+                {docType === 'insho' ? 'AI insho matnini yozyapti.' : 'AI matn yozib, rasmlarni joylayapti.'}
+                <br />Bu 2-4 daqiqa vaqt olishi mumkin.
+              </p>
               <div className="w-full max-w-xs">
                 <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                   <motion.div className="h-full bg-blue-600" initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ duration: 0.3 }} />

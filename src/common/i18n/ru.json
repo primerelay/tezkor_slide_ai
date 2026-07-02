@@ -54,16 +54,19 @@
     "slideCreate": "📊 Создать слайд",
     "quizCreate": "🧠 Создать тест",
     "mustaqilIsh": "📄 Самостоятельная работа",
-    "referat": "📚 Реферат"
+    "referat": "📚 Реферат",
+    "insho": "✍️ Эссе"
   },
   "document": {
     "typeNames": {
       "mustaqil_ish": "Самостоятельная работа",
-      "referat": "Реферат"
+      "referat": "Реферат",
+      "insho": "Эссе"
     },
     "typeLabel": {
       "mustaqil_ish": "САМОСТОЯТЕЛЬНАЯ РАБОТА",
-      "referat": "РЕФЕРАТ"
+      "referat": "РЕФЕРАТ",
+      "insho": "ЭССЕ"
     },
     "ministryHeader": "МИНИСТЕРСТВО ВЫСШЕГО ОБРАЗОВАНИЯ, НАУКИ И ИННОВАЦИЙ РЕСПУБЛИКИ УЗБЕКИСТАН",
     "topicLabel": "Тема",
