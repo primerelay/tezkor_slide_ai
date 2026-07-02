@@ -70,7 +70,21 @@
       "Bash(journalctl:*)",
       "Bash(xargs:*)",
       "Bash(find:*)",
-      "Bash(npm uninstall *)"
+      "Bash(npm uninstall *)",
+      "Bash(gh auth *)",
+      "Bash(git config *)",
+      "Bash(git -C /Users/Learning/tezkor_slide_ai remote -v)",
+      "Read(//Users/joraqozi/.ssh/**)",
+      "Bash(ssh -T git@github.com -o StrictHostKeyChecking=no -o ConnectTimeout=5)",
+      "Bash(security find-internet-password *)",
+      "Bash(security find-generic-password *)",
+      "Read(//Users/joraqozi/**)",
+      "Bash(security dump-keychain *)",
+      "Bash(security delete-generic-password *)",
+      "Bash(git credential-osxkeychain *)",
+      "Bash(gh --version)",
+      "Bash(gh api *)",
+      "Bash(git -C /Users/Learning/tezkor_slide_ai push --dry-run)"
     ]
   }
 }
