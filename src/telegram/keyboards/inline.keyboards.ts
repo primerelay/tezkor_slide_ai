@@ -20,6 +20,7 @@ export class ReplyKeyboards {
     keyboard.push(
       [i18n.t('buttons.balance'), i18n.t('buttons.addBalance')],
       [i18n.t('buttons.inviteFriends'), i18n.t('buttons.language')],
+      [i18n.t('buttons.slideCreate')],
       [i18n.t('buttons.mustaqilIsh'), i18n.t('buttons.referat')],
       [i18n.t('buttons.kursIshi'), i18n.t('buttons.maqola')],
       [i18n.t('buttons.tezis'), i18n.t('buttons.insho')],
@@ -200,6 +201,7 @@ export class InlineKeyboards {
 
     // Then all the features.
     buttons.push(
+      [Markup.button.callback(i18n.t('buttons.slideCreate'), 'new_presentation')],
       [
         Markup.button.callback(i18n.t('buttons.mustaqilIsh'), 'doc_create_mustaqil_ish'),
         Markup.button.callback(i18n.t('buttons.referat'), 'doc_create_referat'),
