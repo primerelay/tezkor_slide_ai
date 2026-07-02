@@ -86,4 +86,8 @@ export class DocumentService {
       take: 10,
     });
   }
+
+  async getDocumentById(id: string): Promise<GeneratedDocument | null> {
+    return this.documentRepository.findOne({ where: { id } });
+  }
 }

@@ -38,7 +38,52 @@ export interface GenerateResponse {
   message: string;
 }
 
+export type DocumentType = 'mustaqil_ish' | 'referat';
+
+export interface CreateDocumentRequest {
+  telegramId: string;
+  docType: DocumentType;
+  topic: string;
+  pageCount: number;
+  institution?: string;
+  studentName?: string;
+  teacherName?: string;
+  language?: 'uz' | 'ru' | 'en' | 'de';
+}
+
+export interface DocumentStatus {
+  id: string;
+  type: DocumentType;
+  topic: string;
+  status: 'pending' | 'processing' | 'completed' | 'failed';
+  pageCount: number;
+  errorMessage?: string;
+}
+
 export const api = {
+  async createDocument(
+    req: CreateDocumentRequest,
+  ): Promise<{ success: boolean; documentId: string; message: string }> {
+    const response = await fetch(`${API_BASE}/document`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Failed to create document' }));
+      throw new Error(error.message || 'Failed to create document');
+    }
+    return response.json();
+  },
+
+  async getDocument(id: string): Promise<DocumentStatus> {
+    const response = await fetch(`${API_BASE}/document/${id}`);
+    if (!response.ok) {
+      throw new Error('Failed to fetch document');
+    }
+    return response.json();
+  },
+
   async getUser(telegramId: string): Promise<User> {
     const response = await fetch(`${API_BASE}/user/${telegramId}`);
     if (!response.ok) {

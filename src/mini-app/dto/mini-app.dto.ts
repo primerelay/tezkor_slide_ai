@@ -55,3 +55,14 @@ export interface CreatePresentationDto {
   userId: number;
   presentation: MiniAppPresentationDto;
 }
+
+export interface CreateDocumentDto {
+  telegramId: string;
+  docType: 'mustaqil_ish' | 'referat';
+  topic: string;
+  pageCount: number;
+  institution?: string;
+  studentName?: string;
+  teacherName?: string;
+  language?: 'uz' | 'ru' | 'en' | 'de';
+}

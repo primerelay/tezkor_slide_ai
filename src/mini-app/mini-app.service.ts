@@ -14,6 +14,8 @@ import { RendererService } from '../renderer/renderer.service';
 import { StorageService } from '../storage/storage.service';
 import { SupportedLanguage } from '../common/i18n/i18n.service';
 import { ImageService } from '../ai/services/image.service';
+import { DocumentService } from '../document/document.service';
+import { CreateDocumentDto } from './dto/mini-app.dto';
 
 @Injectable()
 export class MiniAppService {
@@ -32,7 +34,64 @@ export class MiniAppService {
     private readonly rendererService: RendererService,
     private readonly storageService: StorageService,
     private readonly imageService: ImageService,
+    private readonly documentService: DocumentService,
   ) {}
+
+  /**
+   * Create a document (mustaqil ish / referat) from the mini-app. Deducts
+   * credits up front; the finished .docx is delivered to the user's Telegram
+   * chat by the document processor (which also auto-refunds on failure).
+   */
+  async createDocument(dto: CreateDocumentDto): Promise<{ documentId: string; price: number }> {
+    const user = await this.userRepository.findOne({
+      where: { telegramId: dto.telegramId.toString() },
+    });
+    if (!user) {
+      throw new Error('User not found');
+    }
+
+    const price = this.documentService.getPriceForPageCount(dto.pageCount);
+    if (user.credits < price) {
+      throw new Error(
+        `Balansingiz yetarli emas. Kerak: ${price} so'm, Balans: ${user.credits} so'm`,
+      );
+    }
+
+    await this.telegramService.deductCredits(user.id, price);
+
+    try {
+      const document = await this.documentService.createDocument({
+        userId: user.id,
+        topic: dto.topic,
+        docType: dto.docType,
+        pageCount: dto.pageCount,
+        language: dto.language || user.language || 'uz',
+        institution: dto.institution,
+        studentName: dto.studentName,
+        teacherName: dto.teacherName,
+        price,
+        telegramChatId: user.telegramId,
+      });
+      return { documentId: document.id, price };
+    } catch (error) {
+      // Queueing failed before any work started — return the money.
+      await this.telegramService.addCredits(user.id, price);
+      throw error;
+    }
+  }
+
+  async getDocumentById(id: string) {
+    const doc = await this.documentService.getDocumentById(id);
+    if (!doc) return null;
+    return {
+      id: doc.id,
+      type: doc.type,
+      topic: doc.topic,
+      status: doc.status,
+      pageCount: doc.pageCount,
+      errorMessage: doc.errorMessage,
+    };
+  }
 
   /** Editor image picker — search stock photos (no download yet). */
   async searchImages(query: string) {

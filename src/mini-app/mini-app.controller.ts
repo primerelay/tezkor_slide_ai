@@ -12,7 +12,7 @@ import {
 import { MiniAppService } from './mini-app.service';
 import {
   CreatePresentationDto,
-  MiniAppPresentationDto,
+  CreateDocumentDto,
 } from './dto/mini-app.dto';
 
 @Controller('api/mini-app')
@@ -63,6 +63,34 @@ export class MiniAppController {
   @Get('image-search')
   async imageSearch(@Query('q') q: string) {
     return this.miniAppService.searchImages(q || '');
+  }
+
+  @Post('document')
+  async generateDocument(@Body() dto: CreateDocumentDto) {
+    this.logger.log(`Generating ${dto.docType} for telegram ${dto.telegramId}`);
+    try {
+      const result = await this.miniAppService.createDocument(dto);
+      return {
+        success: true,
+        documentId: result.documentId,
+        message: 'Hujjat yaratilmoqda...',
+      };
+    } catch (error) {
+      this.logger.error('Failed to create document', error);
+      throw new HttpException(
+        error.message || 'Failed to create document',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
+
+  @Get('document/:id')
+  async getDocument(@Param('id') id: string) {
+    const document = await this.miniAppService.getDocumentById(id);
+    if (!document) {
+      throw new HttpException('Document not found', HttpStatus.NOT_FOUND);
+    }
+    return document;
   }
 
   @Get('presentations/:userId')

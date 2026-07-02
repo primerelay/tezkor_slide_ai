@@ -11,6 +11,7 @@ import { PRESENTATION_QUEUE } from '../queue/constants';
 import { RendererModule } from '../renderer/renderer.module';
 import { StorageModule } from '../storage/storage.module';
 import { AiModule } from '../ai/ai.module';
+import { DocumentModule } from '../document/document.module';
 
 @Module({
   imports: [
@@ -22,6 +23,7 @@ import { AiModule } from '../ai/ai.module';
     RendererModule,
     StorageModule,
     AiModule,
+    DocumentModule,
   ],
   controllers: [MiniAppController],
   providers: [MiniAppService],
