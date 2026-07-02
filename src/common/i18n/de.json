@@ -61,7 +61,24 @@
     "maqola": "📰 Artikel",
     "tezis": "📃 These",
     "glossary": "📖 Glossar",
-    "crossword": "🧩 Kreuzworträtsel"
+    "crossword": "🧩 Kreuzworträtsel",
+    "resume": "📇 Lebenslauf (CV)"
+  },
+  "resume": {
+    "summary": "Berufsprofil",
+    "experience": "Berufserfahrung",
+    "education": "Ausbildung",
+    "skills": "Kenntnisse",
+    "languages": "Sprachen",
+    "enterName": "📇 <b>Lebenslauf (CV) erstellen</b>\n\nGeben Sie Ihren vollständigen Namen ein:\n\n❌ Zum Abbrechen /cancel",
+    "enterPosition": "💼 Für welche Position ist der Lebenslauf?\n\nBeispiel: \"Frontend-Entwickler\"",
+    "enterContact": "📞 Kontakt (Telefon, E-Mail, Stadt) — in einer Zeile:\n\nBeispiel: <code>+998901234567, name@mail.com, Taschkent</code>\n\nZum Überspringen \"-\" senden.",
+    "enterBackground": "📝 Beschreiben Sie Ihre Berufserfahrung, Ausbildung und Kenntnisse (frei — die KI strukturiert es):\n\nBeispiel: <i>2020-2023 als Frontend-Entwickler bei ABC mit React... TUIT abgeschlossen... kenne JavaScript, React, Git...</i>",
+    "confirmCreation": "📋 <b>Lebenslauf erstellen?</b>\n\n👤 {name}\n💼 {position}\n💰 Preis: <b>{price} So'm</b>\n\n💵 Guthaben: {balance} So'm\n\n✨ Die KI formatiert Ihre Angaben zu einem professionellen CV (Word .docx).",
+    "creating": "⏳ Lebenslauf wird erstellt...",
+    "done": "✅ Lebenslauf als Word (.docx) gesendet! 🎉",
+    "error": "❌ Ein Fehler ist aufgetreten!\n\n{error}",
+    "cancelled": "❌ Lebenslauf-Erstellung abgebrochen."
   },
   "glossary": {
     "enterContent": "📖 <b>Glossar</b>\n\nSenden Sie Text oder ein Thema, um ein Glossar zu erstellen.\n\n❌ Zum Abbrechen /cancel drücken",

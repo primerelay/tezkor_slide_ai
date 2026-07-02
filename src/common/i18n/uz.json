@@ -61,7 +61,24 @@
     "maqola": "📰 Maqola",
     "tezis": "📃 Tezis",
     "glossary": "📖 Glossary",
-    "crossword": "🧩 Krossvord"
+    "crossword": "🧩 Krossvord",
+    "resume": "📇 Rezyume (CV)"
+  },
+  "resume": {
+    "summary": "Kasbiy ma'lumot",
+    "experience": "Ish tajribasi",
+    "education": "Ta'lim",
+    "skills": "Ko'nikmalar",
+    "languages": "Tillar",
+    "enterName": "📇 <b>Rezyume (CV) yaratish</b>\n\nTo'liq ism-familiyangizni kiriting:\n\n❌ Bekor qilish uchun /cancel",
+    "enterPosition": "💼 Qaysi lavozimga (kasbga) rezyume kerak?\n\nMasalan: \"Frontend dasturchi\"",
+    "enterContact": "📞 Aloqa ma'lumotlari (telefon, email, shahar) — bitta qatorda:\n\nMasalan: <code>+998901234567, ism@mail.com, Toshkent</code>\n\nO'tkazib yuborish uchun \"-\" yuboring.",
+    "enterBackground": "📝 Ish tajribangiz, ta'lim va ko'nikmalaringizni yozing (erkin shaklda — AI o'zi tartibga soladi):\n\nMasalan: <i>2020-2023 ABC kompaniyasida frontend dasturchi bo'lib ishladim, React bilan... TATU bitirganman... JavaScript, React, Git bilaman...</i>",
+    "confirmCreation": "📋 <b>Rezyume tayyorlansinmi?</b>\n\n👤 {name}\n💼 {position}\n💰 Narx: <b>{price} so'm</b>\n\n💵 Balansingiz: {balance} so'm\n\n✨ AI ma'lumotlaringizni professional CV formatida Word (.docx) qilib beradi.",
+    "creating": "⏳ Rezyume tayyorlanmoqda...",
+    "done": "✅ Rezyume Word (.docx) faylida yuborildi! 🎉",
+    "error": "❌ Xatolik yuz berdi!\n\n{error}",
+    "cancelled": "❌ Rezyume bekor qilindi."
   },
   "glossary": {
     "enterContent": "📖 <b>Glossary (izohli lug'at)</b>\n\nLug'at yaratish uchun matn yoki mavzuni yuboring.\n\n❌ Bekor qilish uchun /cancel ni bosing",

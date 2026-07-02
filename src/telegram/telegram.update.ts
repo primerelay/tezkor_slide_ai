@@ -46,6 +46,12 @@ interface SessionData extends Scenes.SceneSession {
   glossaryCount?: number;
   crosswordContent?: string;
   crosswordCount?: number;
+  // Resume properties
+  resumeStep?: 'name' | 'position' | 'contact' | 'background';
+  resumeName?: string;
+  resumePosition?: string;
+  resumeContact?: string;
+  resumeBackground?: string;
 }
 
 export interface BotContext extends Context {
@@ -474,6 +480,17 @@ export class TelegramUpdate {
   @Hears(/^🧩.+$/)
   async onCrosswordButton(@Ctx() ctx: BotContext) {
     await this.startSceneWithChannelCheck(ctx, 'crossword-create');
+  }
+
+  @Hears(/^📇.+$/)
+  async onResumeButton(@Ctx() ctx: BotContext) {
+    await this.startSceneWithChannelCheck(ctx, 'resume-create');
+  }
+
+  @Action('resume_create')
+  async onResumeCreate(@Ctx() ctx: BotContext) {
+    await ctx.answerCbQuery();
+    await this.startSceneWithChannelCheck(ctx, 'resume-create');
   }
 
   @Action('glossary_create')

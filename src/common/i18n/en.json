@@ -61,7 +61,24 @@
     "maqola": "📰 Article",
     "tezis": "📃 Thesis",
     "glossary": "📖 Glossary",
-    "crossword": "🧩 Crossword"
+    "crossword": "🧩 Crossword",
+    "resume": "📇 Resume (CV)"
+  },
+  "resume": {
+    "summary": "Professional Summary",
+    "experience": "Work Experience",
+    "education": "Education",
+    "skills": "Skills",
+    "languages": "Languages",
+    "enterName": "📇 <b>Create a Resume (CV)</b>\n\nEnter your full name:\n\n❌ Press /cancel to cancel",
+    "enterPosition": "💼 What position is the resume for?\n\nExample: \"Frontend Developer\"",
+    "enterContact": "📞 Contact info (phone, email, city) — on one line:\n\nExample: <code>+998901234567, name@mail.com, Tashkent</code>\n\nSend \"-\" to skip.",
+    "enterBackground": "📝 Describe your work experience, education and skills (free text — the AI will structure it):\n\nExample: <i>2020-2023 worked as a frontend developer at ABC with React... graduated from TUIT... know JavaScript, React, Git...</i>",
+    "confirmCreation": "📋 <b>Create the resume?</b>\n\n👤 {name}\n💼 {position}\n💰 Price: <b>{price} so'm</b>\n\n💵 Balance: {balance} so'm\n\n✨ The AI will format your details into a professional CV (Word .docx).",
+    "creating": "⏳ Creating resume...",
+    "done": "✅ Resume sent as Word (.docx)! 🎉",
+    "error": "❌ An error occurred!\n\n{error}",
+    "cancelled": "❌ Resume creation cancelled."
   },
   "glossary": {
     "enterContent": "📖 <b>Glossary</b>\n\nSend text or a topic to create a glossary.\n\n❌ Press /cancel to cancel",

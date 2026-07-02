@@ -135,6 +135,30 @@ export const api = {
     return response.json();
   },
 
+  async createResume(req: {
+    telegramId: string;
+    fullName: string;
+    position: string;
+    phone?: string;
+    email?: string;
+    location?: string;
+    rawBackground?: string;
+    skills?: string[];
+    languages?: string[];
+    language?: string;
+  }): Promise<{ id: number; fullName: string }> {
+    const response = await fetch('/api/resume', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Failed to create resume' }));
+      throw new Error(error.message || 'Failed to create resume');
+    }
+    return response.json();
+  },
+
   async createDocument(
     req: CreateDocumentRequest,
   ): Promise<{ success: boolean; documentId: string; message: string }> {

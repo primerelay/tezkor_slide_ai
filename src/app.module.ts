@@ -19,6 +19,7 @@ import { QuizModule } from './quiz/quiz.module';
 import { DocumentModule } from './document/document.module';
 import { FlashcardModule } from './flashcard/flashcard.module';
 import { StudyModule } from './study/study.module';
+import { ResumeModule } from './resume/resume.module';
 import { SpaController } from './spa.controller';
 
 @Module({
@@ -83,6 +84,7 @@ import { SpaController } from './spa.controller';
     DocumentModule,
     FlashcardModule,
     StudyModule,
+    ResumeModule,
   ],
 })
 export class AppModule {}
