@@ -176,14 +176,27 @@ export class InlineKeyboards {
   static featuresMenu(i18n: I18nService, webAppUrl?: string) {
     const buttons: any[] = [];
 
-    // Main "Open Web App" button at the top (opens home page)
+    // Row 1: Open Web App + Start together.
+    const topRow: any[] = [];
     if (webAppUrl) {
-      buttons.push([
-        Markup.button.webApp(i18n.t('buttons.openWebApp'), webAppUrl),
-      ]);
+      topRow.push(Markup.button.webApp(i18n.t('buttons.openWebApp'), webAppUrl));
     }
+    topRow.push(Markup.button.callback(i18n.t('buttons.start'), 'run_start'));
+    buttons.push(topRow);
 
-    // Feature buttons below
+    // Then the 4 account buttons.
+    buttons.push(
+      [
+        Markup.button.callback(i18n.t('buttons.balance'), 'check_balance'),
+        Markup.button.callback(i18n.t('buttons.addBalance'), 'add_balance'),
+      ],
+      [
+        Markup.button.callback(i18n.t('buttons.inviteFriends'), 'share_referral'),
+        Markup.button.callback(i18n.t('buttons.language'), 'change_language'),
+      ],
+    );
+
+    // Then all the features.
     buttons.push(
       [
         Markup.button.callback(i18n.t('buttons.mustaqilIsh'), 'doc_create_mustaqil_ish'),
@@ -208,17 +221,6 @@ export class InlineKeyboards {
       [
         Markup.button.callback(i18n.t('buttons.resume'), 'resume_create'),
         Markup.button.callback(i18n.t('buttons.translator'), 'translator_create'),
-      ],
-      [
-        Markup.button.callback(i18n.t('buttons.balance'), 'check_balance'),
-        Markup.button.callback(i18n.t('buttons.addBalance'), 'add_balance'),
-      ],
-      [
-        Markup.button.callback(i18n.t('buttons.inviteFriends'), 'share_referral'),
-        Markup.button.callback(i18n.t('buttons.language'), 'change_language'),
-      ],
-      [
-        Markup.button.callback(i18n.t('buttons.start'), 'run_start'),
       ],
     );
 
