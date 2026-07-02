@@ -1,7 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OpenRouterProvider } from '../providers/openrouter.provider';
-import { GeminiProvider } from '../providers/gemini.provider';
-import { AiProvider } from '../providers/ai-provider.interface';
 import { PresentationOutline } from './outline.agent';
 import { SupportedLanguage } from '../../common/i18n/i18n.service';
 
@@ -46,20 +44,8 @@ export interface ContentResult {
 @Injectable()
 export class ContentAgent {
   private readonly logger = new Logger(ContentAgent.name);
-  private readonly provider: AiProvider;
 
-  constructor(
-    private readonly openRouterProvider: OpenRouterProvider,
-    private readonly geminiProvider: GeminiProvider,
-  ) {
-    if (openRouterProvider.isAvailable()) {
-      this.provider = openRouterProvider;
-      this.logger.log('Using OpenRouter provider');
-    } else {
-      this.provider = geminiProvider;
-      this.logger.log('Using Gemini provider');
-    }
-  }
+  constructor(private readonly provider: OpenRouterProvider) {}
 
   async generateContent(
     outline: PresentationOutline,

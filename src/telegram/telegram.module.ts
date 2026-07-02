@@ -17,7 +17,9 @@ import { TopicScene } from './scenes/topic.scene';
 import { OptionsScene } from './scenes/options.scene';
 import { GenerationScene } from './scenes/generation.scene';
 import { QuizCreateScene } from './scenes/quiz-create.scene';
+import { DocumentCreateScene } from './scenes/document-create.scene';
 import { QuizModule } from '../quiz/quiz.module';
+import { DocumentModule } from '../document/document.module';
 
 @Module({
   imports: [
@@ -31,6 +33,7 @@ import { QuizModule } from '../quiz/quiz.module';
     }),
     TypeOrmModule.forFeature([User, Presentation, GenerationJob, Transaction, ChannelMembership]),
     forwardRef(() => QuizModule),
+    DocumentModule,
   ],
   providers: [
     TelegramService,
@@ -42,6 +45,7 @@ import { QuizModule } from '../quiz/quiz.module';
     OptionsScene,
     GenerationScene,
     QuizCreateScene,
+    DocumentCreateScene,
   ],
   exports: [TelegramService],
 })

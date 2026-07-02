@@ -69,7 +69,8 @@
       "Bash(npm start)",
       "Bash(journalctl:*)",
       "Bash(xargs:*)",
-      "Bash(find:*)"
+      "Bash(find:*)",
+      "Bash(npm uninstall *)"
     ]
   }
 }

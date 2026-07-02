@@ -65,6 +65,9 @@ export class OpenRouterProvider implements AiProvider {
         temperature: options?.temperature ?? 0.7,
         max_tokens: options?.maxTokens ?? 4096,
         top_p: options?.topP ?? 0.9,
+        ...(options?.jsonMode
+          ? { response_format: { type: 'json_object' as const } }
+          : {}),
       });
 
       const content = completion.choices[0]?.message?.content || '';
@@ -110,10 +113,33 @@ export class OpenRouterProvider implements AiProvider {
       ? `${systemPrompt}\n\nIMPORTANT: Respond ONLY with valid JSON. No markdown, no code blocks, just pure JSON.`
       : 'Respond ONLY with valid JSON. No markdown, no code blocks, just pure JSON.';
 
-    const response = await this.generateText(prompt, jsonSystemPrompt, options);
+    // JSON mode makes the model emit strict JSON; a single retry covers the
+    // rare case where the response is still truncated or malformed.
+    const jsonOptions = { ...options, jsonMode: true };
+    let totalCost = 0;
+    let lastError: unknown;
 
-    let content = response.content.trim();
+    for (let attempt = 0; attempt < 2; attempt++) {
+      const response = await this.generateText(prompt, jsonSystemPrompt, jsonOptions);
+      totalCost += response.cost || 0;
 
+      try {
+        const data = JSON.parse(this.stripJson(response.content)) as T;
+        return { data, cost: totalCost };
+      } catch (error) {
+        lastError = error;
+        this.logger.warn(
+          `JSON parse failed (attempt ${attempt + 1}/2)${attempt === 0 ? ', retrying' : ''}`,
+        );
+      }
+    }
+
+    this.logger.error('Failed to parse JSON response after retry');
+    throw new Error(`Failed to parse AI response as JSON: ${lastError}`);
+  }
+
+  private stripJson(raw: string): string {
+    let content = raw.trim();
     if (content.startsWith('```json')) {
       content = content.slice(7);
     }
@@ -123,14 +149,6 @@ export class OpenRouterProvider implements AiProvider {
     if (content.endsWith('```')) {
       content = content.slice(0, -3);
     }
-    content = content.trim();
-
-    try {
-      const data = JSON.parse(content) as T;
-      return { data, cost: response.cost };
-    } catch (error) {
-      this.logger.error('Failed to parse JSON response:', content);
-      throw new Error(`Failed to parse AI response as JSON: ${error}`);
-    }
+    return content.trim();
   }
 }

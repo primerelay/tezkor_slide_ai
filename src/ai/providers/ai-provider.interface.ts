@@ -18,6 +18,8 @@ export interface AiProviderOptions {
   maxTokens?: number;
   topP?: number;
   model?: string;
+  /** Ask the model to return a strict JSON object (reduces malformed output). */
+  jsonMode?: boolean;
 }
 
 export interface AiProvider {

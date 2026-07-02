@@ -52,7 +52,46 @@
     "backToMenu": "🔙 Back to menu",
     "openWebApp": "🚀 Open Web App",
     "slideCreate": "📊 Create Slide",
-    "quizCreate": "🧠 Create Quiz"
+    "quizCreate": "🧠 Create Quiz",
+    "mustaqilIsh": "📄 Independent work",
+    "referat": "📚 Report (Referat)"
+  },
+  "document": {
+    "typeNames": {
+      "mustaqil_ish": "Independent work",
+      "referat": "Report (Referat)"
+    },
+    "typeLabel": {
+      "mustaqil_ish": "INDEPENDENT WORK",
+      "referat": "REPORT"
+    },
+    "ministryHeader": "MINISTRY OF HIGHER EDUCATION, SCIENCE AND INNOVATION OF THE REPUBLIC OF UZBEKISTAN",
+    "topicLabel": "Topic",
+    "preparedBy": "Prepared by",
+    "checkedBy": "Checked by",
+    "tocTitle": "Table of Contents",
+    "referencesTitle": "References",
+    "enterTopic": "📝 <b>Enter the topic ({type})</b>\n\nExample: \"The process of photosynthesis and its importance\"\n\nThe topic must be 5 to 500 characters long.\n\n❌ Press /cancel to cancel",
+    "enterInstitution": "🏛 <b>Enter the name of your institution</b>\n\nExample: \"Tashkent State Technical University\"\n\nIt will appear on the title page.",
+    "skipButton": "⏭ Skip",
+    "selectPageCount": "📃 <b>Select the number of pages:</b>\n\nPrices are in so'm.",
+    "pagesShort": "pages",
+    "pages": "Pages",
+    "figureLabel": "Figure",
+    "confirmCreation": "📋 <b>Confirm creating {type}?</b>\n\n📝 Topic: <i>{topic}</i>\n📃 Length: ~{pages} pages\n💰 Price: <b>{price} so'm</b>\n\n💵 Your balance: {balance} so'm\n\n✨ Includes: title page, table of contents, introduction, chapters, conclusion, references.\n📐 Format: Times New Roman 14, 1.5 spacing — ready to submit!",
+    "creationStarted": "✅ <b>Document generation started!</b>\n\n🆔 ID: <code>{id}</code>\n\n⏳ This may take 2-4 minutes. We'll send the Word (.docx) file when it's ready.",
+    "cancelled": "❌ Document creation cancelled.",
+    "progressTitle": "Creating document",
+    "progress": {
+      "0": "🚀 Starting...",
+      "20": "📋 Planning the structure...",
+      "40": "✍️ Writing chapters...",
+      "60": "✍️ Writing chapters...",
+      "80": "📖 Finalizing...",
+      "100": "✅ Done!"
+    },
+    "ready": "Document is ready!",
+    "refunded": "💰 <b>{amount} so'm has been refunded to your balance.</b>"
   },
   "quiz": {
     "createTitle": "📝 <b>Create Quiz</b>",

@@ -16,6 +16,7 @@ import { PaymentModule } from './payment/payment.module';
 import { MiniAppModule } from './mini-app/mini-app.module';
 import { AdminModule } from './admin/admin.module';
 import { QuizModule } from './quiz/quiz.module';
+import { DocumentModule } from './document/document.module';
 import { SpaController } from './spa.controller';
 
 @Module({
@@ -66,6 +67,7 @@ import { SpaController } from './spa.controller';
     MiniAppModule,
     AdminModule,
     QuizModule,
+    DocumentModule,
   ],
 })
 export class AppModule {}

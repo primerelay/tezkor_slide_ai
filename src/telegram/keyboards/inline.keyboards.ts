@@ -9,15 +9,17 @@ export class ReplyKeyboards {
   static mainMenu(i18n: I18nService, webAppUrl?: string) {
     const keyboard: any[] = [];
 
-    // Add Web App button if URL is provided
+    // Web App opener at the top (only works when an HTTPS URL is configured).
     if (webAppUrl) {
-      keyboard.push([Markup.button.webApp(i18n.t('buttons.openMiniApp'), webAppUrl)]);
+      keyboard.push([Markup.button.webApp(i18n.t('buttons.openWebApp'), webAppUrl)]);
     }
 
     keyboard.push(
       [i18n.t('buttons.newPresentation'), i18n.t('buttons.myPresentations')],
+      [i18n.t('buttons.mustaqilIsh'), i18n.t('buttons.referat')],
+      [i18n.t('buttons.quizBot'), i18n.t('buttons.inviteFriends')],
       [i18n.t('buttons.balance'), i18n.t('buttons.addBalance')],
-      [i18n.t('buttons.quizBot'), i18n.t('buttons.language')],
+      [i18n.t('buttons.language')],
     );
 
     return Markup.keyboard(keyboard).resize().reply_markup;
@@ -180,6 +182,10 @@ export class InlineKeyboards {
     // Feature buttons below
     buttons.push(
       [Markup.button.callback(i18n.t('buttons.slideCreate'), 'new_presentation')],
+      [
+        Markup.button.callback(i18n.t('buttons.mustaqilIsh'), 'doc_create_mustaqil_ish'),
+        Markup.button.callback(i18n.t('buttons.referat'), 'doc_create_referat'),
+      ],
       [Markup.button.callback(i18n.t('buttons.quizCreate'), 'quiz_create')],
       [
         Markup.button.callback(i18n.t('buttons.balance'), 'check_balance'),

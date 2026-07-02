@@ -52,7 +52,46 @@
     "backToMenu": "🔙 Menyuga qaytish",
     "openWebApp": "🚀 Web ilovani ochish",
     "slideCreate": "📊 Slide yaratish",
-    "quizCreate": "🧠 Quiz yaratish"
+    "quizCreate": "🧠 Quiz yaratish",
+    "mustaqilIsh": "📄 Mustaqil ish",
+    "referat": "📚 Referat"
+  },
+  "document": {
+    "typeNames": {
+      "mustaqil_ish": "Mustaqil ish",
+      "referat": "Referat"
+    },
+    "typeLabel": {
+      "mustaqil_ish": "MUSTAQIL ISH",
+      "referat": "REFERAT"
+    },
+    "ministryHeader": "O'ZBEKISTON RESPUBLIKASI OLIY TA'LIM, FAN VA INNOVATSIYALAR VAZIRLIGI",
+    "topicLabel": "Mavzu",
+    "preparedBy": "Bajardi",
+    "checkedBy": "Tekshirdi",
+    "tocTitle": "Mundarija",
+    "referencesTitle": "Foydalanilgan adabiyotlar ro'yxati",
+    "enterTopic": "📝 <b>{type} mavzusini kiriting</b>\n\nMisol: \"Fotosintez jarayoni va uning ahamiyati\"\n\nMavzu 5 dan 500 gacha belgidan iborat bo'lishi kerak.\n\n❌ Bekor qilish uchun /cancel ni bosing",
+    "enterInstitution": "🏛 <b>O'quv muassasangiz nomini kiriting</b>\n\nMisol: \"Toshkent davlat texnika universiteti\"\n\nBu titul varaqda ko'rsatiladi.",
+    "skipButton": "⏭ O'tkazib yuborish",
+    "selectPageCount": "📃 <b>Sahifalar sonini tanlang:</b>\n\nNarxlar so'mda ko'rsatilgan.",
+    "pagesShort": "bet",
+    "pages": "Sahifalar",
+    "figureLabel": "rasm",
+    "confirmCreation": "📋 <b>{type} yaratish tasdiqlansinmi?</b>\n\n📝 Mavzu: <i>{topic}</i>\n📃 Hajm: ~{pages} bet\n💰 Narx: <b>{price} so'm</b>\n\n💵 Sizning balansingiz: {balance} so'm\n\n✨ Hujjat tarkibi: titul varaq, mundarija, kirish, boblar, xulosa, adabiyotlar ro'yxati.\n📐 Format: Times New Roman 14, 1.5 interval — topshirishga tayyor!",
+    "creationStarted": "✅ <b>Hujjat yaratish boshlandi!</b>\n\n🆔 ID: <code>{id}</code>\n\n⏳ Bu 2-4 daqiqa vaqt olishi mumkin. Tayyor bo'lganda Word (.docx) faylini yuboramiz.",
+    "cancelled": "❌ Hujjat yaratish bekor qilindi.",
+    "progressTitle": "Hujjat yaratilmoqda",
+    "progress": {
+      "0": "🚀 Boshlanmoqda...",
+      "20": "📋 Reja tuzilmoqda...",
+      "40": "✍️ Boblar yozilmoqda...",
+      "60": "✍️ Boblar yozilmoqda...",
+      "80": "📖 Yakunlanmoqda...",
+      "100": "✅ Tayyor!"
+    },
+    "ready": "Hujjat tayyor!",
+    "refunded": "💰 <b>{amount} so'm balansingizga qaytarildi.</b>"
   },
   "quiz": {
     "createTitle": "📝 <b>Quiz yaratish</b>",

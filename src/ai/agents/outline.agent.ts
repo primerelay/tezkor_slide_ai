@@ -1,7 +1,5 @@
 import { Injectable, Logger } from '@nestjs/common';
 import { OpenRouterProvider } from '../providers/openrouter.provider';
-import { GeminiProvider } from '../providers/gemini.provider';
-import { AiProvider } from '../providers/ai-provider.interface';
 import { SupportedLanguage } from '../../common/i18n/i18n.service';
 
 export interface OutlineSlide {
@@ -28,21 +26,8 @@ export interface OutlineResult {
 @Injectable()
 export class OutlineAgent {
   private readonly logger = new Logger(OutlineAgent.name);
-  private readonly provider: AiProvider;
 
-  constructor(
-    private readonly openRouterProvider: OpenRouterProvider,
-    private readonly geminiProvider: GeminiProvider,
-  ) {
-    // Use OpenRouter if available, fallback to Gemini
-    if (openRouterProvider.isAvailable()) {
-      this.provider = openRouterProvider;
-      this.logger.log('Using OpenRouter provider');
-    } else {
-      this.provider = geminiProvider;
-      this.logger.log('Using Gemini provider');
-    }
-  }
+  constructor(private readonly provider: OpenRouterProvider) {}
 
   async generateOutline(
     topic: string,

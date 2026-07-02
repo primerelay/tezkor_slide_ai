@@ -52,7 +52,46 @@
     "backToMenu": "🔙 Zurück zum Menü",
     "openWebApp": "🚀 Web-App öffnen",
     "slideCreate": "📊 Folie erstellen",
-    "quizCreate": "🧠 Quiz erstellen"
+    "quizCreate": "🧠 Quiz erstellen",
+    "mustaqilIsh": "📄 Selbstständige Arbeit",
+    "referat": "📚 Referat"
+  },
+  "document": {
+    "typeNames": {
+      "mustaqil_ish": "Selbstständige Arbeit",
+      "referat": "Referat"
+    },
+    "typeLabel": {
+      "mustaqil_ish": "SELBSTSTÄNDIGE ARBEIT",
+      "referat": "REFERAT"
+    },
+    "ministryHeader": "MINISTERIUM FÜR HOCHSCHULBILDUNG, WISSENSCHAFT UND INNOVATION DER REPUBLIK USBEKISTAN",
+    "topicLabel": "Thema",
+    "preparedBy": "Erstellt von",
+    "checkedBy": "Geprüft von",
+    "tocTitle": "Inhaltsverzeichnis",
+    "referencesTitle": "Literaturverzeichnis",
+    "enterTopic": "📝 <b>Geben Sie das Thema ein ({type})</b>\n\nBeispiel: \"Der Prozess der Photosynthese und seine Bedeutung\"\n\nDas Thema muss 5 bis 500 Zeichen lang sein.\n\n❌ Zum Abbrechen /cancel drücken",
+    "enterInstitution": "🏛 <b>Geben Sie den Namen Ihrer Bildungseinrichtung ein</b>\n\nBeispiel: \"Staatliche Technische Universität Taschkent\"\n\nEr erscheint auf dem Titelblatt.",
+    "skipButton": "⏭ Überspringen",
+    "selectPageCount": "📃 <b>Wählen Sie die Seitenzahl:</b>\n\nPreise in So'm.",
+    "pagesShort": "Seiten",
+    "pages": "Seiten",
+    "figureLabel": "Abb",
+    "confirmCreation": "📋 <b>{type} erstellen bestätigen?</b>\n\n📝 Thema: <i>{topic}</i>\n📃 Umfang: ~{pages} Seiten\n💰 Preis: <b>{price} So'm</b>\n\n💵 Ihr Guthaben: {balance} So'm\n\n✨ Enthält: Titelblatt, Inhaltsverzeichnis, Einleitung, Kapitel, Fazit, Literaturverzeichnis.\n📐 Format: Times New Roman 14, 1,5-Zeilenabstand — abgabefertig!",
+    "creationStarted": "✅ <b>Dokumenterstellung gestartet!</b>\n\n🆔 ID: <code>{id}</code>\n\n⏳ Dies kann 2-4 Minuten dauern. Wir senden die Word-Datei (.docx), sobald sie fertig ist.",
+    "cancelled": "❌ Dokumenterstellung abgebrochen.",
+    "progressTitle": "Dokument wird erstellt",
+    "progress": {
+      "0": "🚀 Es geht los...",
+      "20": "📋 Struktur wird geplant...",
+      "40": "✍️ Kapitel werden geschrieben...",
+      "60": "✍️ Kapitel werden geschrieben...",
+      "80": "📖 Wird abgeschlossen...",
+      "100": "✅ Fertig!"
+    },
+    "ready": "Dokument ist fertig!",
+    "refunded": "💰 <b>{amount} So'm wurden Ihrem Guthaben gutgeschrieben.</b>"
   },
   "quiz": {
     "createTitle": "📝 <b>Quiz erstellen</b>",

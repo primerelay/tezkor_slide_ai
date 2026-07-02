@@ -1,6 +1,5 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-import { GeminiProvider } from './providers/gemini.provider';
 import { OpenRouterProvider } from './providers/openrouter.provider';
 import { AnthropicProvider } from './providers/anthropic.provider';
 import { OutlineAgent } from './agents/outline.agent';
@@ -13,7 +12,6 @@ import { PresentationPipeline } from './pipeline/presentation.pipeline';
 @Module({
   imports: [ConfigModule],
   providers: [
-    GeminiProvider,
     OpenRouterProvider,
     AnthropicProvider,
     OutlineAgent,
@@ -23,6 +21,6 @@ import { PresentationPipeline } from './pipeline/presentation.pipeline';
     ImageService,
     PresentationPipeline,
   ],
-  exports: [PresentationPipeline, GeminiProvider, ImageService],
+  exports: [PresentationPipeline, OpenRouterProvider, ImageService],
 })
 export class AiModule {}

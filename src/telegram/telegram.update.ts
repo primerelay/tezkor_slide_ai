@@ -28,6 +28,14 @@ interface SessionData extends Scenes.SceneSession {
   quizType?: string;
   quizDifficulty?: string;
   quizQuestionCount?: number;
+  // Document (mustaqil ish / referat) properties
+  docType?: 'mustaqil_ish' | 'referat';
+  docStep?: 'topic' | 'institution' | 'student_name' | 'teacher_name' | 'pages';
+  docTopic?: string;
+  docInstitution?: string;
+  docStudentName?: string;
+  docTeacherName?: string;
+  docPageCount?: number;
 }
 
 export interface BotContext extends Context {
@@ -343,6 +351,70 @@ export class TelegramUpdate {
   }
 
   /**
+   * Handler for "Mustaqil ish" button (📄)
+   */
+  @Hears(/^📄.+$/)
+  async onMustaqilIshButton(@Ctx() ctx: BotContext) {
+    await this.startDocumentFlow(ctx, 'mustaqil_ish');
+  }
+
+  /**
+   * Handler for "Referat" button (📚)
+   */
+  @Hears(/^📚.+$/)
+  async onReferatButton(@Ctx() ctx: BotContext) {
+    await this.startDocumentFlow(ctx, 'referat');
+  }
+
+  @Action('doc_create_mustaqil_ish')
+  async onDocCreateMustaqilIsh(@Ctx() ctx: BotContext) {
+    await ctx.answerCbQuery();
+    await this.startDocumentFlow(ctx, 'mustaqil_ish');
+  }
+
+  @Action('doc_create_referat')
+  async onDocCreateReferat(@Ctx() ctx: BotContext) {
+    await ctx.answerCbQuery();
+    await this.startDocumentFlow(ctx, 'referat');
+  }
+
+  private async startDocumentFlow(
+    ctx: BotContext,
+    docType: 'mustaqil_ish' | 'referat',
+  ) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    if (!user) return;
+
+    // Check channel membership
+    const requiredChannel = this.telegramService.getRequiredChannel();
+    if (requiredChannel) {
+      const isMember = await this.telegramService.isChannelMember(telegramUser.id);
+      if (!isMember) {
+        const i18n = this.telegramService.getI18n(user.language);
+        await ctx.reply(
+          i18n.t('channel.joinRequired', { channel: requiredChannel.username }),
+          {
+            parse_mode: 'HTML',
+            reply_markup: InlineKeyboards.joinChannel(requiredChannel.url, requiredChannel.username),
+          },
+        );
+        return;
+      }
+    }
+
+    ctx.session.userId = user.id;
+    ctx.session.language = user.language;
+    ctx.session.docType = docType;
+
+    await ctx.scene.enter('document-create');
+  }
+
+  /**
    * Handler for "Language" button (🌐)
    */
   @Hears(/^🌐.+$/)
@@ -603,6 +675,22 @@ export class TelegramUpdate {
     await ctx.reply(i18n.t('paymentInstructions', { humoCard, humoOwner, uzcardCard, uzcardOwner }), { parse_mode: 'HTML' });
   }
 
+  /**
+   * Handler for "Invite friends" reply-keyboard button (🎁)
+   */
+  @Hears(/^🎁.+$/)
+  async onInviteFriendsButton(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    if (!user) return;
+
+    await this.sendReferralInfo(ctx, user);
+  }
+
   @Action('share_referral')
   async onShareReferral(@Ctx() ctx: BotContext) {
     const telegramUser = ctx.from;
@@ -613,11 +701,15 @@ export class TelegramUpdate {
     );
     if (!user) return;
 
+    await ctx.answerCbQuery();
+    await this.sendReferralInfo(ctx, user);
+  }
+
+  /** Shared referral share card — used by both the inline and reply buttons. */
+  private async sendReferralInfo(ctx: BotContext, user: any) {
     const i18n = this.telegramService.getI18n(user.language);
     const referralLink = this.telegramService.getReferralLink(user);
     const stats = await this.telegramService.getReferralStats(user.id);
-
-    await ctx.answerCbQuery();
 
     const message = i18n.t('referral.shareTitle', {
       count: stats.referralCount.toString(),
