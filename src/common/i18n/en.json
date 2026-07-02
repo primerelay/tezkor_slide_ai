@@ -59,7 +59,31 @@
     "flashcard": "🎴 Flashcards",
     "kursIshi": "📘 Coursework",
     "maqola": "📰 Article",
-    "tezis": "📃 Thesis"
+    "tezis": "📃 Thesis",
+    "glossary": "📖 Glossary",
+    "crossword": "🧩 Crossword"
+  },
+  "glossary": {
+    "enterContent": "📖 <b>Glossary</b>\n\nSend text or a topic to create a glossary.\n\n❌ Press /cancel to cancel",
+    "contentTooShort": "⚠️ Text is too short. At least 10 characters.",
+    "selectCount": "🔢 <b>Choose the number of terms:</b>",
+    "termsShort": "terms",
+    "confirmCreation": "📋 <b>Confirm creating the glossary?</b>\n\n📖 Terms: {count}\n💰 Price: <b>{price} so'm</b>\n\n💵 Balance: {balance} so'm\n\n✨ Alphabetical, with definitions, in Word (.docx).",
+    "creating": "⏳ Creating glossary...",
+    "done": "✅ Glossary sent as Word (.docx)! 🎉",
+    "error": "❌ An error occurred!\n\n{error}",
+    "cancelled": "❌ Glossary creation cancelled."
+  },
+  "crossword": {
+    "enterContent": "🧩 <b>Crossword</b>\n\nSend text or a topic to create a crossword.\n\n❌ Press /cancel to cancel",
+    "contentTooShort": "⚠️ Text is too short. At least 10 characters.",
+    "selectCount": "🔢 <b>Choose the number of words:</b>",
+    "wordsShort": "words",
+    "confirmCreation": "📋 <b>Confirm creating the crossword?</b>\n\n🧩 Words: {count}\n💰 Price: <b>{price} so'm</b>\n\n💵 Balance: {balance} so'm\n\n✨ Grid + clues + answer key in Word (.docx).",
+    "creating": "⏳ Building crossword...",
+    "done": "✅ Crossword sent as Word (.docx)! 🎉",
+    "error": "❌ An error occurred!\n\n{error}",
+    "cancelled": "❌ Crossword creation cancelled."
   },
   "flashcard": {
     "enterContent": "🎴 <b>Create flashcards</b>\n\nSend text or a topic to create cards.\n\n💡 For example: textbook text, a topic name, or a short description.\n\n❌ Press /cancel to cancel",

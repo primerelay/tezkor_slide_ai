@@ -99,6 +99,42 @@ export const api = {
     return response.json();
   },
 
+  async createGlossary(req: {
+    telegramId: string;
+    sourceContent: string;
+    termCount: number;
+    language?: string;
+  }): Promise<{ id: number; title: string; termCount: number }> {
+    const response = await fetch('/api/glossary', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Failed to create glossary' }));
+      throw new Error(error.message || 'Failed to create glossary');
+    }
+    return response.json();
+  },
+
+  async createCrossword(req: {
+    telegramId: string;
+    sourceContent: string;
+    wordCount: number;
+    language?: string;
+  }): Promise<{ id: number; title: string; wordCount: number }> {
+    const response = await fetch('/api/crossword', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Failed to create crossword' }));
+      throw new Error(error.message || 'Failed to create crossword');
+    }
+    return response.json();
+  },
+
   async createDocument(
     req: CreateDocumentRequest,
   ): Promise<{ success: boolean; documentId: string; message: string }> {

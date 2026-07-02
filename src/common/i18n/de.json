@@ -59,7 +59,31 @@
     "flashcard": "🎴 Lernkarten",
     "kursIshi": "📘 Kursarbeit",
     "maqola": "📰 Artikel",
-    "tezis": "📃 These"
+    "tezis": "📃 These",
+    "glossary": "📖 Glossar",
+    "crossword": "🧩 Kreuzworträtsel"
+  },
+  "glossary": {
+    "enterContent": "📖 <b>Glossar</b>\n\nSenden Sie Text oder ein Thema, um ein Glossar zu erstellen.\n\n❌ Zum Abbrechen /cancel drücken",
+    "contentTooShort": "⚠️ Text ist zu kurz. Mindestens 10 Zeichen.",
+    "selectCount": "🔢 <b>Wählen Sie die Anzahl der Begriffe:</b>",
+    "termsShort": "Begr.",
+    "confirmCreation": "📋 <b>Glossar-Erstellung bestätigen?</b>\n\n📖 Begriffe: {count}\n💰 Preis: <b>{price} So'm</b>\n\n💵 Guthaben: {balance} So'm\n\n✨ Alphabetisch, mit Definitionen, als Word (.docx).",
+    "creating": "⏳ Glossar wird erstellt...",
+    "done": "✅ Glossar als Word (.docx) gesendet! 🎉",
+    "error": "❌ Ein Fehler ist aufgetreten!\n\n{error}",
+    "cancelled": "❌ Glossar-Erstellung abgebrochen."
+  },
+  "crossword": {
+    "enterContent": "🧩 <b>Kreuzworträtsel</b>\n\nSenden Sie Text oder ein Thema, um ein Kreuzworträtsel zu erstellen.\n\n❌ Zum Abbrechen /cancel drücken",
+    "contentTooShort": "⚠️ Text ist zu kurz. Mindestens 10 Zeichen.",
+    "selectCount": "🔢 <b>Wählen Sie die Anzahl der Wörter:</b>",
+    "wordsShort": "Wörter",
+    "confirmCreation": "📋 <b>Kreuzworträtsel-Erstellung bestätigen?</b>\n\n🧩 Wörter: {count}\n💰 Preis: <b>{price} So'm</b>\n\n💵 Guthaben: {balance} So'm\n\n✨ Gitter + Fragen + Lösungsschlüssel als Word (.docx).",
+    "creating": "⏳ Kreuzworträtsel wird erstellt...",
+    "done": "✅ Kreuzworträtsel als Word (.docx) gesendet! 🎉",
+    "error": "❌ Ein Fehler ist aufgetreten!\n\n{error}",
+    "cancelled": "❌ Kreuzworträtsel-Erstellung abgebrochen."
   },
   "flashcard": {
     "enterContent": "🎴 <b>Lernkarten erstellen</b>\n\nSenden Sie Text oder ein Thema, um Karten zu erstellen.\n\n💡 Zum Beispiel: Lehrbuchtext, Themenname oder eine kurze Beschreibung.\n\n❌ Zum Abbrechen /cancel drücken",

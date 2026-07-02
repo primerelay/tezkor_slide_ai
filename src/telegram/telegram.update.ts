@@ -41,6 +41,11 @@ interface SessionData extends Scenes.SceneSession {
   // Flashcard properties
   flashcardContent?: string;
   flashcardCount?: number;
+  // Glossary / crossword properties
+  glossaryContent?: string;
+  glossaryCount?: number;
+  crosswordContent?: string;
+  crosswordCount?: number;
 }
 
 export interface BotContext extends Context {
@@ -459,6 +464,53 @@ export class TelegramUpdate {
   @Hears(/^🎴.+$/)
   async onFlashcardButton(@Ctx() ctx: BotContext) {
     await this.startFlashcardFlow(ctx);
+  }
+
+  @Hears(/^📖.+$/)
+  async onGlossaryButton(@Ctx() ctx: BotContext) {
+    await this.startSceneWithChannelCheck(ctx, 'glossary-create');
+  }
+
+  @Hears(/^🧩.+$/)
+  async onCrosswordButton(@Ctx() ctx: BotContext) {
+    await this.startSceneWithChannelCheck(ctx, 'crossword-create');
+  }
+
+  @Action('glossary_create')
+  async onGlossaryCreate(@Ctx() ctx: BotContext) {
+    await ctx.answerCbQuery();
+    await this.startSceneWithChannelCheck(ctx, 'glossary-create');
+  }
+
+  @Action('crossword_create')
+  async onCrosswordCreate(@Ctx() ctx: BotContext) {
+    await ctx.answerCbQuery();
+    await this.startSceneWithChannelCheck(ctx, 'crossword-create');
+  }
+
+  /** Enter a scene after resolving the user and enforcing channel membership. */
+  private async startSceneWithChannelCheck(ctx: BotContext, scene: string) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+    const user = await this.telegramService.getUserByTelegramId(telegramUser.id.toString());
+    if (!user) return;
+
+    const requiredChannel = this.telegramService.getRequiredChannel();
+    if (requiredChannel) {
+      const isMember = await this.telegramService.isChannelMember(telegramUser.id);
+      if (!isMember) {
+        const i18n = this.telegramService.getI18n(user.language);
+        await ctx.reply(i18n.t('channel.joinRequired', { channel: requiredChannel.username }), {
+          parse_mode: 'HTML',
+          reply_markup: InlineKeyboards.joinChannel(requiredChannel.url, requiredChannel.username),
+        });
+        return;
+      }
+    }
+
+    ctx.session.userId = user.id;
+    ctx.session.language = user.language;
+    await ctx.scene.enter(scene);
   }
 
   @Action('flashcard_create')

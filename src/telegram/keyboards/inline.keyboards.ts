@@ -20,6 +20,7 @@ export class ReplyKeyboards {
       [i18n.t('buttons.kursIshi'), i18n.t('buttons.maqola')],
       [i18n.t('buttons.tezis'), i18n.t('buttons.insho')],
       [i18n.t('buttons.flashcard'), i18n.t('buttons.quizBot')],
+      [i18n.t('buttons.glossary'), i18n.t('buttons.crossword')],
       [i18n.t('buttons.balance'), i18n.t('buttons.addBalance')],
       [i18n.t('buttons.inviteFriends'), i18n.t('buttons.language')],
     );
@@ -199,6 +200,10 @@ export class InlineKeyboards {
       [
         Markup.button.callback(i18n.t('buttons.flashcard'), 'flashcard_create'),
         Markup.button.callback(i18n.t('buttons.quizCreate'), 'quiz_create'),
+      ],
+      [
+        Markup.button.callback(i18n.t('buttons.glossary'), 'glossary_create'),
+        Markup.button.callback(i18n.t('buttons.crossword'), 'crossword_create'),
       ],
       [
         Markup.button.callback(i18n.t('buttons.balance'), 'check_balance'),

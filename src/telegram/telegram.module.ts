@@ -19,9 +19,12 @@ import { GenerationScene } from './scenes/generation.scene';
 import { QuizCreateScene } from './scenes/quiz-create.scene';
 import { DocumentCreateScene } from './scenes/document-create.scene';
 import { FlashcardCreateScene } from './scenes/flashcard-create.scene';
+import { GlossaryCreateScene } from './scenes/glossary-create.scene';
+import { CrosswordCreateScene } from './scenes/crossword-create.scene';
 import { QuizModule } from '../quiz/quiz.module';
 import { DocumentModule } from '../document/document.module';
 import { FlashcardModule } from '../flashcard/flashcard.module';
+import { StudyModule } from '../study/study.module';
 
 @Module({
   imports: [
@@ -37,6 +40,7 @@ import { FlashcardModule } from '../flashcard/flashcard.module';
     forwardRef(() => QuizModule),
     DocumentModule,
     FlashcardModule,
+    StudyModule,
   ],
   providers: [
     TelegramService,
@@ -50,6 +54,8 @@ import { FlashcardModule } from '../flashcard/flashcard.module';
     QuizCreateScene,
     DocumentCreateScene,
     FlashcardCreateScene,
+    GlossaryCreateScene,
+    CrosswordCreateScene,
   ],
   exports: [TelegramService],
 })

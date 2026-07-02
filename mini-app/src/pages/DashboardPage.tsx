@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTelegram } from '../hooks/useTelegram';
 import { useLanguage } from '../contexts/LanguageContext';
 import { PRICING } from '../i18n/translations';
-import { Plus, FileText, Clock, ChevronRight, Wallet, Sparkles, Gift, Brain, BookOpen, PenLine, Layers, GraduationCap, Newspaper, ScrollText } from 'lucide-react';
+import { Plus, FileText, Clock, ChevronRight, Wallet, Sparkles, Gift, Brain, BookOpen, PenLine, Layers, GraduationCap, Newspaper, ScrollText, BookMarked, Puzzle } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface RecentPresentation {
@@ -245,6 +245,30 @@ export default function DashboardPage() {
               </div>
               <div className="font-medium text-gray-900 text-sm mb-1">Flesh kartalar</div>
               <div className="text-xs text-gray-500">Tez yodlash</div>
+            </button>
+
+            {/* Glossary */}
+            <button
+              onClick={() => { haptic('light'); navigate('/study/create?type=glossary'); }}
+              className="card p-4 text-left active:bg-emerald-50 transition-colors"
+            >
+              <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center mb-3">
+                <BookMarked className="w-5 h-5 text-emerald-600" />
+              </div>
+              <div className="font-medium text-gray-900 text-sm mb-1">Glossary</div>
+              <div className="text-xs text-gray-500">Izohli lug'at</div>
+            </button>
+
+            {/* Crossword */}
+            <button
+              onClick={() => { haptic('light'); navigate('/study/create?type=crossword'); }}
+              className="card p-4 text-left active:bg-teal-50 transition-colors"
+            >
+              <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center mb-3">
+                <Puzzle className="w-5 h-5 text-teal-600" />
+              </div>
+              <div className="font-medium text-gray-900 text-sm mb-1">Krossvord</div>
+              <div className="text-xs text-gray-500">O'yin-mashq</div>
             </button>
           </div>
         </motion.div>

@@ -12,6 +12,7 @@ import QuizViewPage from './pages/QuizViewPage';
 import DocumentCreatePage from './pages/DocumentCreatePage';
 import FlashcardCreatePage from './pages/FlashcardCreatePage';
 import FlashcardViewPage from './pages/FlashcardViewPage';
+import StudyCreatePage from './pages/StudyCreatePage';
 
 function App() {
   const { webApp, ready } = useTelegram();
@@ -57,6 +58,7 @@ function App() {
         <Route path="/document/create" element={<DocumentCreatePage />} />
         <Route path="/flashcards/create" element={<FlashcardCreatePage />} />
         <Route path="/flashcards/:id" element={<FlashcardViewPage />} />
+        <Route path="/study/create" element={<StudyCreatePage />} />
         <Route path="/editor/:id" element={<EditorPage />} />
         <Route path="/preview/:id" element={<PreviewPage />} />
       </Routes>

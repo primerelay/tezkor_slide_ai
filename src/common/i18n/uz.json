@@ -59,7 +59,31 @@
     "flashcard": "🎴 Flesh kartalar",
     "kursIshi": "📘 Kurs ishi",
     "maqola": "📰 Maqola",
-    "tezis": "📃 Tezis"
+    "tezis": "📃 Tezis",
+    "glossary": "📖 Glossary",
+    "crossword": "🧩 Krossvord"
+  },
+  "glossary": {
+    "enterContent": "📖 <b>Glossary (izohli lug'at)</b>\n\nLug'at yaratish uchun matn yoki mavzuni yuboring.\n\n❌ Bekor qilish uchun /cancel ni bosing",
+    "contentTooShort": "⚠️ Matn juda qisqa. Kamida 10 belgi kiriting.",
+    "selectCount": "🔢 <b>Atamalar sonini tanlang:</b>",
+    "termsShort": "atama",
+    "confirmCreation": "📋 <b>Glossary tasdiqlansinmi?</b>\n\n📖 Atamalar: {count} ta\n💰 Narx: <b>{price} so'm</b>\n\n💵 Balansingiz: {balance} so'm\n\n✨ Alfavit tartibda, ta'riflari bilan Word (.docx) faylida.",
+    "creating": "⏳ Lug'at yaratilmoqda...",
+    "done": "✅ Glossary Word (.docx) faylida yuborildi! 🎉",
+    "error": "❌ Xatolik yuz berdi!\n\n{error}",
+    "cancelled": "❌ Glossary bekor qilindi."
+  },
+  "crossword": {
+    "enterContent": "🧩 <b>Krossvord</b>\n\nKrossvord yaratish uchun matn yoki mavzuni yuboring.\n\n❌ Bekor qilish uchun /cancel ni bosing",
+    "contentTooShort": "⚠️ Matn juda qisqa. Kamida 10 belgi kiriting.",
+    "selectCount": "🔢 <b>So'zlar sonini tanlang:</b>",
+    "wordsShort": "so'z",
+    "confirmCreation": "📋 <b>Krossvord tasdiqlansinmi?</b>\n\n🧩 So'zlar: {count} ta\n💰 Narx: <b>{price} so'm</b>\n\n💵 Balansingiz: {balance} so'm\n\n✨ Krossvord katakchalari + savollar + javoblar kaliti Word (.docx) faylida.",
+    "creating": "⏳ Krossvord tuzilmoqda...",
+    "done": "✅ Krossvord Word (.docx) faylida yuborildi! 🎉",
+    "error": "❌ Xatolik yuz berdi!\n\n{error}",
+    "cancelled": "❌ Krossvord bekor qilindi."
   },
   "flashcard": {
     "enterContent": "🎴 <b>Flesh kartalar yaratish</b>\n\nKartalar yaratish uchun matn yoki mavzuni yuboring.\n\n💡 Masalan: darslik matni, mavzu nomi yoki qisqacha tavsif.\n\n❌ Bekor qilish uchun /cancel ni bosing",
