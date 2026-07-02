@@ -10,6 +10,8 @@ import {
   PresentationTheme,
   normalizeTheme,
 } from '../renderer/themes/theme-registry';
+import { FlashcardService } from '../flashcard/flashcard.service';
+import { renderFlashcard } from './keyboards/flashcard.view';
 
 interface SessionData extends Scenes.SceneSession {
   language?: SupportedLanguage;
@@ -36,6 +38,9 @@ interface SessionData extends Scenes.SceneSession {
   docStudentName?: string;
   docTeacherName?: string;
   docPageCount?: number;
+  // Flashcard properties
+  flashcardContent?: string;
+  flashcardCount?: number;
 }
 
 export interface BotContext extends Context {
@@ -52,6 +57,7 @@ export class TelegramUpdate {
     private readonly referralService: ReferralService,
     private readonly jobEventsService: JobEventsService,
     private readonly configService: ConfigService,
+    private readonly flashcardService: FlashcardService,
   ) {
     this.miniAppUrl = this.configService.get<string>('MINI_APP_URL');
   }
@@ -390,6 +396,90 @@ export class TelegramUpdate {
   async onDocCreateInsho(@Ctx() ctx: BotContext) {
     await ctx.answerCbQuery();
     await this.startDocumentFlow(ctx, 'insho');
+  }
+
+  /**
+   * Handler for "Flesh kartalar" button (🎴)
+   */
+  @Hears(/^🎴.+$/)
+  async onFlashcardButton(@Ctx() ctx: BotContext) {
+    await this.startFlashcardFlow(ctx);
+  }
+
+  @Action('flashcard_create')
+  async onFlashcardCreate(@Ctx() ctx: BotContext) {
+    await ctx.answerCbQuery();
+    await this.startFlashcardFlow(ctx);
+  }
+
+  private async startFlashcardFlow(ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    if (!user) return;
+
+    const requiredChannel = this.telegramService.getRequiredChannel();
+    if (requiredChannel) {
+      const isMember = await this.telegramService.isChannelMember(telegramUser.id);
+      if (!isMember) {
+        const i18n = this.telegramService.getI18n(user.language);
+        await ctx.reply(
+          i18n.t('channel.joinRequired', { channel: requiredChannel.username }),
+          {
+            parse_mode: 'HTML',
+            reply_markup: InlineKeyboards.joinChannel(requiredChannel.url, requiredChannel.username),
+          },
+        );
+        return;
+      }
+    }
+
+    ctx.session.userId = user.id;
+    ctx.session.language = user.language;
+    await ctx.scene.enter('flashcard-create');
+  }
+
+  /** Flashcard viewer: flip to the answer side. */
+  @Action(/^fcflip_(\d+)_(\d+)$/)
+  async onFlashcardFlip(@Ctx() ctx: BotContext) {
+    await this.showFlashcard(ctx, 'back');
+  }
+
+  /** Flashcard viewer: navigate to a card's question side. */
+  @Action(/^fcnav_(\d+)_(\d+)$/)
+  async onFlashcardNav(@Ctx() ctx: BotContext) {
+    await this.showFlashcard(ctx, 'front');
+  }
+
+  @Action('fc_noop')
+  async onFlashcardNoop(@Ctx() ctx: BotContext) {
+    await ctx.answerCbQuery();
+  }
+
+  private async showFlashcard(ctx: BotContext, side: 'front' | 'back') {
+    const cbq = ctx.callbackQuery;
+    if (!cbq || !('data' in cbq)) return;
+    const match = cbq.data.match(/^fc(?:flip|nav)_(\d+)_(\d+)$/);
+    if (!match) return;
+
+    const setId = parseInt(match[1], 10);
+    const index = parseInt(match[2], 10);
+
+    try {
+      const set = await this.flashcardService.getSet(setId);
+      const i18n = this.telegramService.getI18n(ctx.session.language || 'uz');
+      const view = renderFlashcard(set, index, side, i18n);
+      await ctx.answerCbQuery();
+      await ctx.editMessageText(view.text, {
+        parse_mode: 'HTML',
+        reply_markup: view.keyboard,
+      });
+    } catch {
+      await ctx.answerCbQuery();
+    }
   }
 
   private async startDocumentFlow(

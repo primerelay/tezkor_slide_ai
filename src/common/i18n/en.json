@@ -55,7 +55,22 @@
     "quizCreate": "🧠 Create Quiz",
     "mustaqilIsh": "📄 Independent work",
     "referat": "📚 Report (Referat)",
-    "insho": "✍️ Essay"
+    "insho": "✍️ Essay",
+    "flashcard": "🎴 Flashcards"
+  },
+  "flashcard": {
+    "enterContent": "🎴 <b>Create flashcards</b>\n\nSend text or a topic to create cards.\n\n💡 For example: textbook text, a topic name, or a short description.\n\n❌ Press /cancel to cancel",
+    "contentTooShort": "⚠️ Text is too short. Enter at least 10 characters.",
+    "selectCount": "🔢 <b>Choose the number of cards:</b>",
+    "cardsShort": "cards",
+    "confirmCreation": "📋 <b>Confirm creating flashcards?</b>\n\n🎴 Cards: {count}\n💰 Price: <b>{price} so'm</b>\n\n💵 Your balance: {balance} so'm\n\n✨ Each card: a question/term (front) and an answer/definition (back). Flip to review.",
+    "creating": "⏳ Creating cards...\n\nThis takes a few seconds.",
+    "ready": "✅ <b>Done!</b>\n\n🎴 {title}\n📊 {count} cards\n\nFlip the cards below to study 👇",
+    "error": "❌ An error occurred!\n\n{error}",
+    "cancelled": "❌ Flashcard creation cancelled.",
+    "showAnswer": "🔄 Show answer",
+    "showQuestion": "🔙 Back to question",
+    "tapToReveal": "Tap the button to reveal the answer"
   },
   "document": {
     "typeNames": {

@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import { useTelegram } from '../hooks/useTelegram';
 import { useLanguage } from '../contexts/LanguageContext';
 import { PRICING } from '../i18n/translations';
-import { Plus, FileText, Clock, ChevronRight, Wallet, Sparkles, Gift, Brain, BookOpen, PenLine } from 'lucide-react';
+import { Plus, FileText, Clock, ChevronRight, Wallet, Sparkles, Gift, Brain, BookOpen, PenLine, Layers } from 'lucide-react';
 import { motion } from 'framer-motion';
 
 interface RecentPresentation {
@@ -194,6 +194,21 @@ export default function DashboardPage() {
               </div>
               <div className="font-medium text-gray-900 text-sm mb-1">Insho</div>
               <div className="text-xs text-gray-500">Insho / Essey</div>
+            </button>
+
+            {/* Flashcards */}
+            <button
+              onClick={() => {
+                haptic('light');
+                navigate('/flashcards/create');
+              }}
+              className="card p-4 text-left active:bg-amber-50 transition-colors"
+            >
+              <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center mb-3">
+                <Layers className="w-5 h-5 text-amber-600" />
+              </div>
+              <div className="font-medium text-gray-900 text-sm mb-1">Flesh kartalar</div>
+              <div className="text-xs text-gray-500">Tez yodlash</div>
             </button>
 
             {/* Balance */}

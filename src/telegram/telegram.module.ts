@@ -18,8 +18,10 @@ import { OptionsScene } from './scenes/options.scene';
 import { GenerationScene } from './scenes/generation.scene';
 import { QuizCreateScene } from './scenes/quiz-create.scene';
 import { DocumentCreateScene } from './scenes/document-create.scene';
+import { FlashcardCreateScene } from './scenes/flashcard-create.scene';
 import { QuizModule } from '../quiz/quiz.module';
 import { DocumentModule } from '../document/document.module';
+import { FlashcardModule } from '../flashcard/flashcard.module';
 
 @Module({
   imports: [
@@ -34,6 +36,7 @@ import { DocumentModule } from '../document/document.module';
     TypeOrmModule.forFeature([User, Presentation, GenerationJob, Transaction, ChannelMembership]),
     forwardRef(() => QuizModule),
     DocumentModule,
+    FlashcardModule,
   ],
   providers: [
     TelegramService,
@@ -46,6 +49,7 @@ import { DocumentModule } from '../document/document.module';
     GenerationScene,
     QuizCreateScene,
     DocumentCreateScene,
+    FlashcardCreateScene,
   ],
   exports: [TelegramService],
 })

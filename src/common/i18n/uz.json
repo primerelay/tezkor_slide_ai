@@ -55,7 +55,22 @@
     "quizCreate": "🧠 Quiz yaratish",
     "mustaqilIsh": "📄 Mustaqil ish",
     "referat": "📚 Referat",
-    "insho": "✍️ Insho/Essey"
+    "insho": "✍️ Insho/Essey",
+    "flashcard": "🎴 Flesh kartalar"
+  },
+  "flashcard": {
+    "enterContent": "🎴 <b>Flesh kartalar yaratish</b>\n\nKartalar yaratish uchun matn yoki mavzuni yuboring.\n\n💡 Masalan: darslik matni, mavzu nomi yoki qisqacha tavsif.\n\n❌ Bekor qilish uchun /cancel ni bosing",
+    "contentTooShort": "⚠️ Matn juda qisqa. Kamida 10 belgi kiriting.",
+    "selectCount": "🔢 <b>Kartalar sonini tanlang:</b>",
+    "cardsShort": "karta",
+    "confirmCreation": "📋 <b>Flesh kartalar tasdiqlansinmi?</b>\n\n🎴 Kartalar: {count} ta\n💰 Narx: <b>{price} so'm</b>\n\n💵 Sizning balansingiz: {balance} so'm\n\n✨ Har karta: savol/tushuncha (old tomon) va javob/ta'rif (orqa tomon). Kartani ag'darib takrorlaysiz.",
+    "creating": "⏳ Kartalar yaratilmoqda...\n\nBu bir necha soniya vaqt oladi.",
+    "ready": "✅ <b>Tayyor!</b>\n\n🎴 {title}\n📊 {count} ta karta\n\nQuyida kartalarni ag'darib o'rganing 👇",
+    "error": "❌ Xatolik yuz berdi!\n\n{error}",
+    "cancelled": "❌ Flesh kartalar bekor qilindi.",
+    "showAnswer": "🔄 Javobni ko'rish",
+    "showQuestion": "🔙 Savolga qaytish",
+    "tapToReveal": "Javobni ko'rish uchun tugmani bosing"
   },
   "document": {
     "typeNames": {

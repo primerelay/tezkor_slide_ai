@@ -55,7 +55,22 @@
     "quizCreate": "🧠 Quiz erstellen",
     "mustaqilIsh": "📄 Selbstständige Arbeit",
     "referat": "📚 Referat",
-    "insho": "✍️ Essay"
+    "insho": "✍️ Essay",
+    "flashcard": "🎴 Lernkarten"
+  },
+  "flashcard": {
+    "enterContent": "🎴 <b>Lernkarten erstellen</b>\n\nSenden Sie Text oder ein Thema, um Karten zu erstellen.\n\n💡 Zum Beispiel: Lehrbuchtext, Themenname oder eine kurze Beschreibung.\n\n❌ Zum Abbrechen /cancel drücken",
+    "contentTooShort": "⚠️ Text ist zu kurz. Mindestens 10 Zeichen eingeben.",
+    "selectCount": "🔢 <b>Wählen Sie die Kartenanzahl:</b>",
+    "cardsShort": "Karten",
+    "confirmCreation": "📋 <b>Erstellung der Lernkarten bestätigen?</b>\n\n🎴 Karten: {count}\n💰 Preis: <b>{price} So'm</b>\n\n💵 Ihr Guthaben: {balance} So'm\n\n✨ Jede Karte: Frage/Begriff (Vorderseite) und Antwort/Definition (Rückseite). Zum Wiederholen umdrehen.",
+    "creating": "⏳ Karten werden erstellt...\n\nDas dauert einige Sekunden.",
+    "ready": "✅ <b>Fertig!</b>\n\n🎴 {title}\n📊 {count} Karten\n\nDrehen Sie die Karten unten zum Lernen 👇",
+    "error": "❌ Ein Fehler ist aufgetreten!\n\n{error}",
+    "cancelled": "❌ Erstellung der Lernkarten abgebrochen.",
+    "showAnswer": "🔄 Antwort zeigen",
+    "showQuestion": "🔙 Zurück zur Frage",
+    "tapToReveal": "Tippen Sie auf die Schaltfläche, um die Antwort zu sehen"
   },
   "document": {
     "typeNames": {

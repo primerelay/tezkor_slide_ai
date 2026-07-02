@@ -17,6 +17,7 @@ import { MiniAppModule } from './mini-app/mini-app.module';
 import { AdminModule } from './admin/admin.module';
 import { QuizModule } from './quiz/quiz.module';
 import { DocumentModule } from './document/document.module';
+import { FlashcardModule } from './flashcard/flashcard.module';
 import { SpaController } from './spa.controller';
 
 @Module({
@@ -68,6 +69,7 @@ import { SpaController } from './spa.controller';
     AdminModule,
     QuizModule,
     DocumentModule,
+    FlashcardModule,
   ],
 })
 export class AppModule {}

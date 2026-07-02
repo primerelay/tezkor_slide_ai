@@ -60,7 +60,44 @@ export interface DocumentStatus {
   errorMessage?: string;
 }
 
+export interface Flashcard {
+  front: string;
+  back: string;
+}
+
+export interface FlashcardSet {
+  id: number;
+  title: string;
+  cardCount: number;
+  cards: Flashcard[];
+  status?: string;
+}
+
 export const api = {
+  async createFlashcards(req: {
+    telegramId: string;
+    sourceContent: string;
+    cardCount: number;
+    language?: string;
+  }): Promise<FlashcardSet> {
+    const response = await fetch('/api/flashcards', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Failed to create flashcards' }));
+      throw new Error(error.message || 'Failed to create flashcards');
+    }
+    return response.json();
+  },
+
+  async getFlashcards(id: string): Promise<FlashcardSet> {
+    const response = await fetch(`/api/flashcards/${id}`);
+    if (!response.ok) throw new Error('Failed to fetch flashcards');
+    return response.json();
+  },
+
   async createDocument(
     req: CreateDocumentRequest,
   ): Promise<{ success: boolean; documentId: string; message: string }> {
