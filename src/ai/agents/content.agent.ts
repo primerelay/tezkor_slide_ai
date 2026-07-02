@@ -56,6 +56,11 @@ export class ContentAgent {
       ru: 'Русский язык',
       en: 'English',
       de: 'Deutsch',
+      tr: 'Türkçe',
+      kk: 'Қазақ тілі',
+      ar: 'العربية',
+      ko: '한국어',
+      uzc: "O'zbek tili (kirill yozuvida)",
     };
 
     const systemPrompt = `You are an expert academic content writer creating PROFESSIONAL university-level presentations.

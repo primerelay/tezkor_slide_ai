@@ -40,6 +40,11 @@ export class OutlineAgent {
     const languageNames: Record<string, string> = {
       uz: "O'zbek tili",
       de: "Deutsch",
+      tr: "Türkçe",
+      kk: "Қазақ тілі",
+      ar: "العربية",
+      ko: "한국어",
+      uzc: "O'zbek tili (kirill yozuvida)",
       ru: 'Русский язык',
       en: 'English',
     };

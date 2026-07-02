@@ -18,7 +18,7 @@ export type DocumentType =
 
 export type DocumentStatus = 'pending' | 'processing' | 'completed' | 'failed';
 
-export type DocumentLanguage = 'uz' | 'ru' | 'en' | 'de';
+export type DocumentLanguage = 'uz' | 'ru' | 'en' | 'de' | 'tr' | 'kk' | 'ar' | 'ko' | 'uzc';
 
 @Entity('documents')
 export class GeneratedDocument {

@@ -41,6 +41,11 @@ const LANGUAGE_NAMES: Record<string, string> = {
   ru: 'Русский язык',
   en: 'English',
   de: 'Deutsch',
+  tr: 'Türkçe',
+  kk: 'Қазақ тілі',
+  ar: 'العربية',
+  ko: '한국어',
+  uzc: "O'zbek tili (kirill yozuvida)",
 };
 
 @Injectable()

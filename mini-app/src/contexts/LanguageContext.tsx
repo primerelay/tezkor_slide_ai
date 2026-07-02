@@ -33,7 +33,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
             if (response.ok) {
               const user = await response.json();
-              if (user.language && ['uz', 'ru', 'en', 'de'].includes(user.language)) {
+              if (user.language && ['uz', 'ru', 'en', 'de', 'tr', 'kk', 'ar', 'ko', 'uzc'].includes(user.language)) {
                 setLanguage(user.language as SupportedLanguage);
               }
             }
@@ -51,6 +51,10 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
               'ru': 'ru',
               'en': 'en',
               'de': 'de',
+              'tr': 'tr',
+              'kk': 'kk',
+              'ar': 'ar',
+              'ko': 'ko',
               'uk': 'ru', // Ukrainian users often prefer Russian
             };
             if (langMap[langCode]) {
@@ -74,6 +78,11 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
 
     return () => clearTimeout(fallbackTimeout);
   }, []);
+
+  // Arabic is right-to-left.
+  useEffect(() => {
+    document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr';
+  }, [language]);
 
   const t = getTranslations(language);
 

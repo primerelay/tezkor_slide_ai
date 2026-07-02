@@ -9,7 +9,7 @@ import {
 import { Presentation } from './presentation.entity';
 import { Transaction } from './transaction.entity';
 
-export type UserLanguage = 'uz' | 'ru' | 'en' | 'de';
+export type UserLanguage = 'uz' | 'ru' | 'en' | 'de' | 'tr' | 'kk' | 'ar' | 'ko' | 'uzc';
 
 @Entity('users')
 export class User {

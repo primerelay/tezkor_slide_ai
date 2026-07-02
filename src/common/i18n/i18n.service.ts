@@ -3,19 +3,29 @@ import uz from './uz.json';
 import ru from './ru.json';
 import en from './en.json';
 import de from './de.json';
+import tr from './tr.json';
+import kk from './kk.json';
+import ar from './ar.json';
+import ko from './ko.json';
+import uzc from './uzc.json';
 
 type TranslationKey = string;
 type TranslationParams = Record<string, string | number>;
 type TranslationValue = string | Record<string, unknown>;
 type TranslationDict = Record<string, TranslationValue>;
 
-export type SupportedLanguage = 'uz' | 'ru' | 'en' | 'de';
+export type SupportedLanguage = 'uz' | 'ru' | 'en' | 'de' | 'tr' | 'kk' | 'ar' | 'ko' | 'uzc';
 
 const translations: Record<SupportedLanguage, TranslationDict> = {
   uz: uz as TranslationDict,
   ru: ru as TranslationDict,
   en: en as TranslationDict,
   de: de as TranslationDict,
+  tr: tr as TranslationDict,
+  kk: kk as TranslationDict,
+  ar: ar as TranslationDict,
+  ko: ko as TranslationDict,
+  uzc: uzc as TranslationDict,
 };
 
 @Injectable()
@@ -88,7 +98,7 @@ export class I18nService {
    * Get all supported languages
    */
   static getSupportedLanguages(): SupportedLanguage[] {
-    return ['uz', 'ru', 'en', 'de'];
+    return ['uz', 'uzc', 'ru', 'en', 'tr', 'kk', 'ar', 'ko', 'de'];
   }
 
   /**
@@ -97,8 +107,13 @@ export class I18nService {
   static getLanguageNames(): Record<SupportedLanguage, string> {
     return {
       uz: "🇺🇿 O'zbekcha",
+      uzc: '🇺🇿 Ўзбекча',
       ru: '🇷🇺 Русский',
       en: '🇬🇧 English',
+      tr: '🇹🇷 Türkçe',
+      kk: '🇰🇿 Қазақша',
+      ar: '🇸🇦 العربية',
+      ko: '🇰🇷 한국어',
       de: '🇩🇪 Deutsch',
     };
   }
@@ -107,7 +122,7 @@ export class I18nService {
    * Check if a language is supported
    */
   static isSupported(lang: string): lang is SupportedLanguage {
-    return ['uz', 'ru', 'en', 'de'].includes(lang);
+    return ['uz', 'uzc', 'ru', 'en', 'de', 'tr', 'kk', 'ar', 'ko'].includes(lang);
   }
 
   /**

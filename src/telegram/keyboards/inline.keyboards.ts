@@ -36,9 +36,22 @@ export class ReplyKeyboards {
 export class InlineKeyboards {
   static languageSelection() {
     return Markup.inlineKeyboard([
-      [Markup.button.callback("🇺🇿 O'zbekcha", 'lang_uz')],
-      [Markup.button.callback('🇷🇺 Русский', 'lang_ru')],
-      [Markup.button.callback('🇬🇧 English', 'lang_en')],
+      [
+        Markup.button.callback("🇺🇿 O'zbekcha", 'lang_uz'),
+        Markup.button.callback('🇺🇿 Ўзбекча', 'lang_uzc'),
+      ],
+      [
+        Markup.button.callback('🇷🇺 Русский', 'lang_ru'),
+        Markup.button.callback('🇬🇧 English', 'lang_en'),
+      ],
+      [
+        Markup.button.callback('🇹🇷 Türkçe', 'lang_tr'),
+        Markup.button.callback('🇰🇿 Қазақша', 'lang_kk'),
+      ],
+      [
+        Markup.button.callback('🇸🇦 العربية', 'lang_ar'),
+        Markup.button.callback('🇰🇷 한국어', 'lang_ko'),
+      ],
       [Markup.button.callback('🇩🇪 Deutsch', 'lang_de')],
     ]).reply_markup;
   }

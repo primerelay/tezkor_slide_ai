@@ -1,4 +1,10 @@
-export type SupportedLanguage = 'uz' | 'ru' | 'en' | 'de';
+import { tr } from './locales/tr';
+import { kk } from './locales/kk';
+import { ar } from './locales/ar';
+import { ko } from './locales/ko';
+import { uzc } from './locales/uzc';
+
+export type SupportedLanguage = 'uz' | 'ru' | 'en' | 'de' | 'tr' | 'kk' | 'ar' | 'ko' | 'uzc';
 
 // Pricing data - centralized
 export const PRICING = [
@@ -597,6 +603,11 @@ export const translations: Record<SupportedLanguage, Translations> = {
   ru,
   en,
   de,
+  tr,
+  kk,
+  ar,
+  ko,
+  uzc,
 };
 
 export function getTranslations(lang: SupportedLanguage): Translations {

@@ -17,7 +17,7 @@ export type PresentationStatus =
   | 'completed'
   | 'failed';
 
-export type PresentationLanguage = 'uz' | 'ru' | 'en' | 'de';
+export type PresentationLanguage = 'uz' | 'ru' | 'en' | 'de' | 'tr' | 'kk' | 'ar' | 'ko' | 'uzc';
 
 @Entity('presentations')
 export class Presentation {

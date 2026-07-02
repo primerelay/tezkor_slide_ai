@@ -32,6 +32,11 @@ const LANGUAGE_NAMES: Record<string, string> = {
   ru: 'Русский язык',
   en: 'English',
   de: 'Deutsch',
+  tr: 'Türkçe',
+  kk: 'Қазақ тілі',
+  ar: 'العربية',
+  ko: '한국어',
+  uzc: "O'zbek tili (kirill yozuvida)",
 };
 
 // Roughly 290 words fit on an A4 page with Times New Roman 14pt and 1.5 spacing.
