@@ -2,6 +2,7 @@ import { useEffect } from 'react';
 import { Routes, Route } from 'react-router-dom';
 import { useTelegram } from './hooks/useTelegram';
 import { useLanguage } from './contexts/LanguageContext';
+import { getTelegramUserId } from './utils/telegram';
 import DashboardPage from './pages/DashboardPage';
 import CreatePage from './pages/CreatePage';
 import PreviewPage from './pages/PreviewPage';
@@ -22,6 +23,10 @@ function App() {
 
       // Set header color
       document.body.style.backgroundColor = '#fafafa';
+
+      // Cache the Telegram user id as soon as it's available so every feature
+      // (including documents) can resolve it later even if state lags.
+      getTelegramUserId();
     }
   }, [webApp]);
 

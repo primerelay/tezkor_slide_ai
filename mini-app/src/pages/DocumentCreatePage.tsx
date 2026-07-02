@@ -14,6 +14,7 @@ import {
   Send,
 } from 'lucide-react';
 import { api, DocumentType } from '../api/api';
+import { getTelegramUserId } from '../utils/telegram';
 
 type Step = 'topic' | 'details' | 'settings' | 'generating' | 'done';
 
@@ -47,7 +48,7 @@ const DOC_META: Record<
 export default function DocumentCreatePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const { haptic, showBackButton, hideBackButton, webApp } = useTelegram();
+  const { haptic, showBackButton, hideBackButton } = useTelegram();
   const { language } = useLanguage();
 
   const docType = (searchParams.get('type') as DocumentType) || 'mustaqil_ish';
@@ -80,17 +81,8 @@ export default function DocumentCreatePage() {
     else if (step === 'settings') handleGenerate();
   };
 
-  // Resolve the Telegram user id robustly: prefer the hook's state, but fall
-  // back to reading window.Telegram directly (state can lag behind on mount).
-  const resolveTelegramId = (): string | undefined => {
-    const fromHook = webApp?.initDataUnsafe?.user?.id;
-    if (fromHook) return String(fromHook);
-    const g = (window as any)?.Telegram?.WebApp?.initDataUnsafe?.user?.id;
-    return g ? String(g) : undefined;
-  };
-
   const handleGenerate = async () => {
-    const telegramId = resolveTelegramId();
+    const telegramId = getTelegramUserId();
     if (!telegramId) {
       alert(
         "Telegram foydalanuvchi aniqlanmadi. Iltimos, ilovani bot ichidagi \"🚀 Web ilovani ochish\" tugmasi orqali oching (brauzerda emas).",
