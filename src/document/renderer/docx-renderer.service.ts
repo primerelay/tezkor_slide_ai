@@ -39,15 +39,19 @@ export class DocxRendererService {
     const lang = (output.language || 'uz') as SupportedLanguage;
     const i18n = I18nService.create(lang);
 
-    const children: Paragraph[] =
-      output.format === 'essay'
-        ? this.buildEssay(output)
-        : [
-            ...this.buildTitlePage(output, i18n),
-            ...this.buildTableOfContents(output, i18n),
-            ...this.buildBody(output, i18n),
-            ...this.buildReferences(output, i18n),
-          ];
+    let children: Paragraph[];
+    if (output.format === 'essay') {
+      children = this.buildEssay(output);
+    } else if (output.format === 'article') {
+      children = this.buildArticle(output, i18n);
+    } else {
+      children = [
+        ...this.buildTitlePage(output, i18n),
+        ...this.buildTableOfContents(output, i18n),
+        ...this.buildBody(output, i18n),
+        ...this.buildReferences(output, i18n),
+      ];
+    }
 
     const doc = new Document({
       creator: 'SliderAI UZ',
@@ -414,6 +418,107 @@ export class DocxRendererService {
           );
         }
       }
+    }
+
+    return paragraphs;
+  }
+
+  /**
+   * Article (maqola) / thesis (tezis) layout: centered title, author, an
+   * "Annotatsiya" abstract, a "Kalit so'zlar" keyword line, titled sections
+   * (unnumbered), then references. No title page, TOC or chapter numbers.
+   */
+  private buildArticle(output: DocPipelineOutput, i18n: I18nService): Paragraph[] {
+    const plan = (output.metadata?.plan || {}) as {
+      annotation?: string;
+      keywords?: string[];
+    };
+    const paragraphs: Paragraph[] = [];
+
+    // Title.
+    paragraphs.push(
+      new Paragraph({
+        alignment: AlignmentType.CENTER,
+        spacing: { after: 120, line: LINE_15 },
+        children: [new TextRun({ text: output.title, bold: true, size: TITLE_SIZE, font: FONT })],
+      }),
+    );
+
+    // Author (centered under the title).
+    if (output.studentName) {
+      paragraphs.push(
+        new Paragraph({
+          alignment: AlignmentType.CENTER,
+          spacing: { after: 240, line: LINE_15 },
+          children: [new TextRun({ text: output.studentName, italics: true, size: BODY_SIZE, font: FONT })],
+        }),
+      );
+    }
+
+    const labelled = (label: string, value: string, italic = false) =>
+      new Paragraph({
+        alignment: AlignmentType.JUSTIFIED,
+        spacing: { after: 120, line: LINE_15 },
+        children: [
+          new TextRun({ text: `${label}: `, bold: true, size: BODY_SIZE, font: FONT }),
+          new TextRun({ text: value, italics: italic, size: BODY_SIZE, font: FONT }),
+        ],
+      });
+
+    if (plan.annotation) {
+      paragraphs.push(labelled(i18n.t('document.annotationLabel'), plan.annotation, true));
+    }
+    if (plan.keywords && plan.keywords.length) {
+      paragraphs.push(labelled(i18n.t('document.keywordsLabel'), plan.keywords.join(', ')));
+    }
+
+    // Titled sections (unnumbered bold headings) + prose.
+    for (const section of output.sections) {
+      paragraphs.push(
+        new Paragraph({
+          spacing: { before: 200, after: 100, line: LINE_15 },
+          children: [new TextRun({ text: section.title, bold: true, size: BODY_SIZE, font: FONT })],
+        }),
+      );
+      for (const block of section.blocks) {
+        for (const text of block.paragraphs) {
+          paragraphs.push(
+            new Paragraph({
+              alignment: AlignmentType.JUSTIFIED,
+              indent: { firstLine: FIRST_LINE_INDENT },
+              spacing: { line: LINE_15 },
+              children: [new TextRun({ text, size: BODY_SIZE, font: FONT })],
+            }),
+          );
+        }
+      }
+    }
+
+    // References.
+    if (output.references.length) {
+      paragraphs.push(
+        new Paragraph({
+          spacing: { before: 240, after: 100, line: LINE_15 },
+          children: [
+            new TextRun({
+              text: i18n.t('document.referencesTitle'),
+              bold: true,
+              size: BODY_SIZE,
+              font: FONT,
+            }),
+          ],
+        }),
+      );
+      output.references.forEach((ref, i) => {
+        paragraphs.push(
+          new Paragraph({
+            alignment: AlignmentType.JUSTIFIED,
+            indent: { left: 400, hanging: 400 },
+            spacing: { line: LINE_15 },
+            children: [new TextRun({ text: `${i + 1}. ${ref}`, size: BODY_SIZE, font: FONT })],
+          }),
+        );
+      });
     }
 
     return paragraphs;

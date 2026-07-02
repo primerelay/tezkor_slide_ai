@@ -8,7 +8,13 @@ import {
 } from 'typeorm';
 import { User } from './user.entity';
 
-export type DocumentType = 'mustaqil_ish' | 'referat' | 'insho';
+export type DocumentType =
+  | 'mustaqil_ish'
+  | 'referat'
+  | 'insho'
+  | 'kurs_ishi'
+  | 'maqola'
+  | 'tezis';
 
 export type DocumentStatus = 'pending' | 'processing' | 'completed' | 'failed';
 

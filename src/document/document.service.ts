@@ -26,8 +26,39 @@ export const ESSAY_PRICES: Record<number, number> = {
   5: 2500,
 };
 
+// Coursework (kurs ishi) is the largest academic document.
+export const KURS_ISHI_PRICES: Record<number, number> = {
+  25: 6000,
+  35: 8000,
+  50: 11000,
+};
+
+// Article (maqola) — medium academic article with abstract + keywords.
+export const MAQOLA_PRICES: Record<number, number> = {
+  5: 3000,
+  8: 4000,
+  10: 5000,
+};
+
+// Thesis abstract (tezis) — very short conference-style piece.
+export const TEZIS_PRICES: Record<number, number> = {
+  2: 2000,
+  3: 2500,
+};
+
 export function priceTableFor(docType: DocumentType): Record<number, number> {
-  return docType === 'insho' ? ESSAY_PRICES : DOC_PRICES;
+  switch (docType) {
+    case 'insho':
+      return ESSAY_PRICES;
+    case 'kurs_ishi':
+      return KURS_ISHI_PRICES;
+    case 'maqola':
+      return MAQOLA_PRICES;
+    case 'tezis':
+      return TEZIS_PRICES;
+    default:
+      return DOC_PRICES;
+  }
 }
 
 @Injectable()
@@ -43,7 +74,9 @@ export class DocumentService {
 
   getPrice(docType: DocumentType, pageCount: number): number {
     const table = priceTableFor(docType);
-    return table[pageCount] ?? (docType === 'insho' ? 2000 : 4500);
+    const values = Object.values(table);
+    // Fall back to the cheapest tier for the type if the count isn't listed.
+    return table[pageCount] ?? values[0] ?? 4500;
   }
 
   async createDocument(data: {

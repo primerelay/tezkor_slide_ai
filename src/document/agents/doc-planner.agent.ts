@@ -16,6 +16,10 @@ export interface DocumentPlan {
   title: string;
   sections: DocSectionPlan[];
   references: string[];
+  /** Article/thesis only: abstract paragraph. */
+  annotation?: string;
+  /** Article/thesis only: keyword list. */
+  keywords?: string[];
 }
 
 export interface DocPlanResult {
@@ -51,6 +55,9 @@ export class DocPlannerAgent {
     if (docType === 'insho') {
       return this.generateEssayPlan(topic, pageCount, language);
     }
+    if (docType === 'maqola' || docType === 'tezis') {
+      return this.generateArticlePlan(topic, docType, pageCount, language);
+    }
 
     const contentPages = Math.max(pageCount - OVERHEAD_PAGES, 4);
     // Intro and conclusion take ~1 page each; the rest is split into chapters.
@@ -58,7 +65,12 @@ export class DocPlannerAgent {
     const chapterCount = Math.min(Math.max(Math.round(chapterPages / 2), 2), 6);
     const wordsPerChapter = Math.round((chapterPages * WORDS_PER_PAGE) / chapterCount);
 
-    const docTypeName = docType === 'referat' ? 'referat (academic report)' : 'mustaqil ish (independent academic work)';
+    const docTypeName =
+      docType === 'referat'
+        ? 'referat (academic report)'
+        : docType === 'kurs_ishi'
+          ? 'kurs ishi (full university coursework/term paper)'
+          : 'mustaqil ish (independent academic work)';
 
     const systemPrompt = `You are a senior university professor in Uzbekistan who structures flawless academic papers for students. You design paper outlines that real teachers rate highly: logical flow, complete topic coverage, academically precise section titles.
 
@@ -150,5 +162,64 @@ Return JSON:
     });
 
     return { plan: { ...result.data, references: [] }, cost: result.cost };
+  }
+
+  /**
+   * Article (maqola) / thesis (tezis) plan — abstract + keywords + a few
+   * titled sections + references. No title page, TOC or numbered chapters.
+   */
+  private async generateArticlePlan(
+    topic: string,
+    docType: DocumentType,
+    pageCount: number,
+    language: SupportedLanguage,
+  ): Promise<DocPlanResult> {
+    const isThesis = docType === 'tezis';
+    const bodyCount = isThesis ? 1 : Math.min(Math.max(Math.round(pageCount / 3), 2), 4);
+    const totalWords = pageCount * WORDS_PER_PAGE;
+    const wordsPerBody = Math.round((totalWords * 0.75) / bodyCount);
+    const kind = isThesis
+      ? 'conference thesis abstract (tezis)'
+      : 'scientific article (maqola)';
+
+    const systemPrompt = `You are a published researcher writing a ${kind} in ${LANGUAGE_NAMES[language]} for students/academics in Uzbekistan. Follow scholarly conventions precisely.
+
+RULES:
+1. ALL content in ${LANGUAGE_NAMES[language]}
+2. Include a concise annotation (abstract) and 4-6 keywords
+3. Section titles must be specific to the topic (not generic)
+4. References must be REAL, well-known sources (author, title, publisher, year); never invent fake authors${
+      isThesis ? '\n5. A thesis (tezis) is SHORT — one focused body section only' : ''
+    }`;
+
+    const prompt = `Design a ${kind}.
+
+TOPIC: ${topic}
+LENGTH: ~${pageCount} pages
+BODY SECTIONS: ${bodyCount}
+LANGUAGE: ${LANGUAGE_NAMES[language]}
+
+Return JSON:
+{
+  "title": "Precise academic title based on the topic",
+  "annotation": "A 3-5 sentence abstract summarising the problem, approach and conclusion",
+  "keywords": ["4-6 keywords"],
+  "sections": [
+    { "type": "kirish", "title": "<'Kirish' in ${LANGUAGE_NAMES[language]}>", "subsections": [], "targetWords": ${Math.round(totalWords * 0.15)} },
+    { "type": "bob", "title": "Specific section title", "subsections": [], "targetWords": ${wordsPerBody} },
+    // ... ${bodyCount} body section(s)
+    { "type": "xulosa", "title": "<'Xulosa' in ${LANGUAGE_NAMES[language]}>", "subsections": [], "targetWords": ${Math.round(totalWords * 0.15)} }
+  ],
+  "references": ["${isThesis ? '3-5' : '6-8'} real references: Author. Title. — City: Publisher, Year."]
+}`;
+
+    this.logger.log(`Planning ${docType} (${pageCount} pages) for: ${topic}`);
+
+    const result = await this.ai.generateJson<DocumentPlan>(prompt, systemPrompt, {
+      temperature: 0.7,
+      maxTokens: 3072,
+    });
+
+    return { plan: result.data, cost: result.cost };
   }
 }

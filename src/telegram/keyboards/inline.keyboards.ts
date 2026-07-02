@@ -17,10 +17,11 @@ export class ReplyKeyboards {
     keyboard.push(
       [i18n.t('buttons.newPresentation'), i18n.t('buttons.myPresentations')],
       [i18n.t('buttons.mustaqilIsh'), i18n.t('buttons.referat')],
-      [i18n.t('buttons.insho'), i18n.t('buttons.flashcard')],
-      [i18n.t('buttons.quizBot'), i18n.t('buttons.inviteFriends')],
+      [i18n.t('buttons.kursIshi'), i18n.t('buttons.maqola')],
+      [i18n.t('buttons.tezis'), i18n.t('buttons.insho')],
+      [i18n.t('buttons.flashcard'), i18n.t('buttons.quizBot')],
       [i18n.t('buttons.balance'), i18n.t('buttons.addBalance')],
-      [i18n.t('buttons.language')],
+      [i18n.t('buttons.inviteFriends'), i18n.t('buttons.language')],
     );
 
     return Markup.keyboard(keyboard).resize().reply_markup;
@@ -188,10 +189,17 @@ export class InlineKeyboards {
         Markup.button.callback(i18n.t('buttons.referat'), 'doc_create_referat'),
       ],
       [
+        Markup.button.callback(i18n.t('buttons.kursIshi'), 'doc_create_kurs_ishi'),
+        Markup.button.callback(i18n.t('buttons.maqola'), 'doc_create_maqola'),
+      ],
+      [
+        Markup.button.callback(i18n.t('buttons.tezis'), 'doc_create_tezis'),
         Markup.button.callback(i18n.t('buttons.insho'), 'doc_create_insho'),
+      ],
+      [
+        Markup.button.callback(i18n.t('buttons.flashcard'), 'flashcard_create'),
         Markup.button.callback(i18n.t('buttons.quizCreate'), 'quiz_create'),
       ],
-      [Markup.button.callback(i18n.t('buttons.flashcard'), 'flashcard_create')],
       [
         Markup.button.callback(i18n.t('buttons.balance'), 'check_balance'),
         Markup.button.callback(i18n.t('buttons.language'), 'change_language'),

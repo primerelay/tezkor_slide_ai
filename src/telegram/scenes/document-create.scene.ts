@@ -61,14 +61,22 @@ export class DocumentCreateScene {
       }
 
       ctx.session.docTopic = text;
+      const dType = ctx.session.docType || 'mustaqil_ish';
 
-      // Essays are pure prose — skip institution/student/teacher, go to length.
-      if (ctx.session.docType === 'insho') {
+      // Essays are pure prose — skip straight to length.
+      if (dType === 'insho') {
         ctx.session.docStep = 'pages';
         await ctx.reply(i18n.t('document.selectPageCount'), {
           parse_mode: 'HTML',
           reply_markup: this.pageCountKeyboard(i18n, 'insho'),
         });
+        return;
+      }
+
+      // Articles/theses need only an author name, not institution/teacher.
+      if (dType === 'maqola' || dType === 'tezis') {
+        ctx.session.docStep = 'student_name';
+        await ctx.reply(i18n.t('enterStudentName'), { parse_mode: 'HTML' });
         return;
       }
 
@@ -95,6 +103,18 @@ export class DocumentCreateScene {
         return;
       }
       ctx.session.docStudentName = text;
+
+      // Articles/theses go straight to length after the author name.
+      const dType = ctx.session.docType || 'mustaqil_ish';
+      if (dType === 'maqola' || dType === 'tezis') {
+        ctx.session.docStep = 'pages';
+        await ctx.reply(i18n.t('document.selectPageCount'), {
+          parse_mode: 'HTML',
+          reply_markup: this.pageCountKeyboard(i18n, dType),
+        });
+        return;
+      }
+
       ctx.session.docStep = 'teacher_name';
       await ctx.reply(i18n.t('enterTeacherName'), { parse_mode: 'HTML' });
       return;

@@ -21,8 +21,13 @@ export interface DocPipelineInput {
 export interface DocPipelineOutput {
   title: string;
   docType: DocumentType;
-  /** Layout family: essays render as clean prose, academic docs get title page/TOC/refs. */
-  format: 'academic' | 'essay';
+  /**
+   * Layout family:
+   *  - academic: title page + TOC + numbered chapters + refs + images
+   *  - essay: clean continuous prose
+   *  - article: abstract + keywords + titled sections + refs (no title page/TOC)
+   */
+  format: 'academic' | 'essay' | 'article';
   language: SupportedLanguage;
   institution?: string;
   studentName?: string;
@@ -57,6 +62,12 @@ export class DocumentPipeline {
   ): Promise<DocPipelineOutput> {
     this.logger.log(`Starting document pipeline for: ${input.topic}`);
     const isEssay = input.docType === 'insho';
+    const isArticle = input.docType === 'maqola' || input.docType === 'tezis';
+    const format: DocPipelineOutput['format'] = isEssay
+      ? 'essay'
+      : isArticle
+        ? 'article'
+        : 'academic';
     let totalCost = 0;
 
     onProgress?.({ progress: 10, message: 'Planning document structure...' });
@@ -96,8 +107,8 @@ export class DocumentPipeline {
       });
     }
 
-    // Essays are pure prose — no illustrations. Academic docs get chapter images.
-    if (!isEssay) {
+    // Only full academic docs get illustrations; essays and articles stay clean.
+    if (format === 'academic') {
       onProgress?.({ progress: 85, message: 'Fetching illustrations...' });
       await this.attachImages(input.topic, sections);
     }
@@ -109,7 +120,7 @@ export class DocumentPipeline {
     return {
       title: plan.title,
       docType: input.docType,
-      format: isEssay ? 'essay' : 'academic',
+      format,
       language: input.language,
       institution: input.institution,
       studentName: input.studentName,

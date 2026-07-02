@@ -38,7 +38,7 @@ export interface GenerateResponse {
   message: string;
 }
 
-export type DocumentType = 'mustaqil_ish' | 'referat' | 'insho';
+export type DocumentType = 'mustaqil_ish' | 'referat' | 'insho' | 'kurs_ishi' | 'maqola' | 'tezis';
 
 export interface CreateDocumentRequest {
   telegramId: string;

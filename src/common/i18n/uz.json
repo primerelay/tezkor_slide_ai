@@ -56,7 +56,10 @@
     "mustaqilIsh": "📄 Mustaqil ish",
     "referat": "📚 Referat",
     "insho": "✍️ Insho/Essey",
-    "flashcard": "🎴 Flesh kartalar"
+    "flashcard": "🎴 Flesh kartalar",
+    "kursIshi": "📘 Kurs ishi",
+    "maqola": "📰 Maqola",
+    "tezis": "📃 Tezis"
   },
   "flashcard": {
     "enterContent": "🎴 <b>Flesh kartalar yaratish</b>\n\nKartalar yaratish uchun matn yoki mavzuni yuboring.\n\n💡 Masalan: darslik matni, mavzu nomi yoki qisqacha tavsif.\n\n❌ Bekor qilish uchun /cancel ni bosing",
@@ -81,12 +84,18 @@
     "typeNames": {
       "mustaqil_ish": "Mustaqil ish",
       "referat": "Referat",
-      "insho": "Insho"
+      "insho": "Insho",
+      "kurs_ishi": "Kurs ishi",
+      "maqola": "Maqola",
+      "tezis": "Tezis"
     },
     "typeLabel": {
       "mustaqil_ish": "MUSTAQIL ISH",
       "referat": "REFERAT",
-      "insho": "INSHO"
+      "insho": "INSHO",
+      "kurs_ishi": "KURS ISHI",
+      "maqola": "MAQOLA",
+      "tezis": "TEZIS"
     },
     "ministryHeader": "O'ZBEKISTON RESPUBLIKASI OLIY TA'LIM, FAN VA INNOVATSIYALAR VAZIRLIGI",
     "topicLabel": "Mavzu",
@@ -94,6 +103,8 @@
     "checkedBy": "Tekshirdi",
     "tocTitle": "Mundarija",
     "referencesTitle": "Foydalanilgan adabiyotlar ro'yxati",
+    "annotationLabel": "Annotatsiya",
+    "keywordsLabel": "Kalit so'zlar",
     "enterTopic": "📝 <b>{type} mavzusini kiriting</b>\n\nMisol: \"Fotosintez jarayoni va uning ahamiyati\"\n\nMavzu 5 dan 500 gacha belgidan iborat bo'lishi kerak.\n\n❌ Bekor qilish uchun /cancel ni bosing",
     "enterInstitution": "🏛 <b>O'quv muassasangiz nomini kiriting</b>\n\nMisol: \"Toshkent davlat texnika universiteti\"\n\nBu titul varaqda ko'rsatiladi.",
     "skipButton": "⏭ O'tkazib yuborish",

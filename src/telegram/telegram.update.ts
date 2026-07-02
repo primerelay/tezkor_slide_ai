@@ -31,7 +31,7 @@ interface SessionData extends Scenes.SceneSession {
   quizDifficulty?: string;
   quizQuestionCount?: number;
   // Document (mustaqil ish / referat) properties
-  docType?: 'mustaqil_ish' | 'referat' | 'insho';
+  docType?: 'mustaqil_ish' | 'referat' | 'insho' | 'kurs_ishi' | 'maqola' | 'tezis';
   docStep?: 'topic' | 'institution' | 'student_name' | 'teacher_name' | 'pages';
   docTopic?: string;
   docInstitution?: string;
@@ -417,6 +417,39 @@ export class TelegramUpdate {
     await this.startDocumentFlow(ctx, 'insho');
   }
 
+  @Hears(/^📘.+$/)
+  async onKursIshiButton(@Ctx() ctx: BotContext) {
+    await this.startDocumentFlow(ctx, 'kurs_ishi');
+  }
+
+  @Hears(/^📰.+$/)
+  async onMaqolaButton(@Ctx() ctx: BotContext) {
+    await this.startDocumentFlow(ctx, 'maqola');
+  }
+
+  @Hears(/^📃.+$/)
+  async onTezisButton(@Ctx() ctx: BotContext) {
+    await this.startDocumentFlow(ctx, 'tezis');
+  }
+
+  @Action('doc_create_kurs_ishi')
+  async onDocCreateKursIshi(@Ctx() ctx: BotContext) {
+    await ctx.answerCbQuery();
+    await this.startDocumentFlow(ctx, 'kurs_ishi');
+  }
+
+  @Action('doc_create_maqola')
+  async onDocCreateMaqola(@Ctx() ctx: BotContext) {
+    await ctx.answerCbQuery();
+    await this.startDocumentFlow(ctx, 'maqola');
+  }
+
+  @Action('doc_create_tezis')
+  async onDocCreateTezis(@Ctx() ctx: BotContext) {
+    await ctx.answerCbQuery();
+    await this.startDocumentFlow(ctx, 'tezis');
+  }
+
   /**
    * Handler for "Flesh kartalar" button (🎴)
    */
@@ -503,7 +536,7 @@ export class TelegramUpdate {
 
   private async startDocumentFlow(
     ctx: BotContext,
-    docType: 'mustaqil_ish' | 'referat' | 'insho',
+    docType: 'mustaqil_ish' | 'referat' | 'insho' | 'kurs_ishi' | 'maqola' | 'tezis',
   ) {
     const telegramUser = ctx.from;
     if (!telegramUser) return;

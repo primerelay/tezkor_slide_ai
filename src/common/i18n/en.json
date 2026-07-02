@@ -56,7 +56,10 @@
     "mustaqilIsh": "📄 Independent work",
     "referat": "📚 Report (Referat)",
     "insho": "✍️ Essay",
-    "flashcard": "🎴 Flashcards"
+    "flashcard": "🎴 Flashcards",
+    "kursIshi": "📘 Coursework",
+    "maqola": "📰 Article",
+    "tezis": "📃 Thesis"
   },
   "flashcard": {
     "enterContent": "🎴 <b>Create flashcards</b>\n\nSend text or a topic to create cards.\n\n💡 For example: textbook text, a topic name, or a short description.\n\n❌ Press /cancel to cancel",
@@ -81,12 +84,18 @@
     "typeNames": {
       "mustaqil_ish": "Independent work",
       "referat": "Report (Referat)",
-      "insho": "Essay"
+      "insho": "Essay",
+      "kurs_ishi": "Coursework",
+      "maqola": "Article",
+      "tezis": "Thesis"
     },
     "typeLabel": {
       "mustaqil_ish": "INDEPENDENT WORK",
       "referat": "REPORT",
-      "insho": "ESSAY"
+      "insho": "ESSAY",
+      "kurs_ishi": "COURSEWORK",
+      "maqola": "ARTICLE",
+      "tezis": "THESIS"
     },
     "ministryHeader": "MINISTRY OF HIGHER EDUCATION, SCIENCE AND INNOVATION OF THE REPUBLIC OF UZBEKISTAN",
     "topicLabel": "Topic",
@@ -94,6 +103,8 @@
     "checkedBy": "Checked by",
     "tocTitle": "Table of Contents",
     "referencesTitle": "References",
+    "annotationLabel": "Abstract",
+    "keywordsLabel": "Keywords",
     "enterTopic": "📝 <b>Enter the topic ({type})</b>\n\nExample: \"The process of photosynthesis and its importance\"\n\nThe topic must be 5 to 500 characters long.\n\n❌ Press /cancel to cancel",
     "enterInstitution": "🏛 <b>Enter the name of your institution</b>\n\nExample: \"Tashkent State Technical University\"\n\nIt will appear on the title page.",
     "skipButton": "⏭ Skip",

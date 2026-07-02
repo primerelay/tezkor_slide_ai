@@ -56,7 +56,10 @@
     "mustaqilIsh": "📄 Selbstständige Arbeit",
     "referat": "📚 Referat",
     "insho": "✍️ Essay",
-    "flashcard": "🎴 Lernkarten"
+    "flashcard": "🎴 Lernkarten",
+    "kursIshi": "📘 Kursarbeit",
+    "maqola": "📰 Artikel",
+    "tezis": "📃 These"
   },
   "flashcard": {
     "enterContent": "🎴 <b>Lernkarten erstellen</b>\n\nSenden Sie Text oder ein Thema, um Karten zu erstellen.\n\n💡 Zum Beispiel: Lehrbuchtext, Themenname oder eine kurze Beschreibung.\n\n❌ Zum Abbrechen /cancel drücken",
@@ -81,12 +84,18 @@
     "typeNames": {
       "mustaqil_ish": "Selbstständige Arbeit",
       "referat": "Referat",
-      "insho": "Essay"
+      "insho": "Essay",
+      "kurs_ishi": "Kursarbeit",
+      "maqola": "Artikel",
+      "tezis": "These"
     },
     "typeLabel": {
       "mustaqil_ish": "SELBSTSTÄNDIGE ARBEIT",
       "referat": "REFERAT",
-      "insho": "ESSAY"
+      "insho": "ESSAY",
+      "kurs_ishi": "KURSARBEIT",
+      "maqola": "ARTIKEL",
+      "tezis": "THESE"
     },
     "ministryHeader": "MINISTERIUM FÜR HOCHSCHULBILDUNG, WISSENSCHAFT UND INNOVATION DER REPUBLIK USBEKISTAN",
     "topicLabel": "Thema",
@@ -94,6 +103,8 @@
     "checkedBy": "Geprüft von",
     "tocTitle": "Inhaltsverzeichnis",
     "referencesTitle": "Literaturverzeichnis",
+    "annotationLabel": "Zusammenfassung",
+    "keywordsLabel": "Schlüsselwörter",
     "enterTopic": "📝 <b>Geben Sie das Thema ein ({type})</b>\n\nBeispiel: \"Der Prozess der Photosynthese und seine Bedeutung\"\n\nDas Thema muss 5 bis 500 Zeichen lang sein.\n\n❌ Zum Abbrechen /cancel drücken",
     "enterInstitution": "🏛 <b>Geben Sie den Namen Ihrer Bildungseinrichtung ein</b>\n\nBeispiel: \"Staatliche Technische Universität Taschkent\"\n\nEr erscheint auf dem Titelblatt.",
     "skipButton": "⏭ Überspringen",

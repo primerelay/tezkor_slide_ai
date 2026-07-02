@@ -8,6 +8,9 @@ import {
   FileText,
   BookOpen,
   PenLine,
+  GraduationCap,
+  Newspaper,
+  ScrollText,
   Building2,
   User as UserIcon,
   Sparkles,
@@ -32,6 +35,23 @@ const ESSAY_PRICES: PriceOption[] = [
   { pages: 2, price: 1500 },
   { pages: 3, price: 2000 },
   { pages: 5, price: 2500 },
+];
+
+const KURS_ISHI_PRICES: PriceOption[] = [
+  { pages: 25, price: 6000 },
+  { pages: 35, price: 8000 },
+  { pages: 50, price: 11000 },
+];
+
+const MAQOLA_PRICES: PriceOption[] = [
+  { pages: 5, price: 3000 },
+  { pages: 8, price: 4000 },
+  { pages: 10, price: 5000 },
+];
+
+const TEZIS_PRICES: PriceOption[] = [
+  { pages: 2, price: 2000 },
+  { pages: 3, price: 2500 },
 ];
 
 const DOC_META: Record<
@@ -74,6 +94,36 @@ const DOC_META: Record<
     iconBg: 'bg-rose-100',
     iconFg: 'text-rose-600',
     prices: ESSAY_PRICES,
+    defaultPages: 3,
+    withDetails: false,
+  },
+  kurs_ishi: {
+    title: 'Kurs ishi',
+    desc: 'AI to\'liq kurs ishi tayyorlaydi',
+    icon: GraduationCap,
+    iconBg: 'bg-indigo-100',
+    iconFg: 'text-indigo-600',
+    prices: KURS_ISHI_PRICES,
+    defaultPages: 35,
+    withDetails: true,
+  },
+  maqola: {
+    title: 'Maqola',
+    desc: 'AI ilmiy maqola yozadi (annotatsiya + kalit so\'zlar)',
+    icon: Newspaper,
+    iconBg: 'bg-cyan-100',
+    iconFg: 'text-cyan-600',
+    prices: MAQOLA_PRICES,
+    defaultPages: 8,
+    withDetails: false,
+  },
+  tezis: {
+    title: 'Tezis',
+    desc: 'AI konferensiya tezisini yozadi',
+    icon: ScrollText,
+    iconBg: 'bg-violet-100',
+    iconFg: 'text-violet-600',
+    prices: TEZIS_PRICES,
     defaultPages: 3,
     withDetails: false,
   },
@@ -325,6 +375,13 @@ export default function DocumentCreatePage() {
                       <div>✓ Kirish — asosiy qism — xulosa</div>
                       <div>✓ Times New Roman 14, 1.5 interval — topshirishga tayyor</div>
                     </>
+                  ) : docType === 'maqola' || docType === 'tezis' ? (
+                    <>
+                      <div>✓ Annotatsiya va kalit so'zlar</div>
+                      <div>✓ Kirish, asosiy bo'limlar, xulosa</div>
+                      <div>✓ Adabiyotlar ro'yxati</div>
+                      <div>✓ Times New Roman 14, 1.5 interval — topshirishga tayyor</div>
+                    </>
                   ) : (
                     <>
                       <div>✓ Titul varaq va mundarija</div>
@@ -350,7 +407,9 @@ export default function DocumentCreatePage() {
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">{meta.title} yaratilmoqda...</h3>
               <p className="text-gray-500 mb-6 text-center">
-                {docType === 'insho' ? 'AI insho matnini yozyapti.' : 'AI matn yozib, rasmlarni joylayapti.'}
+                {docType === 'mustaqil_ish' || docType === 'referat' || docType === 'kurs_ishi'
+                  ? 'AI matn yozib, rasmlarni joylayapti.'
+                  : 'AI matn yozyapti.'}
                 <br />Bu 2-4 daqiqa vaqt olishi mumkin.
               </p>
               <div className="w-full max-w-xs">
