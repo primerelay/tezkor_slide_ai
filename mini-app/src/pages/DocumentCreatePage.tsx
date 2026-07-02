@@ -80,10 +80,21 @@ export default function DocumentCreatePage() {
     else if (step === 'settings') handleGenerate();
   };
 
+  // Resolve the Telegram user id robustly: prefer the hook's state, but fall
+  // back to reading window.Telegram directly (state can lag behind on mount).
+  const resolveTelegramId = (): string | undefined => {
+    const fromHook = webApp?.initDataUnsafe?.user?.id;
+    if (fromHook) return String(fromHook);
+    const g = (window as any)?.Telegram?.WebApp?.initDataUnsafe?.user?.id;
+    return g ? String(g) : undefined;
+  };
+
   const handleGenerate = async () => {
-    const telegramId = webApp?.initDataUnsafe?.user?.id?.toString();
+    const telegramId = resolveTelegramId();
     if (!telegramId) {
-      alert('Telegram foydalanuvchi aniqlanmadi. Ilovani Telegram orqali oching.');
+      alert(
+        "Telegram foydalanuvchi aniqlanmadi. Iltimos, ilovani bot ichidagi \"🚀 Web ilovani ochish\" tugmasi orqali oching (brauzerda emas).",
+      );
       return;
     }
 
