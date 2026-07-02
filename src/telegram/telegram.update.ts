@@ -125,15 +125,11 @@ export class TelegramUpdate {
       });
     }
 
-    // Send welcome message with inline keyboard showing all features
+    // Send only the welcome message with the inline features menu — no separate
+    // "Asosiy menyu" message / persistent reply keyboard.
     await ctx.reply(i18n.t('welcome', { name: user.firstName || 'User' }), {
       parse_mode: 'HTML',
       reply_markup: InlineKeyboards.featuresMenu(i18n, this.miniAppUrl),
-    });
-
-    // Send reply keyboard (persistent buttons at bottom)
-    await ctx.reply(i18n.t('mainMenuText'), {
-      reply_markup: ReplyKeyboards.mainMenu(i18n, this.miniAppUrl),
     });
 
     // Opened via a shared flashcard link — show the deck interactively.
@@ -150,6 +146,31 @@ export class TelegramUpdate {
         await ctx.reply(i18n.t('flashcard.sharedNotFound'));
       }
     }
+  }
+
+  /**
+   * "Start" inline button — re-runs the /start welcome (inline menu only).
+   */
+  @Action('run_start')
+  async onRunStart(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    await ctx.answerCbQuery();
+    if (!user) return;
+
+    ctx.session.userId = user.id;
+    ctx.session.language = user.language;
+    ctx.session.step = undefined;
+
+    const i18n = this.telegramService.getI18n(user.language);
+    await ctx.reply(i18n.t('welcome', { name: user.firstName || 'User' }), {
+      parse_mode: 'HTML',
+      reply_markup: InlineKeyboards.featuresMenu(i18n, this.miniAppUrl),
+    });
   }
 
   /**

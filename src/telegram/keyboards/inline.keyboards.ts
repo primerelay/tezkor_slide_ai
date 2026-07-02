@@ -185,7 +185,6 @@ export class InlineKeyboards {
 
     // Feature buttons below
     buttons.push(
-      [Markup.button.callback(i18n.t('buttons.slideCreate'), 'new_presentation')],
       [
         Markup.button.callback(i18n.t('buttons.mustaqilIsh'), 'doc_create_mustaqil_ish'),
         Markup.button.callback(i18n.t('buttons.referat'), 'doc_create_referat'),
@@ -209,14 +208,14 @@ export class InlineKeyboards {
       [Markup.button.callback(i18n.t('buttons.resume'), 'resume_create')],
       [
         Markup.button.callback(i18n.t('buttons.balance'), 'check_balance'),
-        Markup.button.callback(i18n.t('buttons.language'), 'change_language'),
-      ],
-      [
-        Markup.button.callback(i18n.t('buttons.myPresentations'), 'my_presentations'),
         Markup.button.callback(i18n.t('buttons.addBalance'), 'add_balance'),
       ],
       [
         Markup.button.callback(i18n.t('buttons.inviteFriends'), 'share_referral'),
+        Markup.button.callback(i18n.t('buttons.language'), 'change_language'),
+      ],
+      [
+        Markup.button.callback(i18n.t('buttons.start'), 'run_start'),
       ],
     );
 
