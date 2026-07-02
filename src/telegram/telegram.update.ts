@@ -175,6 +175,9 @@ export class TelegramUpdate {
       const oldStatus = old_chat_member.status;
       const newStatus = new_chat_member.status;
 
+      // Membership changed — drop any cached result for this user.
+      this.telegramService.invalidateMembership(from.id);
+
       // User joined the channel
       if (
         ['left', 'kicked'].includes(oldStatus) &&
@@ -786,6 +789,8 @@ export class TelegramUpdate {
       return;
     }
 
+    // The user just claims to have joined — bypass any stale cached result.
+    this.telegramService.invalidateMembership(telegramUser.id);
     const isMember = await this.telegramService.isChannelMember(telegramUser.id);
 
     if (isMember) {

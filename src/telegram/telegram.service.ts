@@ -30,6 +30,10 @@ export class TelegramService {
   private readonly adminTelegramIds: number[];
   private readonly requiredChannelUsername: string;
   private readonly requiredChannelUrl: string;
+  // Short-lived cache so tapping several buttons doesn't hit the Telegram API
+  // for the same membership check each time. Membership rarely changes in 60s.
+  private readonly membershipCache = new Map<string, { member: boolean; expires: number }>();
+  private static readonly MEMBERSHIP_TTL_MS = 60_000;
 
   constructor(
     @InjectBot()
@@ -57,6 +61,13 @@ export class TelegramService {
       return true; // No channel required
     }
 
+    const key = String(telegramId);
+    const cached = this.membershipCache.get(key);
+    const now = Date.now();
+    if (cached && cached.expires > now) {
+      return cached.member;
+    }
+
     try {
       const chatMember = await this.bot.telegram.getChatMember(
         `@${this.requiredChannelUsername}`,
@@ -64,11 +75,18 @@ export class TelegramService {
       );
 
       // User is a member if status is 'member', 'administrator', or 'creator'
-      return ['member', 'administrator', 'creator'].includes(chatMember.status);
+      const member = ['member', 'administrator', 'creator'].includes(chatMember.status);
+      this.membershipCache.set(key, { member, expires: now + TelegramService.MEMBERSHIP_TTL_MS });
+      return member;
     } catch (error) {
       this.logger.warn(`Failed to check channel membership for ${telegramId}:`, error);
       return false;
     }
+  }
+
+  /** Drop a cached membership result (e.g. right after the user joins). */
+  invalidateMembership(telegramId: string | number): void {
+    this.membershipCache.delete(String(telegramId));
   }
 
   /**

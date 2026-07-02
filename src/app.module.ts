@@ -36,12 +36,23 @@ import { SpaController } from './spa.controller';
       database: process.env.DATABASE_NAME || 'tezkor_slide_ai',
       entities: [__dirname + '/**/*.entity{.ts,.js}'],
       synchronize: process.env.NODE_ENV !== 'production',
-      logging: process.env.NODE_ENV === 'development',
+      // Query logging is a heavy CPU/IO sink; keep only errors and warnings.
+      logging: ['error', 'warn'],
+      // Bounded connection pool so a burst of requests can't exhaust Postgres.
+      extra: { max: 10 },
     }),
     BullModule.forRoot({
       connection: {
         host: process.env.REDIS_HOST || 'localhost',
         port: parseInt(process.env.REDIS_PORT || '6379', 10),
+      },
+      // Don't let finished jobs pile up in Redis (memory growth over time).
+      // NOTE: no `attempts` here on purpose — the processors handle their own
+      // failure (refund + error message) assuming a single run; auto-retry
+      // would double-refund/double-deliver.
+      defaultJobOptions: {
+        removeOnComplete: 100,
+        removeOnFail: 500,
       },
     }),
     ServeStaticModule.forRoot({

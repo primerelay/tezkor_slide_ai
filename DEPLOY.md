@@ -250,6 +250,13 @@ server {
     listen 80;
     server_name yourdomain.com;
 
+    # Gzip — siqib uzatish (JS/CSS/JSON hajmini ~3x kamaytiradi, tez yuklanadi)
+    gzip on;
+    gzip_comp_level 5;
+    gzip_min_length 1024;
+    gzip_types text/plain text/css application/javascript application/json image/svg+xml;
+    gzip_vary on;
+
     # Backend API
     location / {
         proxy_pass http://127.0.0.1:3000;
@@ -264,7 +271,16 @@ server {
         client_max_body_size 50M;
     }
 
-    # Mini app static files
+    # Hash'langan asset'lar (index-XXXX.js/css) — abadiy keshlanadi.
+    # Eng uzun prefix mos kelgani uchun bu /mini-app dan oldin ishlaydi.
+    location /mini-app/assets/ {
+        alias /var/www/tezkor_slide_ai/mini-app/dist/assets/;
+        expires 1y;
+        add_header Cache-Control "public, immutable";
+        access_log off;
+    }
+
+    # Mini app static files (SPA)
     location /mini-app {
         alias /var/www/tezkor_slide_ai/mini-app/dist;
         try_files $uri $uri/ /mini-app/index.html;
@@ -276,6 +292,8 @@ server {
     }
 }
 ```
+
+> ⚙️ Konfiguratsiyani o'zgartirgach qo'llash uchun: `nginx -t && systemctl reload nginx`
 
 **Aktivlashtirish:**
 
