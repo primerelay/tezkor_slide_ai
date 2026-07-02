@@ -151,31 +151,36 @@ function ElementsLayer({ elements, theme, onChange, t, onSelect }: { elements: S
   const start = (e: SlideElement, mode: 'move' | 'resize') => (ev: React.PointerEvent) => {
     ev.stopPropagation();
     setSelected(e.id);
+    // Capture the pointer so drag keeps working even outside the element box.
+    try { (ev.currentTarget as HTMLElement).setPointerCapture(ev.pointerId); } catch {}
     drag.current = { id: e.id, mode, px: ev.clientX, py: ev.clientY, box: { ...e } };
   };
   const end = () => { drag.current = null; };
 
   const COLORS = [theme.primary, theme.accent, '#111827', '#ffffff'];
 
+  // The overlay itself never captures taps (so the underlying editable text
+  // stays tappable); only the element boxes below are interactive.
   return (
     <div
       ref={ref}
-      style={{ position: 'absolute', inset: 0, pointerEvents: elements.length ? 'auto' : 'none' }}
-      onPointerMove={onMove}
-      onPointerUp={end}
-      onPointerLeave={end}
-      onPointerDown={() => setSelected(null)}
+      style={{ position: 'absolute', inset: 0, pointerEvents: 'none' }}
     >
       {elements.map((e) => {
         const sel = selected === e.id;
         const common: React.CSSProperties = {
           position: 'absolute', left: `${e.x * 100}%`, top: `${e.y * 100}%`,
           width: `${e.w * 100}%`, height: `${e.h * 100}%`,
-          cursor: 'move', boxSizing: 'border-box',
+          cursor: 'move', boxSizing: 'border-box', pointerEvents: 'auto',
           outline: sel ? '2px solid #7c3aed' : 'none',
         };
         return (
-          <div key={e.id} style={common} onPointerDown={start(e, 'move')}>
+          <div key={e.id} style={common}
+            onPointerDown={start(e, 'move')}
+            onPointerMove={onMove}
+            onPointerUp={end}
+            onPointerCancel={end}
+          >
             {e.kind === 'rect' && <div style={{ width: '100%', height: '100%', background: e.color || theme.accent, borderRadius: 4 }} />}
             {e.kind === 'ellipse' && <div style={{ width: '100%', height: '100%', background: e.color || theme.accent, borderRadius: '50%' }} />}
             {e.kind === 'line' && <div style={{ width: '100%', height: 0, borderTop: `0.6cqw solid ${e.color || theme.accent}`, marginTop: '50%' }} />}
@@ -193,7 +198,8 @@ function ElementsLayer({ elements, theme, onChange, t, onSelect }: { elements: S
             {sel && (
               <>
                 {/* resize handle */}
-                <div onPointerDown={start(e, 'resize')} style={{ position: 'absolute', right: -6, bottom: -6, width: 14, height: 14, background: '#7c3aed', borderRadius: '50%', cursor: 'nwse-resize' }} />
+                <div onPointerDown={start(e, 'resize')} onPointerMove={onMove} onPointerUp={end} onPointerCancel={end}
+                  style={{ position: 'absolute', right: -6, bottom: -6, width: 16, height: 16, background: '#7c3aed', borderRadius: '50%', cursor: 'nwse-resize', border: '2px solid #fff', boxShadow: '0 1px 4px rgba(0,0,0,0.3)' }} />
                 {/* delete */}
                 <button onPointerDown={(ev) => { ev.stopPropagation(); remove(e.id); }} style={{ position: 'absolute', right: -10, top: -12, width: 20, height: 20, background: '#ef4444', color: '#fff', borderRadius: '50%', fontSize: 12, lineHeight: '20px' }}>×</button>
 

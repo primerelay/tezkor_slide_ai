@@ -195,3 +195,13 @@ body {
   content: attr(data-ph);
   opacity: 0.45;
 }
+
+/* Scrollable strips (toolbar / thumbnail rail) without a visible scrollbar */
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+}
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}

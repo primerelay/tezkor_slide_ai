@@ -32,26 +32,13 @@ export default function EditorPage() {
   const [selectedElId, setSelectedElId] = useState<string | null>(null);
   const undoStack = useRef<{ slideIdx: number; prev: Slide }[]>([]);
   const meta = useRef<{ studentName?: string; teacherName?: string; subtitle?: string }>({});
-  const dragRef = useRef<number | null>(null);
+  const railRef = useRef<HTMLDivElement>(null);
 
-  // Pointer-based drag reorder of slides in the rail (mouse + touch).
-  const onRailPointerMove = (e: React.PointerEvent) => {
-    if (dragRef.current === null) return;
-    const el = (document.elementFromPoint(e.clientX, e.clientY) as HTMLElement | null)?.closest('[data-thumb]') as HTMLElement | null;
-    if (!el) return;
-    const to = Number(el.dataset.thumb);
-    const from = dragRef.current;
-    if (Number.isNaN(to) || to === from) return;
-    setSlides((prev) => {
-      const a = [...prev];
-      const [m] = a.splice(from, 1);
-      a.splice(to, 0, m);
-      return a.map((s, i) => ({ ...s, slideNumber: i + 1 }));
-    });
-    dragRef.current = to;
-    setSelected(to);
-  };
-  const endDrag = () => { dragRef.current = null; };
+  // Keep the selected thumbnail scrolled into view in the rail.
+  useEffect(() => {
+    const el = railRef.current?.querySelector(`[data-thumb="${selected}"]`) as HTMLElement | null;
+    el?.scrollIntoView({ behavior: 'smooth', inline: 'center', block: 'nearest' });
+  }, [selected]);
 
   // Poll the backend until the AI pipeline finishes, then load the content.
   useEffect(() => {
@@ -339,12 +326,22 @@ export default function EditorPage() {
   }
 
   const current = slides[selected];
+  const hasTextSel = selectedElId && (slides[selected]?.elements || []).find((e) => e.id === selectedElId && e.kind === 'text');
+
+  const ToolBtn = ({ onClick, disabled, children, danger }: { onClick: () => void; disabled?: boolean; children: React.ReactNode; danger?: boolean }) => (
+    <button onClick={onClick} disabled={disabled}
+      className={`shrink-0 flex items-center gap-1.5 h-9 px-3 rounded-xl text-sm font-medium ring-1 transition-all active:scale-95 disabled:opacity-40 ${
+        danger ? 'bg-red-50 text-red-600 ring-red-100' : 'bg-white text-gray-700 ring-gray-200 shadow-sm'
+      }`}>
+      {children}
+    </button>
+  );
 
   return (
     <div className="flex flex-col h-full bg-gray-100 overflow-hidden">
       {/* Top bar */}
-      <div className="flex items-center gap-2 px-3 py-2 bg-white border-b border-gray-100 shrink-0">
-        <button onClick={() => navigate('/')} className="p-1.5 rounded-lg hover:bg-gray-100">
+      <div className="flex items-center gap-2 px-3 py-2.5 bg-white border-b border-gray-100 shrink-0 shadow-sm z-10">
+        <button onClick={() => navigate('/')} className="w-9 h-9 rounded-xl hover:bg-gray-100 flex items-center justify-center">
           <ChevronLeft className="w-5 h-5 text-gray-600" />
         </button>
         <input
@@ -356,140 +353,106 @@ export default function EditorPage() {
         <button
           onClick={download}
           disabled={downloading || sent}
-          className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-600 text-white text-sm font-medium disabled:opacity-60"
+          className="flex items-center gap-1.5 px-3.5 h-9 rounded-xl bg-purple-600 text-white text-sm font-semibold disabled:opacity-60 active:scale-95 transition-transform shadow-sm shadow-purple-200"
         >
           {downloading ? <Loader2 className="w-4 h-4 animate-spin" /> : sent ? <Check className="w-4 h-4" /> : <Download className="w-4 h-4" />}
-          {sent ? t.deckSent : t.downloadDeck}
+          <span>{sent ? t.deckSent : t.downloadDeck}</span>
         </button>
       </div>
 
-      {/* Canvas + controls — slide fills available height */}
-      <div className="flex-1 min-h-0 overflow-y-auto overflow-x-hidden px-2 pt-1 pb-1">
-        {/* Height-driven slide: fills vertical space, width follows from 16:9 */}
-        <div className="flex items-start justify-center" style={{ minHeight: 'calc(100vh - 190px)' }}>
-          <div style={{ height: 'calc(100vh - 200px)', aspectRatio: '16/9', maxWidth: '100%', margin: '0 auto', flexShrink: 0 }}>
-            <SlideSurface
-              key={selected}
-              slide={current}
-              theme={theme}
-              onChange={(patch) => updateSlide(selected, patch)}
-              t={t}
-              onElementSelect={setSelectedElId}
-            />
+      {/* Canvas — slide fits the width for a proper mobile preview */}
+      <div className="flex-1 min-h-0 overflow-y-auto bg-gradient-to-b from-gray-100 to-gray-200">
+        <div className="px-4 pt-4 pb-3 flex flex-col items-center gap-2.5">
+          <div className="w-full" style={{ maxWidth: 620 }}>
+            <div style={{ width: '100%', aspectRatio: '16/9' }} className="rounded-2xl shadow-xl ring-1 ring-black/10 overflow-hidden">
+              <SlideSurface
+                key={selected}
+                slide={current}
+                theme={theme}
+                onChange={(patch) => updateSlide(selected, patch)}
+                t={t}
+                onElementSelect={setSelectedElId}
+              />
+            </div>
           </div>
+          <div className="text-xs font-medium text-gray-400">{selected + 1} / {slides.length}</div>
         </div>
-
-        {/* Slide controls */}
-        <div className="mt-1.5 flex items-center justify-center gap-1.5 flex-wrap">
-            <button onClick={() => moveSlide(-1)} disabled={selected === 0}
-              className="p-2 rounded-lg bg-white shadow-sm ring-1 ring-gray-200 text-gray-600 disabled:opacity-40">
-              <ArrowLeft className="w-4 h-4" />
-            </button>
-            <button onClick={() => moveSlide(1)} disabled={selected === slides.length - 1}
-              className="p-2 rounded-lg bg-white shadow-sm ring-1 ring-gray-200 text-gray-600 disabled:opacity-40">
-              <ArrowRight className="w-4 h-4" />
-            </button>
-            <button onClick={addItem}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white shadow-sm ring-1 ring-gray-200 text-gray-700 text-sm">
-              <ListPlus className="w-4 h-4" /> {t.addBullet}
-            </button>
-            <button onClick={removeItem}
-              className="px-3 py-2 rounded-lg bg-white shadow-sm ring-1 ring-gray-200 text-gray-500 text-sm">
-              −
-            </button>
-            <button onClick={openImagePicker}
-              className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white shadow-sm ring-1 ring-gray-200 text-gray-700 text-sm">
-              <ImageIcon className="w-4 h-4" /> {t.addImage}
-            </button>
-
-            {/* Text styles — Pitch-like */}
-            <div className="relative">
-              <button onClick={() => { setTextMenuOpen((o) => !o); setShapeMenuOpen(false); }}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white shadow-sm ring-1 ring-gray-200 text-gray-700 text-sm">
-                <Type className="w-4 h-4" /> Text
-              </button>
-              {textMenuOpen && (() => {
-                const hasTextSel = selectedElId && (slides[selected]?.elements || []).find(e => e.id === selectedElId && e.kind === 'text');
-                return (
-                <div className="absolute bottom-full mb-2 left-0 w-52 bg-white rounded-xl shadow-lg ring-1 ring-gray-200 py-1 z-20">
-                  <div className="px-3 py-1.5 text-xs text-gray-400 font-medium">
-                    {hasTextSel ? 'Apply style ✏️' : 'Text styles'}
-                  </div>
-                  {TEXT_STYLES.map((st) => (
-                    <button key={st.label} onClick={() => addTextStyle(st)}
-                      className="w-full text-left px-3 py-1.5 hover:bg-gray-50 transition-colors"
-                      style={{ fontSize: Math.min(st.fontSize * 0.55, 20), fontWeight: st.bold ? 700 : 400, fontStyle: st.italic ? 'italic' : 'normal' }}>
-                      {st.label}
-                    </button>
-                  ))}
-                </div>
-                ); })()}
-            </div>
-
-            {/* Shape menu */}
-            <div className="relative">
-              <button onClick={() => { setShapeMenuOpen((o) => !o); setTextMenuOpen(false); }}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white shadow-sm ring-1 ring-gray-200 text-gray-700 text-sm">
-                <Shapes className="w-4 h-4" /> {t.addShape}
-              </button>
-              {shapeMenuOpen && (
-                <div className="absolute bottom-full mb-2 left-0 bg-white rounded-xl shadow-lg ring-1 ring-gray-200 p-1 flex gap-1 z-20">
-                  <button onClick={() => addElement('rect')} className="p-2 rounded-lg hover:bg-gray-100"><Square className="w-5 h-5 text-gray-700" /></button>
-                  <button onClick={() => addElement('ellipse')} className="p-2 rounded-lg hover:bg-gray-100"><Circle className="w-5 h-5 text-gray-700" /></button>
-                  <button onClick={() => addElement('line')} className="p-2 rounded-lg hover:bg-gray-100"><Minus className="w-5 h-5 text-gray-700" /></button>
-                </div>
-              )}
-            </div>
-
-            {/* Undo */}
-            <button onClick={undo}
-              className="p-2 rounded-lg bg-white shadow-sm ring-1 ring-gray-200 text-gray-600">
-              <Undo2 className="w-4 h-4" />
-            </button>
-
-            {slides.length > 1 && (
-              <button onClick={() => deleteSlide(selected)}
-                className="flex items-center gap-1.5 px-3 py-2 rounded-lg bg-white shadow-sm ring-1 ring-red-200 text-red-500 text-sm">
-                <Trash2 className="w-4 h-4" /> {t.deleteSlide}
-              </button>
-            )}
-          </div>
       </div>
 
-      {/* Slide rail — drag thumbnails to reorder, or use ←/→ */}
-      <div
-        className="bg-white border-t border-gray-100 px-2 py-1.5 flex items-center gap-1.5 overflow-x-auto"
-        onPointerMove={onRailPointerMove}
-        onPointerUp={endDrag}
-        onPointerLeave={endDrag}
-      >
+      {/* Toolbar — horizontally scrollable action pills */}
+      <div className="shrink-0 bg-white border-t border-gray-100">
+        <div className="flex items-center gap-2 px-3 py-2 overflow-x-auto no-scrollbar">
+          <ToolBtn onClick={() => moveSlide(-1)} disabled={selected === 0}><ArrowLeft className="w-4 h-4" /></ToolBtn>
+          <ToolBtn onClick={() => moveSlide(1)} disabled={selected === slides.length - 1}><ArrowRight className="w-4 h-4" /></ToolBtn>
+          <div className="w-px h-6 bg-gray-200 shrink-0" />
+          <ToolBtn onClick={addItem}><ListPlus className="w-4 h-4" /> {t.addBullet}</ToolBtn>
+          <ToolBtn onClick={removeItem}><Minus className="w-4 h-4" /></ToolBtn>
+          <ToolBtn onClick={openImagePicker}><ImageIcon className="w-4 h-4" /> {t.addImage}</ToolBtn>
+          <ToolBtn onClick={() => { haptic('light'); setTextMenuOpen(true); setShapeMenuOpen(false); }}><Type className="w-4 h-4" /> Matn</ToolBtn>
+          <ToolBtn onClick={() => { haptic('light'); setShapeMenuOpen(true); setTextMenuOpen(false); }}><Shapes className="w-4 h-4" /> {t.addShape}</ToolBtn>
+          <ToolBtn onClick={undo}><Undo2 className="w-4 h-4" /></ToolBtn>
+          {slides.length > 1 && (
+            <ToolBtn onClick={() => deleteSlide(selected)} danger><Trash2 className="w-4 h-4" /></ToolBtn>
+          )}
+        </div>
+      </div>
+
+      {/* Thumbnail rail — native horizontal scroll, tap to open */}
+      <div ref={railRef} className="shrink-0 bg-white border-t border-gray-100 flex items-center gap-2 px-3 py-2 overflow-x-auto no-scrollbar">
         {slides.map((s, i) => (
           <button
             key={i}
             data-thumb={i}
-            onPointerDown={() => { dragRef.current = i; }}
             onClick={() => { haptic('selection'); setSelected(i); }}
-            style={{ touchAction: 'none' }}
-            className={`shrink-0 w-20 rounded-md overflow-hidden ring-2 transition-all ${i === selected ? 'ring-purple-500' : 'ring-gray-200'}`}
+            className={`relative shrink-0 w-[68px] rounded-lg overflow-hidden ring-2 transition-all ${i === selected ? 'ring-purple-500 scale-[1.03]' : 'ring-gray-200'}`}
           >
             <RailThumb slide={s} theme={theme} index={i} />
+            <span className={`absolute bottom-0.5 left-0.5 min-w-[14px] h-[14px] px-1 rounded text-[9px] font-bold flex items-center justify-center ${i === selected ? 'bg-purple-600 text-white' : 'bg-black/40 text-white'}`}>{i + 1}</span>
           </button>
         ))}
-        <button
-          onClick={addSlide}
-          title={t.addSlide}
-          className="shrink-0 w-14 h-[45px] rounded-md border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-purple-400 hover:text-purple-500"
-        >
+        <button onClick={addSlide} title={t.addSlide}
+          className="shrink-0 w-12 h-[38px] rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 active:border-purple-400 active:text-purple-500">
           <Plus className="w-4 h-4" />
         </button>
-        <button
-          onClick={addChartSlide}
-          title={t.addChart}
-          className="shrink-0 w-14 h-[45px] rounded-md border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 hover:border-purple-400 hover:text-purple-500"
-        >
+        <button onClick={addChartSlide} title={t.addChart}
+          className="shrink-0 w-12 h-[38px] rounded-lg border-2 border-dashed border-gray-300 flex items-center justify-center text-gray-400 active:border-purple-400 active:text-purple-500">
           <BarChart3 className="w-5 h-5" />
         </button>
       </div>
+
+      {/* Text styles bottom sheet */}
+      {textMenuOpen && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-black/50" onClick={() => setTextMenuOpen(false)}>
+          <div className="mt-auto bg-white rounded-t-3xl p-4 pb-6" onClick={(e) => e.stopPropagation()}>
+            <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-3" />
+            <div className="text-sm font-semibold text-gray-900 mb-3">{hasTextSel ? 'Uslubni qo\'llash ✏️' : 'Matn qo\'shish'}</div>
+            <div className="grid grid-cols-2 gap-2">
+              {TEXT_STYLES.map((st) => (
+                <button key={st.label} onClick={() => addTextStyle(st)}
+                  className="text-left px-3 py-2.5 rounded-xl bg-gray-50 active:bg-purple-50 ring-1 ring-gray-100"
+                  style={{ fontSize: Math.min(st.fontSize * 0.5, 18), fontWeight: st.bold ? 700 : 400, fontStyle: st.italic ? 'italic' : 'normal' }}>
+                  {st.label}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* Shapes bottom sheet */}
+      {shapeMenuOpen && (
+        <div className="fixed inset-0 z-50 flex flex-col bg-black/50" onClick={() => setShapeMenuOpen(false)}>
+          <div className="mt-auto bg-white rounded-t-3xl p-4 pb-6" onClick={(e) => e.stopPropagation()}>
+            <div className="w-10 h-1 bg-gray-300 rounded-full mx-auto mb-3" />
+            <div className="text-sm font-semibold text-gray-900 mb-3">{t.addShape}</div>
+            <div className="grid grid-cols-3 gap-2">
+              <button onClick={() => addElement('rect')} className="flex flex-col items-center gap-1.5 py-4 rounded-xl bg-gray-50 active:bg-purple-50 ring-1 ring-gray-100"><Square className="w-6 h-6 text-gray-700" /><span className="text-xs text-gray-500">To'rtburchak</span></button>
+              <button onClick={() => addElement('ellipse')} className="flex flex-col items-center gap-1.5 py-4 rounded-xl bg-gray-50 active:bg-purple-50 ring-1 ring-gray-100"><Circle className="w-6 h-6 text-gray-700" /><span className="text-xs text-gray-500">Doira</span></button>
+              <button onClick={() => addElement('line')} className="flex flex-col items-center gap-1.5 py-4 rounded-xl bg-gray-50 active:bg-purple-50 ring-1 ring-gray-100"><Minus className="w-6 h-6 text-gray-700" /><span className="text-xs text-gray-500">Chiziq</span></button>
+            </div>
+          </div>
+        </div>
+      )}
 
       {/* Image picker modal */}
       {imgPickerOpen && (
