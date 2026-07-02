@@ -70,6 +70,16 @@
     "education": "Education",
     "skills": "Skills",
     "languages": "Languages",
+    "contactTitle": "Contact",
+    "selectTemplate": "🎨 <b>Choose a template:</b>",
+    "templates": {
+      "classic": "Classic",
+      "modern": "Modern",
+      "minimal": "Minimal",
+      "bold": "Bold",
+      "twotone": "Two-tone",
+      "executive": "Executive"
+    },
     "enterName": "📇 <b>Create a Resume (CV)</b>\n\nEnter your full name:\n\n❌ Press /cancel to cancel",
     "enterPosition": "💼 What position is the resume for?\n\nExample: \"Frontend Developer\"",
     "enterContact": "📞 Contact info (phone, email, city) — on one line:\n\nExample: <code>+998901234567, name@mail.com, Tashkent</code>\n\nSend \"-\" to skip.",

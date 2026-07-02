@@ -23,6 +23,8 @@ export interface ResumeInput {
   /** Free-form background (bot flow) the AI should structure into sections. */
   rawBackground?: string;
   language: string;
+  /** Chosen visual template id (default 'classic'). */
+  template?: string;
 }
 
 export interface ResumeEnhanceResult {

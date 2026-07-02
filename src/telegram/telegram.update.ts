@@ -52,6 +52,7 @@ interface SessionData extends Scenes.SceneSession {
   resumePosition?: string;
   resumeContact?: string;
   resumeBackground?: string;
+  resumeTemplate?: string;
 }
 
 export interface BotContext extends Context {

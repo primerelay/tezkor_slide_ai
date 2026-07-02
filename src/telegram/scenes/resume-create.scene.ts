@@ -4,6 +4,7 @@ import { BotContext } from '../telegram.update';
 import { TelegramService } from '../telegram.service';
 import { InlineKeyboards } from '../keyboards/inline.keyboards';
 import { ResumeService } from '../../resume/resume.service';
+import { RESUME_TEMPLATES } from '../../resume/resume-templates';
 
 @Scene('resume-create')
 export class ResumeCreateScene {
@@ -83,23 +84,49 @@ export class ResumeCreateScene {
         return;
       }
 
-      await ctx.reply(
-        i18n.t('resume.confirmCreation', {
-          name: ctx.session.resumeName || '',
-          position: ctx.session.resumePosition || '',
-          price: price.toLocaleString(),
-          balance: user.credits.toLocaleString(),
-        }),
-        {
-          parse_mode: 'HTML',
-          reply_markup: Markup.inlineKeyboard([
-            [Markup.button.callback(i18n.t('buttons.confirm'), 'resume_confirm')],
-            [Markup.button.callback(i18n.t('buttons.cancel'), 'resume_cancel')],
-          ]).reply_markup,
-        },
-      );
+      // Ask which visual template to use (2 per row).
+      const rows: any[] = [];
+      for (let i = 0; i < RESUME_TEMPLATES.length; i += 2) {
+        rows.push(
+          RESUME_TEMPLATES.slice(i, i + 2).map((t) =>
+            Markup.button.callback(i18n.t(`resume.templates.${t.id}`), `resume_tpl_${t.id}`),
+          ),
+        );
+      }
+      await ctx.reply(i18n.t('resume.selectTemplate'), {
+        parse_mode: 'HTML',
+        reply_markup: Markup.inlineKeyboard(rows).reply_markup,
+      });
       return;
     }
+  }
+
+  @Action(/resume_tpl_(.+)/)
+  async onTemplate(@Ctx() ctx: any) {
+    const templateId = ctx.match[1];
+    ctx.session.resumeTemplate = templateId;
+
+    const user = await this.telegramService.getUserByTelegramId(ctx.from.id.toString());
+    if (!user) return;
+    const i18n = this.telegramService.getI18n(user.language);
+    const price = this.resumeService.getPrice();
+
+    await ctx.answerCbQuery();
+    await ctx.editMessageText(
+      i18n.t('resume.confirmCreation', {
+        name: ctx.session.resumeName || '',
+        position: ctx.session.resumePosition || '',
+        price: price.toLocaleString(),
+        balance: user.credits.toLocaleString(),
+      }) + `\n\n🎨 ${i18n.t(`resume.templates.${templateId}`)}`,
+      {
+        parse_mode: 'HTML',
+        reply_markup: Markup.inlineKeyboard([
+          [Markup.button.callback(i18n.t('buttons.confirm'), 'resume_confirm')],
+          [Markup.button.callback(i18n.t('buttons.cancel'), 'resume_cancel')],
+        ]).reply_markup,
+      },
+    );
   }
 
   @Action('resume_confirm')
@@ -136,6 +163,7 @@ export class ResumeCreateScene {
           email,
           location,
           rawBackground: resumeBackground,
+          template: ctx.session.resumeTemplate || 'classic',
           language: user.language || 'uz',
         },
         user.telegramId,

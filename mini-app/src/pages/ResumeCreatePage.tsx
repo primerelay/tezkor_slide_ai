@@ -3,13 +3,78 @@ import { useNavigate } from 'react-router-dom';
 import { useTelegram } from '../hooks/useTelegram';
 import { useLanguage } from '../contexts/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ArrowRight, IdCard, Sparkles, CheckCircle2, Send } from 'lucide-react';
+import { ArrowRight, IdCard, Sparkles, CheckCircle2, Send, Check } from 'lucide-react';
 import { api } from '../api/api';
 import { getTelegramUserId } from '../utils/telegram';
 
-type Step = 'personal' | 'details' | 'generating' | 'done';
+type Step = 'personal' | 'details' | 'template' | 'generating' | 'done';
+type TemplateId = 'classic' | 'modern' | 'minimal' | 'bold' | 'twotone' | 'executive';
 
 const PRICE = 2500;
+
+const TEMPLATES: { id: TemplateId; name: string; accent: string }[] = [
+  { id: 'classic', name: 'Klassik', accent: '#1F4E79' },
+  { id: 'modern', name: 'Zamonaviy', accent: '#1F3864' },
+  { id: 'minimal', name: 'Minimal', accent: '#374151' },
+  { id: 'bold', name: 'Jasur', accent: '#0F766E' },
+  { id: 'twotone', name: 'Ikki rang', accent: '#7F1D1D' },
+  { id: 'executive', name: 'Ijrochi', accent: '#1E293B' },
+];
+
+/** Small visual mock-up so the user can see each layout at a glance. */
+function TemplatePreview({ id, accent }: { id: TemplateId; accent: string }) {
+  const line = (w: string, c = '#D1D5DB', h = 3) => (
+    <div style={{ width: w, height: h, background: c, borderRadius: 2 }} />
+  );
+  const bar = <div style={{ height: 5, width: '55%', background: accent, borderRadius: 2 }} />;
+
+  if (id === 'modern' || id === 'twotone') {
+    const sideBg = id === 'modern' ? accent : '#E5E7EB';
+    return (
+      <div className="flex h-full w-full overflow-hidden rounded-md bg-white">
+        <div className="flex flex-col gap-1.5 p-1.5" style={{ width: '38%', background: sideBg }}>
+          {line('80%', id === 'modern' ? '#ffffff' : accent)}
+          {line('60%', id === 'modern' ? '#93A4C3' : '#9CA3AF')}
+          {line('70%', id === 'modern' ? '#93A4C3' : '#9CA3AF')}
+          {line('50%', id === 'modern' ? '#93A4C3' : '#9CA3AF')}
+        </div>
+        <div className="flex flex-1 flex-col gap-1.5 p-1.5">
+          <div style={{ height: 6, width: '70%', background: accent, borderRadius: 2 }} />
+          {line('90%')} {line('85%')} {line('60%')}
+          {bar}
+          {line('88%')} {line('80%')}
+        </div>
+      </div>
+    );
+  }
+
+  if (id === 'bold') {
+    return (
+      <div className="flex h-full w-full flex-col overflow-hidden rounded-md bg-white">
+        <div className="flex flex-col gap-1 p-1.5" style={{ height: '30%', background: accent }}>
+          <div style={{ height: 6, width: '65%', background: '#ffffff', borderRadius: 2 }} />
+          <div style={{ height: 3, width: '45%', background: '#CBD5E1', borderRadius: 2 }} />
+        </div>
+        <div className="flex flex-1 flex-col gap-1.5 p-1.5">
+          {bar} {line('90%')} {line('80%')} {bar} {line('85%')}
+        </div>
+      </div>
+    );
+  }
+
+  // classic / minimal / executive — single column, differ by heading + align.
+  const centered = id === 'executive';
+  return (
+    <div className={`flex h-full w-full flex-col gap-1.5 rounded-md bg-white p-2 ${centered ? 'items-center' : ''}`}>
+      <div style={{ height: 6, width: centered ? '60%' : '55%', background: accent, borderRadius: 2 }} />
+      <div style={{ height: 3, width: '35%', background: '#9CA3AF', borderRadius: 2 }} />
+      <div style={{ height: 1, width: '100%', background: id === 'minimal' ? '#E5E7EB' : accent, marginTop: 2 }} />
+      {line('92%')} {line('85%')}
+      <div style={{ height: 1, width: '100%', background: id === 'minimal' ? '#E5E7EB' : accent, marginTop: 2 }} />
+      {line('88%')} {line('70%')}
+    </div>
+  );
+}
 
 export default function ResumeCreatePage() {
   const navigate = useNavigate();
@@ -26,6 +91,7 @@ export default function ResumeCreatePage() {
   const [education, setEducation] = useState('');
   const [skills, setSkills] = useState('');
   const [languages, setLanguages] = useState('');
+  const [template, setTemplate] = useState<TemplateId>('classic');
   const [progress, setProgress] = useState(0);
 
   useEffect(() => {
@@ -33,17 +99,16 @@ export default function ResumeCreatePage() {
       haptic('light');
       if (step === 'personal') navigate('/');
       else if (step === 'details') setStep('personal');
+      else if (step === 'template') setStep('details');
     });
     return () => hideBackButton();
   }, [step, showBackButton, hideBackButton, navigate, haptic]);
 
   const handleNext = () => {
     haptic('light');
-    if (step === 'personal' && fullName.trim().length >= 3 && position.trim().length >= 2) {
-      setStep('details');
-    } else if (step === 'details') {
-      handleGenerate();
-    }
+    if (step === 'personal' && fullName.trim().length >= 3 && position.trim().length >= 2) setStep('details');
+    else if (step === 'details') setStep('template');
+    else if (step === 'template') handleGenerate();
   };
 
   const handleGenerate = async () => {
@@ -74,6 +139,7 @@ export default function ResumeCreatePage() {
         rawBackground: rawBackground || undefined,
         skills: skills.trim() ? skills.split(',').map((s) => s.trim()).filter(Boolean) : undefined,
         languages: languages.trim() ? languages.split(',').map((s) => s.trim()).filter(Boolean) : undefined,
+        template,
         language: (language as string) || 'uz',
       });
       clearInterval(progressInterval);
@@ -90,19 +156,17 @@ export default function ResumeCreatePage() {
   const canProceed =
     step === 'personal'
       ? fullName.trim().length >= 3 && position.trim().length >= 2
-      : experience.trim().length > 0 || education.trim().length > 0;
+      : step === 'details'
+        ? experience.trim().length > 0 || education.trim().length > 0
+        : true;
 
   const field = (label: string, value: string, set: (v: string) => void, placeholder: string, optional = false) => (
     <div className="card p-3">
       <h3 className="font-medium text-gray-900 text-sm mb-2">
         {label} {optional && <span className="text-gray-400 font-normal">(ixtiyoriy)</span>}
       </h3>
-      <input
-        value={value}
-        onChange={(e) => set(e.target.value)}
-        placeholder={placeholder}
-        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
+      <input value={value} onChange={(e) => set(e.target.value)} placeholder={placeholder}
+        className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
     </div>
   );
 
@@ -111,12 +175,8 @@ export default function ResumeCreatePage() {
       <h3 className="font-medium text-gray-900 text-sm mb-2">
         {label} {optional && <span className="text-gray-400 font-normal">(ixtiyoriy)</span>}
       </h3>
-      <textarea
-        value={value}
-        onChange={(e) => set(e.target.value)}
-        placeholder={placeholder}
-        className="w-full h-24 px-3 py-2 text-sm border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
-      />
+      <textarea value={value} onChange={(e) => set(e.target.value)} placeholder={placeholder}
+        className="w-full h-24 px-3 py-2 text-sm border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500" />
     </div>
   );
 
@@ -132,6 +192,7 @@ export default function ResumeCreatePage() {
             <p className="text-sm text-gray-500">
               {step === 'personal' && 'Shaxsiy ma\'lumotlar'}
               {step === 'details' && 'Tajriba va ta\'lim'}
+              {step === 'template' && 'Shablonni tanlang'}
               {step === 'generating' && 'Tayyorlanmoqda...'}
               {step === 'done' && 'Tayyor!'}
             </p>
@@ -140,6 +201,7 @@ export default function ResumeCreatePage() {
         {step !== 'done' && (
           <div className="flex items-center gap-2 mt-4">
             <div className={`flex-1 h-1 rounded-full ${step !== 'personal' ? 'bg-blue-600' : 'bg-gray-200'}`} />
+            <div className={`flex-1 h-1 rounded-full ${step === 'template' || step === 'generating' ? 'bg-blue-600' : 'bg-gray-200'}`} />
             <div className={`flex-1 h-1 rounded-full ${step === 'generating' ? 'bg-blue-600' : 'bg-gray-200'}`} />
           </div>
         )}
@@ -163,13 +225,40 @@ export default function ResumeCreatePage() {
               {area('Ta\'lim', education, setEducation, 'Qaysi universitet/kollej, yo\'nalish, yillar', true)}
               {field('Ko\'nikmalar', skills, setSkills, 'JavaScript, React, Git (vergul bilan)', true)}
               {field('Tillar', languages, setLanguages, 'O\'zbek, Rus, Ingliz - B2', true)}
+            </motion.div>
+          )}
 
-              <div className="card p-4 bg-blue-50 border-2 border-blue-200">
+          {step === 'template' && (
+            <motion.div key="t" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="py-4">
+              <p className="text-sm text-gray-500 mb-3">Yoqqan dizaynni tanlang:</p>
+              <div className="grid grid-cols-2 gap-3">
+                {TEMPLATES.map((t) => {
+                  const active = template === t.id;
+                  return (
+                    <button
+                      key={t.id}
+                      onClick={() => { haptic('light'); setTemplate(t.id); }}
+                      className={`relative rounded-2xl border-2 p-2 transition-all ${active ? 'border-blue-600 bg-blue-50' : 'border-gray-200 bg-white'}`}
+                    >
+                      {active && (
+                        <div className="absolute -top-2 -right-2 w-6 h-6 rounded-full bg-blue-600 flex items-center justify-center shadow">
+                          <Check className="w-4 h-4 text-white" />
+                        </div>
+                      )}
+                      <div className="aspect-[3/4] w-full rounded-md border border-gray-100 overflow-hidden shadow-sm">
+                        <TemplatePreview id={t.id} accent={t.accent} />
+                      </div>
+                      <div className="mt-2 text-sm font-medium text-gray-900 text-center">{t.name}</div>
+                    </button>
+                  );
+                })}
+              </div>
+              <div className="card p-4 bg-blue-50 border-2 border-blue-200 mt-4">
                 <div className="flex items-center justify-between">
                   <h3 className="font-semibold text-gray-900">Narx</h3>
                   <div className="text-xl font-bold text-blue-600">{PRICE.toLocaleString()} so'm</div>
                 </div>
-                <p className="text-xs text-gray-600 mt-2">✨ AI ma'lumotlaringizni professional CV (Word .docx) formatida tayyorlaydi va Telegram'ga yuboradi.</p>
+                <p className="text-xs text-gray-600 mt-2">✨ Tanlangan shablonда professional CV (Word .docx) Telegram'ga yuboriladi.</p>
               </div>
             </motion.div>
           )}
@@ -217,7 +306,7 @@ export default function ResumeCreatePage() {
               canProceed ? 'bg-blue-600 text-white active:scale-[0.98]' : 'bg-gray-200 text-gray-400 cursor-not-allowed'
             }`}
           >
-            {step === 'details' ? (
+            {step === 'template' ? (
               <>
                 <Sparkles className="w-5 h-5" />
                 {PRICE.toLocaleString()} so'm — Yaratish

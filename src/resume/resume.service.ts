@@ -10,6 +10,7 @@ import { User } from '../database/entities/user.entity';
 import { Transaction } from '../database/entities/transaction.entity';
 import { ResumeEnhancerAgent, ResumeInput } from './resume-enhancer.agent';
 import { ResumeRendererService } from './resume-renderer.service';
+import { ResumeTemplate, isResumeTemplate } from './resume-templates';
 import { StorageService } from '../storage/storage.service';
 
 // Resume is a single high-value document — flat price.
@@ -54,8 +55,10 @@ export class ResumeService {
     await this.userRepository.save(user);
 
     try {
+      const template: ResumeTemplate =
+        input.template && isResumeTemplate(input.template) ? input.template : 'classic';
       const enhanced = await this.enhancer.enhance(input);
-      const buffer = await this.renderer.render(enhanced.data, input.language);
+      const buffer = await this.renderer.render(enhanced.data, input.language, template);
       const filename = `resume_${user.id}_${Date.now()}.docx`;
       const docxUrl = await this.storage.saveFile(filename, buffer);
 
@@ -63,6 +66,7 @@ export class ResumeService {
         this.resumeRepository.create({
           userId,
           language: input.language,
+          template,
           data: enhanced.data,
           docxUrl,
           price,

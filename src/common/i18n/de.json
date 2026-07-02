@@ -70,6 +70,16 @@
     "education": "Ausbildung",
     "skills": "Kenntnisse",
     "languages": "Sprachen",
+    "contactTitle": "Kontakt",
+    "selectTemplate": "🎨 <b>Vorlage wählen:</b>",
+    "templates": {
+      "classic": "Klassisch",
+      "modern": "Modern",
+      "minimal": "Minimal",
+      "bold": "Kräftig",
+      "twotone": "Zweifarbig",
+      "executive": "Executive"
+    },
     "enterName": "📇 <b>Lebenslauf (CV) erstellen</b>\n\nGeben Sie Ihren vollständigen Namen ein:\n\n❌ Zum Abbrechen /cancel",
     "enterPosition": "💼 Für welche Position ist der Lebenslauf?\n\nBeispiel: \"Frontend-Entwickler\"",
     "enterContact": "📞 Kontakt (Telefon, E-Mail, Stadt) — in einer Zeile:\n\nBeispiel: <code>+998901234567, name@mail.com, Taschkent</code>\n\nZum Überspringen \"-\" senden.",

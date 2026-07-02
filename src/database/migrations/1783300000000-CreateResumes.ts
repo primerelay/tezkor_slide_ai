@@ -8,6 +8,7 @@ export class CreateResumes1783300000000 implements MigrationInterface {
                 "id" SERIAL PRIMARY KEY,
                 "userId" INTEGER NOT NULL,
                 "language" VARCHAR(5) NOT NULL DEFAULT 'uz',
+                "template" VARCHAR(20) NOT NULL DEFAULT 'classic',
                 "data" JSONB NOT NULL,
                 "docxUrl" TEXT,
                 "price" INTEGER NOT NULL DEFAULT 0,

@@ -145,6 +145,7 @@ export const api = {
     rawBackground?: string;
     skills?: string[];
     languages?: string[];
+    template?: string;
     language?: string;
   }): Promise<{ id: number; fullName: string }> {
     const response = await fetch('/api/resume', {

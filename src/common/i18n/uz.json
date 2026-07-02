@@ -70,6 +70,16 @@
     "education": "Ta'lim",
     "skills": "Ko'nikmalar",
     "languages": "Tillar",
+    "contactTitle": "Aloqa",
+    "selectTemplate": "🎨 <b>Shablonni tanlang:</b>",
+    "templates": {
+      "classic": "Klassik",
+      "modern": "Zamonaviy",
+      "minimal": "Minimal",
+      "bold": "Jasur",
+      "twotone": "Ikki rang",
+      "executive": "Ijrochi"
+    },
     "enterName": "📇 <b>Rezyume (CV) yaratish</b>\n\nTo'liq ism-familiyangizni kiriting:\n\n❌ Bekor qilish uchun /cancel",
     "enterPosition": "💼 Qaysi lavozimga (kasbga) rezyume kerak?\n\nMasalan: \"Frontend dasturchi\"",
     "enterContact": "📞 Aloqa ma'lumotlari (telefon, email, shahar) — bitta qatorda:\n\nMasalan: <code>+998901234567, ism@mail.com, Toshkent</code>\n\nO'tkazib yuborish uchun \"-\" yuboring.",

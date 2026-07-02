@@ -49,6 +49,9 @@ export class Resume {
   @Column({ type: 'varchar', length: 5, default: 'uz' })
   language: string;
 
+  @Column({ type: 'varchar', length: 20, default: 'classic' })
+  template: string;
+
   @Column({ type: 'jsonb' })
   data: ResumeData;
 
