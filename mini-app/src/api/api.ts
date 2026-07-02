@@ -135,6 +135,23 @@ export const api = {
     return response.json();
   },
 
+  async translate(req: {
+    telegramId: string;
+    text: string;
+    targetLang: string;
+  }): Promise<{ translated: string }> {
+    const response = await fetch('/api/translate', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(req),
+    });
+    if (!response.ok) {
+      const error = await response.json().catch(() => ({ message: 'Translation failed' }));
+      throw new Error(error.message || 'Translation failed');
+    }
+    return response.json();
+  },
+
   async createResume(req: {
     telegramId: string;
     fullName: string;

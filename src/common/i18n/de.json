@@ -44,6 +44,7 @@
     "quizBot": "🤖 Quiz Bot erstellen",
     "inviteFriends": "🎁 Freunde einladen",
     "start": "🔄 Start",
+    "translator": "🌍 Übersetzer",
     "confirm": "✅ Bestätigen",
     "cancel": "❌ Abbrechen",
     "yes": "✅ Ja",
@@ -112,6 +113,15 @@
     "done": "✅ Kreuzworträtsel als Word (.docx) gesendet! 🎉",
     "error": "❌ Ein Fehler ist aufgetreten!\n\n{error}",
     "cancelled": "❌ Kreuzworträtsel-Erstellung abgebrochen."
+  },
+  "translator": {
+    "selectTarget": "🌍 <b>Übersetzer</b>\n\nIn welche Sprache übersetzen?",
+    "enterText": "✍️ Senden Sie den Text zum Übersetzen (max. {max} Zeichen).\n\n💰 Preis: {price} So'm\n❌ Zum Abbrechen /cancel",
+    "translating": "⏳ Wird übersetzt...",
+    "tooLong": "⚠️ Text ist zu lang. Max. {max} Zeichen.",
+    "again": "🔁 Sprache für eine neue Übersetzung wählen:",
+    "error": "❌ Fehler: {error}",
+    "cancelled": "❌ Übersetzer abgebrochen."
   },
   "flashcard": {
     "enterContent": "🎴 <b>Lernkarten erstellen</b>\n\nSenden Sie Text oder ein Thema, um Karten zu erstellen.\n\n💡 Zum Beispiel: Lehrbuchtext, Themenname oder eine kurze Beschreibung.\n\n❌ Zum Abbrechen /cancel drücken",

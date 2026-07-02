@@ -20,6 +20,7 @@ import { DocumentModule } from './document/document.module';
 import { FlashcardModule } from './flashcard/flashcard.module';
 import { StudyModule } from './study/study.module';
 import { ResumeModule } from './resume/resume.module';
+import { TranslatorModule } from './translator/translator.module';
 import { SpaController } from './spa.controller';
 
 @Module({
@@ -85,6 +86,7 @@ import { SpaController } from './spa.controller';
     FlashcardModule,
     StudyModule,
     ResumeModule,
+    TranslatorModule,
   ],
 })
 export class AppModule {}

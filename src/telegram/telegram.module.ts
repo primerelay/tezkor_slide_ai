@@ -22,11 +22,13 @@ import { FlashcardCreateScene } from './scenes/flashcard-create.scene';
 import { GlossaryCreateScene } from './scenes/glossary-create.scene';
 import { CrosswordCreateScene } from './scenes/crossword-create.scene';
 import { ResumeCreateScene } from './scenes/resume-create.scene';
+import { TranslatorCreateScene } from './scenes/translator-create.scene';
 import { QuizModule } from '../quiz/quiz.module';
 import { DocumentModule } from '../document/document.module';
 import { FlashcardModule } from '../flashcard/flashcard.module';
 import { StudyModule } from '../study/study.module';
 import { ResumeModule } from '../resume/resume.module';
+import { TranslatorModule } from '../translator/translator.module';
 
 @Module({
   imports: [
@@ -44,6 +46,7 @@ import { ResumeModule } from '../resume/resume.module';
     FlashcardModule,
     StudyModule,
     ResumeModule,
+    TranslatorModule,
   ],
   providers: [
     TelegramService,
@@ -60,6 +63,7 @@ import { ResumeModule } from '../resume/resume.module';
     GlossaryCreateScene,
     CrosswordCreateScene,
     ResumeCreateScene,
+    TranslatorCreateScene,
   ],
   exports: [TelegramService],
 })

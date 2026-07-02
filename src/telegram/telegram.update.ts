@@ -53,6 +53,8 @@ interface SessionData extends Scenes.SceneSession {
   resumeContact?: string;
   resumeBackground?: string;
   resumeTemplate?: string;
+  // Translator
+  translateTarget?: string;
 }
 
 export interface BotContext extends Context {
@@ -513,6 +515,17 @@ export class TelegramUpdate {
   @Hears(/^🧩.+$/)
   async onCrosswordButton(@Ctx() ctx: BotContext) {
     await this.startSceneWithChannelCheck(ctx, 'crossword-create');
+  }
+
+  @Hears(/^🌍.+$/)
+  async onTranslatorButton(@Ctx() ctx: BotContext) {
+    await this.startSceneWithChannelCheck(ctx, 'translator-create');
+  }
+
+  @Action('translator_create')
+  async onTranslatorCreate(@Ctx() ctx: BotContext) {
+    await ctx.answerCbQuery();
+    await this.startSceneWithChannelCheck(ctx, 'translator-create');
   }
 
   @Hears(/^📇.+$/)

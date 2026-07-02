@@ -14,6 +14,7 @@ import FlashcardCreatePage from './pages/FlashcardCreatePage';
 import FlashcardViewPage from './pages/FlashcardViewPage';
 import StudyCreatePage from './pages/StudyCreatePage';
 import ResumeCreatePage from './pages/ResumeCreatePage';
+import TranslatorPage from './pages/TranslatorPage';
 
 function App() {
   const { webApp, ready } = useTelegram();
@@ -61,6 +62,7 @@ function App() {
         <Route path="/flashcards/:id" element={<FlashcardViewPage />} />
         <Route path="/study/create" element={<StudyCreatePage />} />
         <Route path="/resume/create" element={<ResumeCreatePage />} />
+        <Route path="/translate" element={<TranslatorPage />} />
         <Route path="/editor/:id" element={<EditorPage />} />
         <Route path="/preview/:id" element={<PreviewPage />} />
       </Routes>

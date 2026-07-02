@@ -44,6 +44,7 @@
     "quizBot": "🤖 Create Quiz Bot",
     "inviteFriends": "🎁 Invite Friends",
     "start": "🔄 Start",
+    "translator": "🌍 Translator",
     "confirm": "✅ Confirm",
     "cancel": "❌ Cancel",
     "yes": "✅ Yes",
@@ -112,6 +113,15 @@
     "done": "✅ Crossword sent as Word (.docx)! 🎉",
     "error": "❌ An error occurred!\n\n{error}",
     "cancelled": "❌ Crossword creation cancelled."
+  },
+  "translator": {
+    "selectTarget": "🌍 <b>Translator</b>\n\nWhich language to translate into?",
+    "enterText": "✍️ Send the text to translate (max {max} characters).\n\n💰 Price: {price} so'm\n❌ Press /cancel to cancel",
+    "translating": "⏳ Translating...",
+    "tooLong": "⚠️ Text is too long. Max {max} characters.",
+    "again": "🔁 Choose a language for a new translation:",
+    "error": "❌ Error: {error}",
+    "cancelled": "❌ Translator cancelled."
   },
   "flashcard": {
     "enterContent": "🎴 <b>Create flashcards</b>\n\nSend text or a topic to create cards.\n\n💡 For example: textbook text, a topic name, or a short description.\n\n❌ Press /cancel to cancel",

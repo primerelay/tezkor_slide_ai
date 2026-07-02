@@ -44,6 +44,7 @@
     "quizBot": "🤖 Quiz Bot yaratish",
     "inviteFriends": "🎁 Do'stlarni taklif qilish",
     "start": "🔄 Start",
+    "translator": "🌍 Tarjimon",
     "confirm": "✅ Tasdiqlash",
     "cancel": "❌ Bekor qilish",
     "yes": "✅ Ha",
@@ -112,6 +113,15 @@
     "done": "✅ Krossvord Word (.docx) faylida yuborildi! 🎉",
     "error": "❌ Xatolik yuz berdi!\n\n{error}",
     "cancelled": "❌ Krossvord bekor qilindi."
+  },
+  "translator": {
+    "selectTarget": "🌍 <b>Tarjimon</b>\n\nQaysi tilga tarjima qilamiz?",
+    "enterText": "✍️ Tarjima qilinadigan matnni yuboring (maksimum {max} belgi).\n\n💰 Narx: {price} so'm\n❌ Bekor qilish uchun /cancel",
+    "translating": "⏳ Tarjima qilinmoqda...",
+    "tooLong": "⚠️ Matn juda uzun. Maksimum {max} belgi.",
+    "again": "🔁 Yana tarjima qilish uchun tilni tanlang:",
+    "error": "❌ Xatolik: {error}",
+    "cancelled": "❌ Tarjimon bekor qilindi."
   },
   "flashcard": {
     "enterContent": "🎴 <b>Flesh kartalar yaratish</b>\n\nKartalar yaratish uchun matn yoki mavzuni yuboring.\n\n💡 Masalan: darslik matni, mavzu nomi yoki qisqacha tavsif.\n\n❌ Bekor qilish uchun /cancel ni bosing",
