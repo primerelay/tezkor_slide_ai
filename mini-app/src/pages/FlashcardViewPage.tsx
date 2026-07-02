@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTelegram } from '../hooks/useTelegram';
 import { motion } from 'framer-motion';
-import { ChevronLeft, ChevronRight, RotateCw, Home } from 'lucide-react';
+import { ChevronLeft, ChevronRight, RotateCw, Home, Share2 } from 'lucide-react';
 import { api, FlashcardSet } from '../api/api';
 
 export default function FlashcardViewPage() {
@@ -45,6 +45,16 @@ export default function FlashcardViewPage() {
 
   const flip = () => { haptic('light'); setFlipped((f) => !f); };
 
+  const share = () => {
+    if (!set?.shareUrl) return;
+    haptic('light');
+    const text = `🎴 «${set.title}» — flesh kartalar bilan tez yodlab ol!`;
+    const dialog = `https://t.me/share/url?url=${encodeURIComponent(set.shareUrl)}&text=${encodeURIComponent(text)}`;
+    const tg = (window as any)?.Telegram?.WebApp;
+    if (tg?.openTelegramLink) tg.openTelegramLink(dialog);
+    else window.open(dialog, '_blank');
+  };
+
   if (loading) {
     return (
       <div className="h-screen flex items-center justify-center bg-gray-50">
@@ -72,9 +82,16 @@ export default function FlashcardViewPage() {
             <h1 className="text-base font-bold text-gray-900 truncate">{set.title}</h1>
             <p className="text-sm text-gray-500">{index + 1} / {total}</p>
           </div>
-          <button onClick={() => navigate('/')} className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center flex-shrink-0">
-            <Home className="w-4 h-4 text-gray-500" />
-          </button>
+          <div className="flex items-center gap-2 flex-shrink-0">
+            {set.shareUrl && (
+              <button onClick={share} className="w-9 h-9 rounded-lg bg-amber-100 flex items-center justify-center">
+                <Share2 className="w-4 h-4 text-amber-600" />
+              </button>
+            )}
+            <button onClick={() => navigate('/')} className="w-9 h-9 rounded-lg bg-gray-100 flex items-center justify-center">
+              <Home className="w-4 h-4 text-gray-500" />
+            </button>
+          </div>
         </div>
         <div className="mt-3 h-1 bg-gray-200 rounded-full overflow-hidden">
           <div className="h-full bg-amber-500 transition-all" style={{ width: `${((index + 1) / total) * 100}%` }} />

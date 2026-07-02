@@ -365,6 +365,17 @@ export class TelegramService {
   }
 
   /**
+   * Build a shareable deep link that opens the bot and displays a flashcard set.
+   */
+  getFlashcardShareLink(setId: number): string {
+    const botUsername = this.configService.get<string>('telegram.botUsername');
+    if (!botUsername) {
+      return `https://t.me/YOUR_BOT?start=fc_${setId}`;
+    }
+    return `https://t.me/${botUsername}?start=fc_${setId}`;
+  }
+
+  /**
    * Find user by referral code
    */
   async getUserByReferralCode(referralCode: string): Promise<User | null> {

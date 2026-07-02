@@ -70,7 +70,12 @@
     "cancelled": "❌ Erstellung der Lernkarten abgebrochen.",
     "showAnswer": "🔄 Antwort zeigen",
     "showQuestion": "🔙 Zurück zur Frage",
-    "tapToReveal": "Tippen Sie auf die Schaltfläche, um die Antwort zu sehen"
+    "tapToReveal": "Tippen Sie auf die Schaltfläche, um die Antwort zu sehen",
+    "sharePrompt": "📤 <b>Teilen Sie diese Karten mit Freunden!</b>\n\nJeder, der den Link öffnet, kann diese Karten direkt im Bot lernen.",
+    "shareButton": "📤 Mit Freunden teilen",
+    "shareText": "🎴 «{title}» — lerne schnell mit Lernkarten!",
+    "sharedIntro": "🎴 <b>Von einem Freund geteilte Karten:</b>\n\n{title}\n📊 {count} Karten\n\nDrehen Sie sie unten zum Lernen 👇",
+    "sharedNotFound": "❌ Karten nicht gefunden oder gelöscht."
   },
   "document": {
     "typeNames": {

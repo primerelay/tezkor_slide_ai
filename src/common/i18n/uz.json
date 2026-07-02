@@ -70,7 +70,12 @@
     "cancelled": "❌ Flesh kartalar bekor qilindi.",
     "showAnswer": "🔄 Javobni ko'rish",
     "showQuestion": "🔙 Savolga qaytish",
-    "tapToReveal": "Javobni ko'rish uchun tugmani bosing"
+    "tapToReveal": "Javobni ko'rish uchun tugmani bosing",
+    "sharePrompt": "📤 <b>Bu kartalarni do'stlaringizga ulashing!</b>\n\nHavolani bosgan har bir do'stingiz shu kartalarni bot ichida ochib o'rganadi.",
+    "shareButton": "📤 Do'stlarga ulashish",
+    "shareText": "🎴 «{title}» — flesh kartalar bilan tez yodlab ol!",
+    "sharedIntro": "🎴 <b>Do'stingiz ulashgan kartalar:</b>\n\n{title}\n📊 {count} ta karta\n\nQuyida ag'darib o'rganing 👇",
+    "sharedNotFound": "❌ Kartalar topilmadi yoki o'chirilgan."
   },
   "document": {
     "typeNames": {

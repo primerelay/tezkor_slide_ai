@@ -130,6 +130,20 @@ export class FlashcardCreateScene {
       // Show the first card interactively.
       const view = renderFlashcard(set, 0, 'front', i18n);
       await ctx.reply(view.text, { parse_mode: 'HTML', reply_markup: view.keyboard });
+
+      // Offer a shareable deep link so friends can study the same deck.
+      const shareLink = this.telegramService.getFlashcardShareLink(set.id);
+      await ctx.reply(i18n.t('flashcard.sharePrompt'), {
+        parse_mode: 'HTML',
+        reply_markup: Markup.inlineKeyboard([
+          [
+            Markup.button.url(
+              i18n.t('flashcard.shareButton'),
+              `https://t.me/share/url?url=${encodeURIComponent(shareLink)}&text=${encodeURIComponent(i18n.t('flashcard.shareText', { title: set.title }))}`,
+            ),
+          ],
+        ]).reply_markup,
+      });
     } catch (error) {
       await ctx.reply(
         i18n.t('flashcard.error', {

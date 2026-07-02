@@ -70,7 +70,12 @@
     "cancelled": "❌ Flashcard creation cancelled.",
     "showAnswer": "🔄 Show answer",
     "showQuestion": "🔙 Back to question",
-    "tapToReveal": "Tap the button to reveal the answer"
+    "tapToReveal": "Tap the button to reveal the answer",
+    "sharePrompt": "📤 <b>Share these cards with friends!</b>\n\nEveryone who opens the link can study these cards right inside the bot.",
+    "shareButton": "📤 Share with friends",
+    "shareText": "🎴 «{title}» — study fast with flashcards!",
+    "sharedIntro": "🎴 <b>Cards shared by a friend:</b>\n\n{title}\n📊 {count} cards\n\nFlip them below to study 👇",
+    "sharedNotFound": "❌ Cards not found or deleted."
   },
   "document": {
     "typeNames": {

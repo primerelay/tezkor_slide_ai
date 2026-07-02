@@ -8,6 +8,7 @@ import {
   HttpStatus,
   Logger,
 } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { FlashcardService } from './flashcard.service';
 
 interface CreateFlashcardDto {
@@ -21,7 +22,18 @@ interface CreateFlashcardDto {
 export class FlashcardController {
   private readonly logger = new Logger(FlashcardController.name);
 
-  constructor(private readonly flashcardService: FlashcardService) {}
+  constructor(
+    private readonly flashcardService: FlashcardService,
+    private readonly configService: ConfigService,
+  ) {}
+
+  /** Shareable deep link that opens the bot on this flashcard set. */
+  private shareUrl(setId: number): string {
+    const botUsername = this.configService.get<string>('telegram.botUsername');
+    return botUsername
+      ? `https://t.me/${botUsername}?start=fc_${setId}`
+      : '';
+  }
 
   @Post()
   async create(@Body() dto: CreateFlashcardDto) {
@@ -41,7 +53,7 @@ export class FlashcardController {
         cardCount: dto.cardCount,
         language: dto.language || user.language || 'uz',
       });
-      return { id: set.id, title: set.title, cardCount: set.cardCount, cards: set.cards };
+      return { id: set.id, title: set.title, cardCount: set.cardCount, cards: set.cards, shareUrl: this.shareUrl(set.id) };
     } catch (error) {
       this.logger.error('Failed to create flashcards', error);
       throw new HttpException(
@@ -54,7 +66,14 @@ export class FlashcardController {
   @Get(':id')
   async getSet(@Param('id') id: string) {
     const set = await this.flashcardService.getSet(parseInt(id, 10));
-    return { id: set.id, title: set.title, cardCount: set.cardCount, cards: set.cards, status: set.status };
+    return {
+      id: set.id,
+      title: set.title,
+      cardCount: set.cardCount,
+      cards: set.cards,
+      status: set.status,
+      shareUrl: this.shareUrl(set.id),
+    };
   }
 
   @Get('user/:telegramId')

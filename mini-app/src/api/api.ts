@@ -71,6 +71,7 @@ export interface FlashcardSet {
   cardCount: number;
   cards: Flashcard[];
   status?: string;
+  shareUrl?: string;
 }
 
 export const api = {

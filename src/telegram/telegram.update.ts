@@ -67,9 +67,10 @@ export class TelegramUpdate {
     const telegramUser = ctx.from;
     if (!telegramUser) return;
 
-    // Parse referral code from deep link (e.g., /start ref_123_abc)
+    // Parse deep-link payload (e.g., /start ref_123_abc or /start fc_42)
     let referrerId: number | undefined;
     let referrerName: string | undefined;
+    let sharedFlashcardId: number | undefined;
 
     if ('message' in ctx.update && 'text' in ctx.update.message) {
       const text = ctx.update.message.text;
@@ -82,6 +83,9 @@ export class TelegramUpdate {
             referrerId = referrer.id;
             referrerName = referrer.firstName || referrer.username;
           }
+        } else if (startPayload && startPayload.startsWith('fc_')) {
+          const id = parseInt(startPayload.slice(3), 10);
+          if (!isNaN(id)) sharedFlashcardId = id;
         }
       }
     }
@@ -119,6 +123,21 @@ export class TelegramUpdate {
     await ctx.reply(i18n.t('mainMenuText'), {
       reply_markup: ReplyKeyboards.mainMenu(i18n, this.miniAppUrl),
     });
+
+    // Opened via a shared flashcard link — show the deck interactively.
+    if (sharedFlashcardId !== undefined) {
+      try {
+        const set = await this.flashcardService.getSet(sharedFlashcardId);
+        await ctx.reply(
+          i18n.t('flashcard.sharedIntro', { title: set.title, count: set.cards.length }),
+          { parse_mode: 'HTML' },
+        );
+        const view = renderFlashcard(set, 0, 'front', i18n);
+        await ctx.reply(view.text, { parse_mode: 'HTML', reply_markup: view.keyboard });
+      } catch {
+        await ctx.reply(i18n.t('flashcard.sharedNotFound'));
+      }
+    }
   }
 
   /**
