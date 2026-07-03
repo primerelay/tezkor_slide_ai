@@ -274,7 +274,7 @@ export class TelegramUpdate {
     await ctx.reply(i18n.t('miniApp.promo'), {
       parse_mode: 'HTML',
       reply_markup: Markup.inlineKeyboard([
-        [Markup.button.webApp(i18n.t('miniApp.openButton'), this.miniAppUrl)],
+        [Markup.button.webApp(i18n.t('miniApp.openButton'), `${this.miniAppUrl}${this.miniAppUrl?.includes('?') ? '&' : '?'}lang=${i18n.getLanguage()}`)],
       ]).reply_markup,
     });
   }
@@ -842,10 +842,10 @@ export class TelegramUpdate {
     await ctx.answerCbQuery(i18n.t('languageChanged'));
     await ctx.editMessageText(i18n.t('languageSet'), { parse_mode: 'HTML' });
 
-    // Update reply keyboard with new language
-    await ctx.reply(i18n.t('mainMenuText'), {
-      reply_markup: ReplyKeyboards.mainMenu(i18n, this.miniAppUrl),
-    });
+    // Re-render the full welcome so BOTH menus (inline + reply keyboard) carry
+    // web-app buttons with the new ?lang=, otherwise the mini-app would open in
+    // the old language (the URL lang takes priority).
+    await this.sendWelcome(ctx);
   }
 
   @Action('new_presentation')

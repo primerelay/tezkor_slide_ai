@@ -1,5 +1,8 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { SupportedLanguage, Translations, getTranslations } from '../i18n/translations';
+import { getTelegramUserId } from '../utils/telegram';
+
+const SUPPORTED: SupportedLanguage[] = ['uz', 'uzc', 'ru', 'en', 'de', 'tr', 'kk', 'ar', 'ko'];
 
 interface LanguageContextType {
   language: SupportedLanguage;
@@ -17,23 +20,31 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const fetchUserLanguage = async () => {
       try {
+        // 1. Language passed in the web-app URL by the bot (?lang=xx). Most
+        //    reliable and instant — reflects the user's current bot language
+        //    and changes the URL when they switch, forcing a fresh load.
+        const urlLang = new URLSearchParams(window.location.search).get('lang');
+        if (urlLang && SUPPORTED.includes(urlLang as SupportedLanguage)) {
+          setLanguage(urlLang as SupportedLanguage);
+          setIsLoading(false);
+          return;
+        }
+
         const tg = window.Telegram?.WebApp;
-        const telegramId = tg?.initDataUnsafe?.user?.id;
+        // 2. Robust telegram id resolution → fetch the saved language from DB.
+        const telegramId = getTelegramUserId();
 
         if (telegramId) {
-          // Add timeout to prevent hanging
           const controller = new AbortController();
           const timeoutId = setTimeout(() => controller.abort(), 3000);
-
           try {
             const response = await fetch(`/api/mini-app/user/${telegramId}`, {
               signal: controller.signal,
             });
             clearTimeout(timeoutId);
-
             if (response.ok) {
               const user = await response.json();
-              if (user.language && ['uz', 'ru', 'en', 'de', 'tr', 'kk', 'ar', 'ko', 'uzc'].includes(user.language)) {
+              if (user.language && SUPPORTED.includes(user.language)) {
                 setLanguage(user.language as SupportedLanguage);
               }
             }
@@ -42,24 +53,15 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
             // Ignore timeout/abort errors, just use default language
           }
         } else {
-          // Try to get language from Telegram WebApp
+          // 3. Fall back to the Telegram device language.
           const langCode = tg?.initDataUnsafe?.user?.language_code;
-          if (langCode) {
-            // Map common language codes
-            const langMap: Record<string, SupportedLanguage> = {
-              'uz': 'uz',
-              'ru': 'ru',
-              'en': 'en',
-              'de': 'de',
-              'tr': 'tr',
-              'kk': 'kk',
-              'ar': 'ar',
-              'ko': 'ko',
-              'uk': 'ru', // Ukrainian users often prefer Russian
-            };
-            if (langMap[langCode]) {
-              setLanguage(langMap[langCode]);
-            }
+          const langMap: Record<string, SupportedLanguage> = {
+            uz: 'uz', ru: 'ru', en: 'en', de: 'de',
+            tr: 'tr', kk: 'kk', ar: 'ar', ko: 'ko',
+            uk: 'ru', // Ukrainian users often prefer Russian
+          };
+          if (langCode && langMap[langCode]) {
+            setLanguage(langMap[langCode]);
           }
         }
       } catch (error) {

@@ -2,6 +2,16 @@ import { Markup } from 'telegraf';
 import { I18nService } from '../../common/i18n/i18n.service';
 import { THEME_META } from '../../renderer/themes/theme-registry';
 
+/**
+ * Append the user's current language to the web-app URL (?lang=xx) so the
+ * mini-app opens directly in that language. Changing language re-renders the
+ * menu with a new URL, which forces Telegram to reload the web app fresh.
+ */
+function webAppWithLang(url: string, i18n: I18nService): string {
+  const sep = url.includes('?') ? '&' : '?';
+  return `${url}${sep}lang=${i18n.getLanguage()}`;
+}
+
 export class ReplyKeyboards {
   /**
    * Persistent main menu keyboard (always visible at bottom)
@@ -12,7 +22,7 @@ export class ReplyKeyboards {
     // Row 1: Web App opener + Start (same layout as the inline menu).
     const topRow: any[] = [];
     if (webAppUrl) {
-      topRow.push(Markup.button.webApp(i18n.t('buttons.openWebApp'), webAppUrl));
+      topRow.push(Markup.button.webApp(i18n.t('buttons.openWebApp'), webAppWithLang(webAppUrl, i18n)));
     }
     topRow.push(i18n.t('buttons.start'));
     keyboard.push(topRow);
@@ -64,7 +74,7 @@ export class InlineKeyboards {
     // Add Mini App button if URL is provided
     if (miniAppUrl) {
       buttons.push([
-        Markup.button.webApp('🎨 Dizayner (Mini App)', miniAppUrl),
+        Markup.button.webApp('🎨 Dizayner (Mini App)', webAppWithLang(miniAppUrl, i18n)),
       ]);
     }
 
@@ -195,7 +205,7 @@ export class InlineKeyboards {
     // Row 1: Open Web App + Start together.
     const topRow: any[] = [];
     if (webAppUrl) {
-      topRow.push(Markup.button.webApp(i18n.t('buttons.openWebApp'), webAppUrl));
+      topRow.push(Markup.button.webApp(i18n.t('buttons.openWebApp'), webAppWithLang(webAppUrl, i18n)));
     }
     topRow.push(Markup.button.callback(i18n.t('buttons.start'), 'run_start'));
     buttons.push(topRow);
