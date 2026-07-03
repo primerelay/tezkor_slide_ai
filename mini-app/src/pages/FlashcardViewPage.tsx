@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { useTelegram } from '../hooks/useTelegram';
+import { useLanguage } from '../contexts/LanguageContext';
 import { motion } from 'framer-motion';
 import { ChevronLeft, ChevronRight, RotateCw, Home, Share2 } from 'lucide-react';
 import { api, FlashcardSet } from '../api/api';
@@ -9,6 +10,7 @@ export default function FlashcardViewPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const { haptic, showBackButton, hideBackButton } = useTelegram();
+  const { t } = useLanguage();
 
   const [set, setSet] = useState<FlashcardSet | null>(null);
   const [loading, setLoading] = useState(true);
@@ -48,7 +50,7 @@ export default function FlashcardViewPage() {
   const share = () => {
     if (!set?.shareUrl) return;
     haptic('light');
-    const text = `🎴 «${set.title}» — flesh kartalar bilan tez yodlab ol!`;
+    const text = `🎴 «${set.title}» — ${t.flashcardShareText}`;
     const dialog = `https://t.me/share/url?url=${encodeURIComponent(set.shareUrl)}&text=${encodeURIComponent(text)}`;
     const tg = (window as any)?.Telegram?.WebApp;
     if (tg?.openTelegramLink) tg.openTelegramLink(dialog);
@@ -66,9 +68,9 @@ export default function FlashcardViewPage() {
   if (!set || !card) {
     return (
       <div className="h-screen flex flex-col items-center justify-center bg-gray-50 gap-4">
-        <p className="text-gray-500">Kartalar topilmadi</p>
+        <p className="text-gray-500">{t.cardsNotFound}</p>
         <button onClick={() => navigate('/')} className="px-4 py-2 rounded-xl bg-amber-500 text-white font-semibold">
-          Bosh sahifa
+          {t.home}
         </button>
       </div>
     );
@@ -116,18 +118,18 @@ export default function FlashcardViewPage() {
               className="absolute inset-0 rounded-3xl bg-white shadow-lg border border-gray-100 flex flex-col items-center justify-center p-6 text-center"
               style={{ backfaceVisibility: 'hidden' }}
             >
-              <span className="text-xs font-semibold text-amber-500 uppercase tracking-wider mb-4">Savol</span>
+              <span className="text-xs font-semibold text-amber-500 uppercase tracking-wider mb-4">{t.question}</span>
               <p className="text-xl font-semibold text-gray-900 leading-snug">{card.front}</p>
-              <span className="absolute bottom-4 text-xs text-gray-400">Javob uchun bosing</span>
+              <span className="absolute bottom-4 text-xs text-gray-400">{t.tapForAnswer}</span>
             </div>
             {/* Back */}
             <div
               className="absolute inset-0 rounded-3xl bg-gradient-to-br from-amber-500 to-orange-500 shadow-lg flex flex-col items-center justify-center p-6 text-center"
               style={{ backfaceVisibility: 'hidden', transform: 'rotateY(180deg)' }}
             >
-              <span className="text-xs font-semibold text-white/80 uppercase tracking-wider mb-4">Javob</span>
+              <span className="text-xs font-semibold text-white/80 uppercase tracking-wider mb-4">{t.answer}</span>
               <p className="text-lg font-medium text-white leading-relaxed">{card.back}</p>
-              <span className="absolute bottom-4 text-xs text-white/70">Savolga qaytish uchun bosing</span>
+              <span className="absolute bottom-4 text-xs text-white/70">{t.tapToReturn}</span>
             </div>
           </motion.div>
         </div>
@@ -146,7 +148,7 @@ export default function FlashcardViewPage() {
           className="flex-1 h-14 rounded-2xl bg-amber-500 text-white font-semibold flex items-center justify-center gap-2 active:scale-[0.98] transition-transform"
         >
           <RotateCw className="w-5 h-5" />
-          Ag'darish
+          {t.flip}
         </button>
         <button
           onClick={() => go(1)}

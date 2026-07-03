@@ -121,7 +121,7 @@ export default function DashboardPage() {
         >
           <h2 className="font-semibold text-gray-900 mb-3 flex items-center gap-2">
             <Sparkles className="w-4 h-4 text-gray-400" />
-            Barcha funksiyalar
+            {t.allFeatures}
           </h2>
           <div className="grid grid-cols-2 gap-3">
             {/* Slide Create */}
@@ -132,8 +132,8 @@ export default function DashboardPage() {
               <div className="w-10 h-10 rounded-xl bg-purple-100 flex items-center justify-center mb-3">
                 <FileText className="w-5 h-5 text-purple-600" />
               </div>
-              <div className="font-medium text-gray-900 text-sm mb-1">Slide yaratish</div>
-              <div className="text-xs text-gray-500">AI yordamida</div>
+              <div className="font-medium text-gray-900 text-sm mb-1">{t.createSlide}</div>
+              <div className="text-xs text-gray-500">{t.withAI}</div>
             </button>
 
             {/* Quiz Generator */}
@@ -162,8 +162,8 @@ export default function DashboardPage() {
               <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center mb-3">
                 <FileText className="w-5 h-5 text-blue-600" />
               </div>
-              <div className="font-medium text-gray-900 text-sm mb-1">Mustaqil ish</div>
-              <div className="text-xs text-gray-500">Word hujjat</div>
+              <div className="font-medium text-gray-900 text-sm mb-1">{t.docMustaqilIsh}</div>
+              <div className="text-xs text-gray-500">{t.wordDocument}</div>
             </button>
 
             {/* Referat */}
@@ -177,8 +177,8 @@ export default function DashboardPage() {
               <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center mb-3">
                 <BookOpen className="w-5 h-5 text-emerald-600" />
               </div>
-              <div className="font-medium text-gray-900 text-sm mb-1">Referat</div>
-              <div className="text-xs text-gray-500">Word hujjat</div>
+              <div className="font-medium text-gray-900 text-sm mb-1">{t.docReferat}</div>
+              <div className="text-xs text-gray-500">{t.wordDocument}</div>
             </button>
 
             {/* Insho / Essay */}
@@ -192,8 +192,8 @@ export default function DashboardPage() {
               <div className="w-10 h-10 rounded-xl bg-rose-100 flex items-center justify-center mb-3">
                 <PenLine className="w-5 h-5 text-rose-600" />
               </div>
-              <div className="font-medium text-gray-900 text-sm mb-1">Insho</div>
-              <div className="text-xs text-gray-500">Insho / Essey</div>
+              <div className="font-medium text-gray-900 text-sm mb-1">{t.docInsho}</div>
+              <div className="text-xs text-gray-500">{t.inshoSubtitle}</div>
             </button>
 
             {/* Kurs ishi */}
@@ -204,8 +204,8 @@ export default function DashboardPage() {
               <div className="w-10 h-10 rounded-xl bg-indigo-100 flex items-center justify-center mb-3">
                 <GraduationCap className="w-5 h-5 text-indigo-600" />
               </div>
-              <div className="font-medium text-gray-900 text-sm mb-1">Kurs ishi</div>
-              <div className="text-xs text-gray-500">Word hujjat</div>
+              <div className="font-medium text-gray-900 text-sm mb-1">{t.docKursIshi}</div>
+              <div className="text-xs text-gray-500">{t.wordDocument}</div>
             </button>
 
             {/* Maqola */}
@@ -216,8 +216,8 @@ export default function DashboardPage() {
               <div className="w-10 h-10 rounded-xl bg-cyan-100 flex items-center justify-center mb-3">
                 <Newspaper className="w-5 h-5 text-cyan-600" />
               </div>
-              <div className="font-medium text-gray-900 text-sm mb-1">Maqola</div>
-              <div className="text-xs text-gray-500">Ilmiy maqola</div>
+              <div className="font-medium text-gray-900 text-sm mb-1">{t.docMaqola}</div>
+              <div className="text-xs text-gray-500">{t.scientificArticle}</div>
             </button>
 
             {/* Tezis */}
@@ -228,8 +228,8 @@ export default function DashboardPage() {
               <div className="w-10 h-10 rounded-xl bg-violet-100 flex items-center justify-center mb-3">
                 <ScrollText className="w-5 h-5 text-violet-600" />
               </div>
-              <div className="font-medium text-gray-900 text-sm mb-1">Tezis</div>
-              <div className="text-xs text-gray-500">Konferensiya</div>
+              <div className="font-medium text-gray-900 text-sm mb-1">{t.docTezis}</div>
+              <div className="text-xs text-gray-500">{t.conference}</div>
             </button>
 
             {/* Flashcards */}
@@ -243,8 +243,8 @@ export default function DashboardPage() {
               <div className="w-10 h-10 rounded-xl bg-amber-100 flex items-center justify-center mb-3">
                 <Layers className="w-5 h-5 text-amber-600" />
               </div>
-              <div className="font-medium text-gray-900 text-sm mb-1">Flesh kartalar</div>
-              <div className="text-xs text-gray-500">Tez yodlash</div>
+              <div className="font-medium text-gray-900 text-sm mb-1">{t.flashcards}</div>
+              <div className="text-xs text-gray-500">{t.quickMemorization}</div>
             </button>
 
             {/* Glossary */}
@@ -255,8 +255,8 @@ export default function DashboardPage() {
               <div className="w-10 h-10 rounded-xl bg-emerald-100 flex items-center justify-center mb-3">
                 <BookMarked className="w-5 h-5 text-emerald-600" />
               </div>
-              <div className="font-medium text-gray-900 text-sm mb-1">Glossary</div>
-              <div className="text-xs text-gray-500">Izohli lug'at</div>
+              <div className="font-medium text-gray-900 text-sm mb-1">{t.docGlossary}</div>
+              <div className="text-xs text-gray-500">{t.glossarySubtitle}</div>
             </button>
 
             {/* Crossword */}
@@ -267,8 +267,8 @@ export default function DashboardPage() {
               <div className="w-10 h-10 rounded-xl bg-teal-100 flex items-center justify-center mb-3">
                 <Puzzle className="w-5 h-5 text-teal-600" />
               </div>
-              <div className="font-medium text-gray-900 text-sm mb-1">Krossvord</div>
-              <div className="text-xs text-gray-500">O'yin-mashq</div>
+              <div className="font-medium text-gray-900 text-sm mb-1">{t.docCrossword}</div>
+              <div className="text-xs text-gray-500">{t.crosswordSubtitle}</div>
             </button>
 
             {/* Resume / CV */}
@@ -279,8 +279,8 @@ export default function DashboardPage() {
               <div className="w-10 h-10 rounded-xl bg-blue-100 flex items-center justify-center mb-3">
                 <IdCard className="w-5 h-5 text-blue-600" />
               </div>
-              <div className="font-medium text-gray-900 text-sm mb-1">Rezyume (CV)</div>
-              <div className="text-xs text-gray-500">Ish uchun</div>
+              <div className="font-medium text-gray-900 text-sm mb-1">{t.docResume}</div>
+              <div className="text-xs text-gray-500">{t.forWork}</div>
             </button>
 
             {/* Translator */}
@@ -291,8 +291,8 @@ export default function DashboardPage() {
               <div className="w-10 h-10 rounded-xl bg-sky-100 flex items-center justify-center mb-3">
                 <Languages className="w-5 h-5 text-sky-600" />
               </div>
-              <div className="font-medium text-gray-900 text-sm mb-1">Tarjimon</div>
-              <div className="text-xs text-gray-500">Akademik tarjima</div>
+              <div className="font-medium text-gray-900 text-sm mb-1">{t.docTranslator}</div>
+              <div className="text-xs text-gray-500">{t.academicTranslation}</div>
             </button>
           </div>
         </motion.div>

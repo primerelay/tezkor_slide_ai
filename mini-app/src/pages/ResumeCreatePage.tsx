@@ -6,19 +6,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, IdCard, Sparkles, CheckCircle2, Send, Check } from 'lucide-react';
 import { api } from '../api/api';
 import { getTelegramUserId } from '../utils/telegram';
+import type { Translations } from '../i18n/translations';
 
 type Step = 'personal' | 'details' | 'template' | 'generating' | 'done';
 type TemplateId = 'classic' | 'modern' | 'minimal' | 'bold' | 'twotone' | 'executive';
 
 const PRICE = 2500;
 
-const TEMPLATES: { id: TemplateId; name: string; accent: string }[] = [
-  { id: 'classic', name: 'Klassik', accent: '#1F4E79' },
-  { id: 'modern', name: 'Zamonaviy', accent: '#1F3864' },
-  { id: 'minimal', name: 'Minimal', accent: '#374151' },
-  { id: 'bold', name: 'Jasur', accent: '#0F766E' },
-  { id: 'twotone', name: 'Ikki rang', accent: '#7F1D1D' },
-  { id: 'executive', name: 'Ijrochi', accent: '#1E293B' },
+const TEMPLATES: { id: TemplateId; name: keyof Translations; accent: string }[] = [
+  { id: 'classic', name: 'tplClassic', accent: '#1F4E79' },
+  { id: 'modern', name: 'modern', accent: '#1F3864' },
+  { id: 'minimal', name: 'tplMinimal', accent: '#374151' },
+  { id: 'bold', name: 'tplBold', accent: '#0F766E' },
+  { id: 'twotone', name: 'tplTwoTone', accent: '#7F1D1D' },
+  { id: 'executive', name: 'tplExecutive', accent: '#1E293B' },
 ];
 
 /** Small visual mock-up so the user can see each layout at a glance. */
@@ -79,7 +80,7 @@ function TemplatePreview({ id, accent }: { id: TemplateId; accent: string }) {
 export default function ResumeCreatePage() {
   const navigate = useNavigate();
   const { haptic, showBackButton, hideBackButton } = useTelegram();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
 
   const [step, setStep] = useState<Step>('personal');
   const [fullName, setFullName] = useState('');
@@ -114,7 +115,7 @@ export default function ResumeCreatePage() {
   const handleGenerate = async () => {
     const telegramId = getTelegramUserId();
     if (!telegramId) {
-      alert('Telegram foydalanuvchi aniqlanmadi. Ilovani bot ichidagi tugma orqali oching.');
+      alert(t.telegramUserNotDetected);
       return;
     }
     setStep('generating');
@@ -148,7 +149,7 @@ export default function ResumeCreatePage() {
       setStep('done');
     } catch (error: any) {
       clearInterval(progressInterval);
-      alert(error.message || 'Rezyume yaratishda xatolik yuz berdi');
+      alert(error.message || t.resumeCreateError);
       navigate('/');
     }
   };
@@ -163,7 +164,7 @@ export default function ResumeCreatePage() {
   const field = (label: string, value: string, set: (v: string) => void, placeholder: string, optional = false) => (
     <div className="card p-3">
       <h3 className="font-medium text-gray-900 text-sm mb-2">
-        {label} {optional && <span className="text-gray-400 font-normal">(ixtiyoriy)</span>}
+        {label} {optional && <span className="text-gray-400 font-normal">{t.optional}</span>}
       </h3>
       <input value={value} onChange={(e) => set(e.target.value)} placeholder={placeholder}
         className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500" />
@@ -173,7 +174,7 @@ export default function ResumeCreatePage() {
   const area = (label: string, value: string, set: (v: string) => void, placeholder: string, optional = false) => (
     <div className="card p-3">
       <h3 className="font-medium text-gray-900 text-sm mb-2">
-        {label} {optional && <span className="text-gray-400 font-normal">(ixtiyoriy)</span>}
+        {label} {optional && <span className="text-gray-400 font-normal">{t.optional}</span>}
       </h3>
       <textarea value={value} onChange={(e) => set(e.target.value)} placeholder={placeholder}
         className="w-full h-24 px-3 py-2 text-sm border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500" />
@@ -188,13 +189,13 @@ export default function ResumeCreatePage() {
             <IdCard className="w-5 h-5 text-blue-600" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-gray-900">Rezyume (CV)</h1>
+            <h1 className="text-lg font-bold text-gray-900">{t.docResume}</h1>
             <p className="text-sm text-gray-500">
-              {step === 'personal' && 'Shaxsiy ma\'lumotlar'}
-              {step === 'details' && 'Tajriba va ta\'lim'}
-              {step === 'template' && 'Shablonni tanlang'}
-              {step === 'generating' && 'Tayyorlanmoqda...'}
-              {step === 'done' && 'Tayyor!'}
+              {step === 'personal' && t.personalInfo}
+              {step === 'details' && t.experienceEducation}
+              {step === 'template' && t.chooseTemplate}
+              {step === 'generating' && t.preparing}
+              {step === 'done' && t.ready}
             </p>
           </div>
         </div>
@@ -211,33 +212,33 @@ export default function ResumeCreatePage() {
         <AnimatePresence mode="wait">
           {step === 'personal' && (
             <motion.div key="p" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="py-4 space-y-3">
-              {field('To\'liq ism-familiya', fullName, setFullName, 'Aliyev Jasur')}
-              {field('Lavozim / kasb', position, setPosition, 'Frontend dasturchi')}
-              {field('Telefon', phone, setPhone, '+998 90 123 45 67', true)}
-              {field('Email', email, setEmail, 'ism@mail.com', true)}
-              {field('Shahar', location, setLocation, 'Toshkent', true)}
+              {field(t.fullNameLabel, fullName, setFullName, t.fullNameSample)}
+              {field(t.positionLabel, position, setPosition, t.positionPlaceholder)}
+              {field(t.phoneLabel, phone, setPhone, '+998 90 123 45 67', true)}
+              {field(t.emailLabel, email, setEmail, t.emailPlaceholder, true)}
+              {field(t.cityLabel, location, setLocation, t.cityPlaceholder, true)}
             </motion.div>
           )}
 
           {step === 'details' && (
             <motion.div key="d" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="py-4 space-y-3">
-              {area('Ish tajribasi', experience, setExperience, 'Qayerda, qachon, qanday ishlagansiz — erkin yozing. AI professional qilib beradi.')}
-              {area('Ta\'lim', education, setEducation, 'Qaysi universitet/kollej, yo\'nalish, yillar', true)}
-              {field('Ko\'nikmalar', skills, setSkills, 'JavaScript, React, Git (vergul bilan)', true)}
-              {field('Tillar', languages, setLanguages, 'O\'zbek, Rus, Ingliz - B2', true)}
+              {area(t.experienceLabel, experience, setExperience, t.experiencePlaceholder)}
+              {area(t.educationLabel, education, setEducation, t.educationPlaceholder, true)}
+              {field(t.skillsLabel, skills, setSkills, t.skillsPlaceholder, true)}
+              {field(t.languagesLabel, languages, setLanguages, t.languagesPlaceholder, true)}
             </motion.div>
           )}
 
           {step === 'template' && (
             <motion.div key="t" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="py-4">
-              <p className="text-sm text-gray-500 mb-3">Yoqqan dizaynni tanlang:</p>
+              <p className="text-sm text-gray-500 mb-3">{t.chooseDesignYouLike}</p>
               <div className="grid grid-cols-2 gap-3">
-                {TEMPLATES.map((t) => {
-                  const active = template === t.id;
+                {TEMPLATES.map((tpl) => {
+                  const active = template === tpl.id;
                   return (
                     <button
-                      key={t.id}
-                      onClick={() => { haptic('light'); setTemplate(t.id); }}
+                      key={tpl.id}
+                      onClick={() => { haptic('light'); setTemplate(tpl.id); }}
                       className={`relative rounded-2xl border-2 p-2 transition-all ${active ? 'border-blue-600 bg-blue-50' : 'border-gray-200 bg-white'}`}
                     >
                       {active && (
@@ -246,19 +247,19 @@ export default function ResumeCreatePage() {
                         </div>
                       )}
                       <div className="aspect-[3/4] w-full rounded-md border border-gray-100 overflow-hidden shadow-sm">
-                        <TemplatePreview id={t.id} accent={t.accent} />
+                        <TemplatePreview id={tpl.id} accent={tpl.accent} />
                       </div>
-                      <div className="mt-2 text-sm font-medium text-gray-900 text-center">{t.name}</div>
+                      <div className="mt-2 text-sm font-medium text-gray-900 text-center">{t[tpl.name]}</div>
                     </button>
                   );
                 })}
               </div>
               <div className="card p-4 bg-blue-50 border-2 border-blue-200 mt-4">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-gray-900">Narx</h3>
-                  <div className="text-xl font-bold text-blue-600">{PRICE.toLocaleString()} so'm</div>
+                  <h3 className="font-semibold text-gray-900">{t.priceLabel}</h3>
+                  <div className="text-xl font-bold text-blue-600">{PRICE.toLocaleString()} {t.uzs}</div>
                 </div>
-                <p className="text-xs text-gray-600 mt-2">✨ Tanlangan shablonда professional CV (Word .docx) Telegram'ga yuboriladi.</p>
+                <p className="text-xs text-gray-600 mt-2">{t.resumeTemplateNote}</p>
               </div>
             </motion.div>
           )}
@@ -268,8 +269,8 @@ export default function ResumeCreatePage() {
               <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center mb-6 animate-pulse">
                 <IdCard className="w-10 h-10 text-blue-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Rezyume tayyorlanmoqda...</h3>
-              <p className="text-gray-500 mb-6 text-center">AI ma'lumotlaringizni professional formatga soladi.</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{t.resumeBeingPrepared}</h3>
+              <p className="text-gray-500 mb-6 text-center">{t.aiFormatsInfo}</p>
               <div className="w-full max-w-xs">
                 <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                   <motion.div className="h-full bg-blue-600" initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ duration: 0.3 }} />
@@ -284,13 +285,13 @@ export default function ResumeCreatePage() {
               <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-6">
                 <CheckCircle2 className="w-11 h-11 text-green-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Rezyume tayyor! 🎉</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{t.resumeReady}</h3>
               <div className="flex items-center gap-2 text-gray-500 mb-8">
                 <Send className="w-4 h-4" />
-                <p className="text-center">CV Word (.docx) formatida Telegram'ga yuborildi.</p>
+                <p className="text-center">{t.cvSentToTelegram}</p>
               </div>
               <button onClick={() => { haptic('light'); navigate('/'); }} className="w-full max-w-xs py-3 rounded-xl font-semibold bg-blue-600 text-white active:scale-[0.98] transition-all">
-                Bosh sahifaga qaytish
+                {t.backToHome}
               </button>
             </motion.div>
           )}
@@ -309,11 +310,11 @@ export default function ResumeCreatePage() {
             {step === 'template' ? (
               <>
                 <Sparkles className="w-5 h-5" />
-                {PRICE.toLocaleString()} so'm — Yaratish
+                {PRICE.toLocaleString()} {t.uzs} — {t.create}
               </>
             ) : (
               <>
-                Keyingisi
+                {t.next}
                 <ArrowRight className="w-5 h-5" />
               </>
             )}

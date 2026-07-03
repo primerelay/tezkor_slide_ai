@@ -6,6 +6,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { ArrowRight, BookMarked, Puzzle, FileText, Sparkles, CheckCircle2, Send } from 'lucide-react';
 import { api } from '../api/api';
 import { getTelegramUserId } from '../utils/telegram';
+import type { Translations } from '../i18n/translations';
 
 type Step = 'content' | 'settings' | 'generating' | 'done';
 type StudyType = 'glossary' | 'crossword';
@@ -13,8 +14,8 @@ type StudyType = 'glossary' | 'crossword';
 const CONFIG: Record<
   StudyType,
   {
-    title: string;
-    hint: string;
+    title: keyof Translations;
+    hint: keyof Translations;
     icon: typeof BookMarked;
     iconBg: string;
     iconFg: string;
@@ -22,14 +23,14 @@ const CONFIG: Record<
     btnColor: string;
     selBorder: string;
     selBg: string;
-    unit: string;
+    unit: keyof Translations;
     options: { count: number; price: number }[];
-    features: string[];
+    features: (keyof Translations)[];
   }
 > = {
   glossary: {
-    title: 'Glossary',
-    hint: 'AI muhim atamalarni ta\'riflari bilan alfavit tartibda tayyorlaydi.',
+    title: 'docGlossary',
+    hint: 'glossaryHint',
     icon: BookMarked,
     iconBg: 'bg-emerald-100',
     iconFg: 'text-emerald-600',
@@ -37,17 +38,17 @@ const CONFIG: Record<
     btnColor: 'bg-emerald-600',
     selBorder: 'border-emerald-600',
     selBg: 'bg-emerald-50',
-    unit: 'atama',
+    unit: 'unitTerm',
     options: [
       { count: 20, price: 500 },
       { count: 30, price: 800 },
       { count: 50, price: 1200 },
     ],
-    features: ['Alfavit tartibda atamalar', 'Aniq akademik ta\'riflar', 'Word (.docx) — chop etishga tayyor'],
+    features: ['featAlphabeticalTerms', 'featAcademicDefinitions', 'featWordPrintReady'],
   },
   crossword: {
-    title: 'Krossvord',
-    hint: 'AI so\'zlarni tanlab, ularni bir-biriga kesishtirib krossvord tuzadi.',
+    title: 'docCrossword',
+    hint: 'crosswordHint',
     icon: Puzzle,
     iconBg: 'bg-teal-100',
     iconFg: 'text-teal-600',
@@ -55,12 +56,12 @@ const CONFIG: Record<
     btnColor: 'bg-teal-600',
     selBorder: 'border-teal-600',
     selBg: 'bg-teal-50',
-    unit: 'so\'z',
+    unit: 'unitWord',
     options: [
       { count: 10, price: 800 },
       { count: 15, price: 1200 },
     ],
-    features: ['Kesishgan katakchalar', 'Savollar (gorizontal/vertikal)', 'Javoblar kaliti bilan'],
+    features: ['featIntersectingCells', 'featQuestionsHV', 'featWithAnswerKey'],
   },
 };
 
@@ -68,7 +69,7 @@ export default function StudyCreatePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { haptic, showBackButton, hideBackButton } = useTelegram();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
 
   const type = (searchParams.get('type') as StudyType) || 'glossary';
   const cfg = CONFIG[type] || CONFIG.glossary;
@@ -98,7 +99,7 @@ export default function StudyCreatePage() {
   const handleGenerate = async () => {
     const telegramId = getTelegramUserId();
     if (!telegramId) {
-      alert('Telegram foydalanuvchi aniqlanmadi. Ilovani bot ichidagi tugma orqali oching.');
+      alert(t.telegramUserNotDetected);
       return;
     }
     setStep('generating');
@@ -120,7 +121,7 @@ export default function StudyCreatePage() {
       setStep('done');
     } catch (error: any) {
       clearInterval(progressInterval);
-      alert(error.message || 'Xatolik yuz berdi');
+      alert(error.message || t.errorOccurred);
       navigate('/');
     }
   };
@@ -136,12 +137,12 @@ export default function StudyCreatePage() {
             <Icon className={`w-5 h-5 ${cfg.iconFg}`} />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-gray-900">{cfg.title}</h1>
+            <h1 className="text-lg font-bold text-gray-900">{t[cfg.title]}</h1>
             <p className="text-sm text-gray-500">
-              {step === 'content' && 'Matn kiriting'}
-              {step === 'settings' && 'Sozlamalar'}
-              {step === 'generating' && 'Yaratilmoqda...'}
-              {step === 'done' && 'Tayyor!'}
+              {step === 'content' && t.enterText}
+              {step === 'settings' && t.settings}
+              {step === 'generating' && t.creating}
+              {step === 'done' && t.ready}
             </p>
           </div>
         </div>
@@ -158,22 +159,22 @@ export default function StudyCreatePage() {
           {step === 'content' && (
             <motion.div key="content" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="py-4 space-y-3">
               <div className="card p-4 bg-gradient-to-br from-gray-50 to-white">
-                <p className="text-sm text-gray-600">{cfg.hint}</p>
+                <p className="text-sm text-gray-600">{t[cfg.hint]}</p>
               </div>
               <div className="card p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <FileText className={`w-4 h-4 ${cfg.iconFg}`} />
-                  <h3 className="font-medium text-gray-900 text-sm">Matn yoki mavzu</h3>
+                  <h3 className="font-medium text-gray-900 text-sm">{t.textOrTopic}</h3>
                 </div>
                 <textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder="Darslik matni yoki mavzuni kiriting... (kamida 10 belgi)"
+                  placeholder={t.contentPlaceholder10}
                   className="w-full h-40 px-3 py-2 text-sm border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-gray-400"
                 />
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs text-gray-500">{content.length} belgi</span>
-                  {content.length >= 10 && <span className="text-xs text-green-600 font-medium">✓ Tayyor</span>}
+                  <span className="text-xs text-gray-500">{content.length} {t.characters}</span>
+                  {content.length >= 10 && <span className="text-xs text-green-600 font-medium">✓ {t.readyShort}</span>}
                 </div>
               </div>
             </motion.div>
@@ -182,7 +183,7 @@ export default function StudyCreatePage() {
           {step === 'settings' && (
             <motion.div key="settings" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="py-4 space-y-3">
               <div className="card p-3">
-                <h3 className="font-medium text-gray-900 text-sm mb-3">{cfg.title === 'Glossary' ? 'Atamalar' : 'So\'zlar'} sonini tanlang</h3>
+                <h3 className="font-medium text-gray-900 text-sm mb-3">{type === 'glossary' ? t.selectTermCount : t.selectWordCount}</h3>
                 <div className={`grid ${cfg.options.length === 2 ? 'grid-cols-2' : 'grid-cols-3'} gap-2`}>
                   {cfg.options.map((o) => (
                     <button
@@ -201,17 +202,17 @@ export default function StudyCreatePage() {
 
               <div className="card p-4 bg-gray-50 border-2 border-gray-200">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-gray-900">Jami narx</h3>
+                  <h3 className="font-semibold text-gray-900">{t.totalPrice}</h3>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-gray-900">{price.toLocaleString()} so'm</div>
-                    <div className="text-xs text-gray-500">{count} {cfg.unit}</div>
+                    <div className="text-2xl font-bold text-gray-900">{price.toLocaleString()} {t.uzs}</div>
+                    <div className="text-xs text-gray-500">{count} {t[cfg.unit]}</div>
                   </div>
                 </div>
                 <div className="pt-3 mt-3 border-t border-gray-200 text-xs text-gray-600 space-y-1">
-                  {cfg.features.map((f) => <div key={f}>✓ {f}</div>)}
+                  {cfg.features.map((f) => <div key={f}>✓ {t[f]}</div>)}
                 </div>
               </div>
-              <p className="text-xs text-gray-500 text-center px-4">Tayyor Word (.docx) fayli Telegram'ga yuboriladi.</p>
+              <p className="text-xs text-gray-500 text-center px-4">{t.readyWordFileSent}</p>
             </motion.div>
           )}
 
@@ -220,8 +221,8 @@ export default function StudyCreatePage() {
               <div className={`w-20 h-20 rounded-full ${cfg.iconBg} flex items-center justify-center mb-6 animate-pulse`}>
                 <Icon className={`w-10 h-10 ${cfg.iconFg}`} />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">{cfg.title} yaratilmoqda...</h3>
-              <p className="text-gray-500 mb-6 text-center">Bu bir necha soniya vaqt oladi.</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{t[cfg.title]} {t.beingCreated}</h3>
+              <p className="text-gray-500 mb-6 text-center">{t.takesFewSeconds}</p>
               <div className="w-full max-w-xs">
                 <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                   <motion.div className={`h-full ${cfg.barColor}`} initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ duration: 0.3 }} />
@@ -236,13 +237,13 @@ export default function StudyCreatePage() {
               <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-6">
                 <CheckCircle2 className="w-11 h-11 text-green-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Tayyor! 🎉</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{t.readyEmoji}</h3>
               <div className="flex items-center gap-2 text-gray-500 mb-8">
                 <Send className="w-4 h-4" />
-                <p className="text-center">Word (.docx) fayli Telegram chatingizga yuborildi.</p>
+                <p className="text-center">{t.wordSentToChat}</p>
               </div>
               <button onClick={() => { haptic('light'); navigate('/'); }} className={`w-full max-w-xs py-3 rounded-xl font-semibold text-white ${cfg.btnColor} active:scale-[0.98] transition-all`}>
-                Bosh sahifaga qaytish
+                {t.backToHome}
               </button>
             </motion.div>
           )}
@@ -261,11 +262,11 @@ export default function StudyCreatePage() {
             {step === 'settings' ? (
               <>
                 <Sparkles className="w-5 h-5" />
-                {price.toLocaleString()} so'm — Yaratish
+                {price.toLocaleString()} {t.uzs} — {t.create}
               </>
             ) : (
               <>
-                Keyingisi
+                {t.next}
                 <ArrowRight className="w-5 h-5" />
               </>
             )}

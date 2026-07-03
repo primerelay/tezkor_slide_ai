@@ -18,7 +18,7 @@ const CARD_PRICES = [
 export default function FlashcardCreatePage() {
   const navigate = useNavigate();
   const { haptic, showBackButton, hideBackButton } = useTelegram();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
 
   const [step, setStep] = useState<Step>('content');
   const [content, setContent] = useState('');
@@ -45,7 +45,7 @@ export default function FlashcardCreatePage() {
   const handleGenerate = async () => {
     const telegramId = getTelegramUserId();
     if (!telegramId) {
-      alert('Telegram foydalanuvchi aniqlanmadi. Ilovani bot ichidagi tugma orqali oching.');
+      alert(t.telegramUserNotDetected);
       return;
     }
 
@@ -68,7 +68,7 @@ export default function FlashcardCreatePage() {
       setTimeout(() => navigate(`/flashcards/${set.id}`), 600);
     } catch (error: any) {
       clearInterval(progressInterval);
-      alert(error.message || 'Flesh kartalar yaratishda xatolik yuz berdi');
+      alert(error.message || t.flashcardCreateError);
       navigate('/');
     }
   };
@@ -83,11 +83,11 @@ export default function FlashcardCreatePage() {
             <Layers className="w-5 h-5 text-amber-600" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-gray-900">Flesh kartalar</h1>
+            <h1 className="text-lg font-bold text-gray-900">{t.flashcards}</h1>
             <p className="text-sm text-gray-500">
-              {step === 'content' && 'Matn kiriting'}
-              {step === 'settings' && 'Kartalar soni'}
-              {step === 'generating' && 'Yaratilmoqda...'}
+              {step === 'content' && t.enterText}
+              {step === 'settings' && t.cardCount}
+              {step === 'generating' && t.creating}
             </p>
           </div>
         </div>
@@ -104,17 +104,17 @@ export default function FlashcardCreatePage() {
               <div className="card p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <FileText className="w-4 h-4 text-amber-600" />
-                  <h3 className="font-medium text-gray-900 text-sm">Matn yoki mavzu</h3>
+                  <h3 className="font-medium text-gray-900 text-sm">{t.textOrTopic}</h3>
                 </div>
                 <textarea
                   value={content}
                   onChange={(e) => setContent(e.target.value)}
-                  placeholder="Kartalar yaratish uchun darslik matni yoki mavzuni kiriting... (kamida 10 belgi)"
+                  placeholder={t.flashcardContentPlaceholder}
                   className="w-full h-44 px-3 py-2 text-sm border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-amber-500"
                 />
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs text-gray-500">{content.length} belgi</span>
-                  {content.length >= 10 && <span className="text-xs text-green-600 font-medium">✓ Tayyor</span>}
+                  <span className="text-xs text-gray-500">{content.length} {t.characters}</span>
+                  {content.length >= 10 && <span className="text-xs text-green-600 font-medium">✓ {t.readyShort}</span>}
                 </div>
               </div>
             </motion.div>
@@ -123,7 +123,7 @@ export default function FlashcardCreatePage() {
           {step === 'settings' && (
             <motion.div key="settings" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="py-4 space-y-3">
               <div className="card p-3">
-                <h3 className="font-medium text-gray-900 text-sm mb-3">Kartalar sonini tanlang</h3>
+                <h3 className="font-medium text-gray-900 text-sm mb-3">{t.selectCardCount}</h3>
                 <div className="grid grid-cols-3 gap-2">
                   {CARD_PRICES.map((c) => (
                     <button
@@ -142,16 +142,16 @@ export default function FlashcardCreatePage() {
 
               <div className="card p-4 bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-200">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-gray-900">Jami narx</h3>
+                  <h3 className="font-semibold text-gray-900">{t.totalPrice}</h3>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-amber-600">{price.toLocaleString()} so'm</div>
-                    <div className="text-xs text-gray-500">{cardCount} ta karta</div>
+                    <div className="text-2xl font-bold text-amber-600">{price.toLocaleString()} {t.uzs}</div>
+                    <div className="text-xs text-gray-500">{cardCount} {t.cardsUnit}</div>
                   </div>
                 </div>
                 <div className="pt-3 mt-3 border-t border-amber-200 text-xs text-gray-600 space-y-1">
-                  <div>✓ Har karta: savol/tushuncha + javob/ta'rif</div>
-                  <div>✓ Kartani ag'darib takrorlash</div>
-                  <div>✓ Telegram'da ham ochish mumkin</div>
+                  <div>✓ {t.featCardQA}</div>
+                  <div>✓ {t.featFlipReview}</div>
+                  <div>✓ {t.featOpenInTelegram}</div>
                 </div>
               </div>
             </motion.div>
@@ -162,8 +162,8 @@ export default function FlashcardCreatePage() {
               <div className="w-20 h-20 rounded-full bg-amber-100 flex items-center justify-center mb-6 animate-pulse">
                 <Layers className="w-10 h-10 text-amber-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Kartalar yaratilmoqda...</h3>
-              <p className="text-gray-500 mb-6">AI eng muhim nuqtalarni tanlayapti</p>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{t.cardsBeingCreated}</h3>
+              <p className="text-gray-500 mb-6">{t.aiSelectingKeyPoints}</p>
               <div className="w-full max-w-xs">
                 <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
                   <motion.div className="h-full bg-amber-500" initial={{ width: 0 }} animate={{ width: `${progress}%` }} transition={{ duration: 0.3 }} />
@@ -187,11 +187,11 @@ export default function FlashcardCreatePage() {
             {step === 'settings' ? (
               <>
                 <Sparkles className="w-5 h-5" />
-                {price.toLocaleString()} so'm — Yaratish
+                {price.toLocaleString()} {t.uzs} — {t.create}
               </>
             ) : (
               <>
-                Keyingisi
+                {t.next}
                 <ArrowRight className="w-5 h-5" />
               </>
             )}

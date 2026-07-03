@@ -12,7 +12,7 @@ type QuizDifficulty = 'easy' | 'medium' | 'hard';
 export default function QuizCreatePage() {
   const navigate = useNavigate();
   const { haptic, showBackButton, hideBackButton } = useTelegram();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
 
   const [step, setStep] = useState<Step>('content');
   const [content, setContent] = useState('');
@@ -98,7 +98,7 @@ export default function QuizCreatePage() {
     } catch (error: any) {
       clearInterval(progressInterval);
       console.error('Quiz generation failed:', error);
-      alert(error.message || 'Quiz yaratishda xatolik yuz berdi');
+      alert(error.message || t.quizCreateError);
       navigate('/');
     }
   };
@@ -111,7 +111,7 @@ export default function QuizCreatePage() {
       attempts++;
       if (attempts > maxAttempts) {
         clearInterval(poll);
-        alert('Quiz yaratish juda uzoq davom etmoqda. Iltimos, keyinroq tekshiring.');
+        alert(t.quizTakingLong);
         navigate('/');
         return;
       }
@@ -127,7 +127,7 @@ export default function QuizCreatePage() {
           setTimeout(() => navigate(`/quiz/${id}`), 1000);
         } else if (quiz.status === 'failed') {
           clearInterval(poll);
-          alert('Quiz yaratishda xatolik yuz berdi');
+          alert(t.quizCreateError);
           navigate('/');
         }
       } catch (error) {
@@ -147,7 +147,7 @@ export default function QuizCreatePage() {
             <Brain className="w-5 h-5 text-indigo-600" />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-gray-900">Quiz yaratish</h1>
+            <h1 className="text-lg font-bold text-gray-900">{t.createQuiz}</h1>
             <p className="text-sm text-gray-500">
               {step === 'content' && 'Matn kiriting'}
               {step === 'settings' && 'Sozlamalar'}
@@ -333,7 +333,7 @@ export default function QuizCreatePage() {
                 <Brain className="w-10 h-10 text-indigo-600" />
               </div>
               <h3 className="text-xl font-bold text-gray-900 mb-2">Quiz yaratilmoqda...</h3>
-              <p className="text-gray-500 mb-6">AI test savollarini yaratyapti</p>
+              <p className="text-gray-500 mb-6">{t.quizGenerating}</p>
 
               {/* Progress Bar */}
               <div className="w-full max-w-xs">
@@ -368,7 +368,7 @@ export default function QuizCreatePage() {
             {step === 'settings' && (
               <>
                 <Sparkles className="w-5 h-5" />
-                Quiz yaratish
+                {t.createQuiz}
               </>
             )}
             <ArrowRight className="w-5 h-5" />

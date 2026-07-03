@@ -19,6 +19,7 @@ import {
 } from 'lucide-react';
 import { api, DocumentType } from '../api/api';
 import { getTelegramUserId } from '../utils/telegram';
+import type { Translations } from '../i18n/translations';
 
 type Step = 'topic' | 'details' | 'settings' | 'generating' | 'done';
 
@@ -57,8 +58,8 @@ const TEZIS_PRICES: PriceOption[] = [
 const DOC_META: Record<
   DocumentType,
   {
-    title: string;
-    desc: string;
+    title: keyof Translations;
+    desc: keyof Translations;
     icon: typeof FileText;
     iconBg: string;
     iconFg: string;
@@ -68,8 +69,8 @@ const DOC_META: Record<
   }
 > = {
   mustaqil_ish: {
-    title: 'Mustaqil ish',
-    desc: 'AI professional mustaqil ish tayyorlaydi',
+    title: 'docMustaqilIsh',
+    desc: 'descMustaqilIsh',
     icon: FileText,
     iconBg: 'bg-blue-100',
     iconFg: 'text-blue-600',
@@ -78,8 +79,8 @@ const DOC_META: Record<
     withDetails: true,
   },
   referat: {
-    title: 'Referat',
-    desc: 'AI professional referat tayyorlaydi',
+    title: 'docReferat',
+    desc: 'descReferat',
     icon: BookOpen,
     iconBg: 'bg-emerald-100',
     iconFg: 'text-emerald-600',
@@ -88,8 +89,8 @@ const DOC_META: Record<
     withDetails: true,
   },
   insho: {
-    title: 'Insho',
-    desc: 'AI ravon, professional insho yozadi',
+    title: 'docInsho',
+    desc: 'descInsho',
     icon: PenLine,
     iconBg: 'bg-rose-100',
     iconFg: 'text-rose-600',
@@ -98,8 +99,8 @@ const DOC_META: Record<
     withDetails: false,
   },
   kurs_ishi: {
-    title: 'Kurs ishi',
-    desc: 'AI to\'liq kurs ishi tayyorlaydi',
+    title: 'docKursIshi',
+    desc: 'descKursIshi',
     icon: GraduationCap,
     iconBg: 'bg-indigo-100',
     iconFg: 'text-indigo-600',
@@ -108,8 +109,8 @@ const DOC_META: Record<
     withDetails: true,
   },
   maqola: {
-    title: 'Maqola',
-    desc: 'AI ilmiy maqola yozadi (annotatsiya + kalit so\'zlar)',
+    title: 'docMaqola',
+    desc: 'descMaqola',
     icon: Newspaper,
     iconBg: 'bg-cyan-100',
     iconFg: 'text-cyan-600',
@@ -118,8 +119,8 @@ const DOC_META: Record<
     withDetails: false,
   },
   tezis: {
-    title: 'Tezis',
-    desc: 'AI konferensiya tezisini yozadi',
+    title: 'docTezis',
+    desc: 'descTezis',
     icon: ScrollText,
     iconBg: 'bg-violet-100',
     iconFg: 'text-violet-600',
@@ -133,7 +134,7 @@ export default function DocumentCreatePage() {
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const { haptic, showBackButton, hideBackButton } = useTelegram();
-  const { language } = useLanguage();
+  const { language, t } = useLanguage();
 
   const docType = (searchParams.get('type') as DocumentType) || 'mustaqil_ish';
   const meta = DOC_META[docType] || DOC_META.mustaqil_ish;
@@ -173,9 +174,7 @@ export default function DocumentCreatePage() {
   const handleGenerate = async () => {
     const telegramId = getTelegramUserId();
     if (!telegramId) {
-      alert(
-        "Telegram foydalanuvchi aniqlanmadi. Iltimos, ilovani bot ichidagi \"🚀 Web ilovani ochish\" tugmasi orqali oching (brauzerda emas).",
-      );
+      alert(t.telegramUserNotDetectedLong);
       return;
     }
 
@@ -199,7 +198,7 @@ export default function DocumentCreatePage() {
       pollStatus(documentId, progressInterval);
     } catch (error: any) {
       clearInterval(progressInterval);
-      alert(error.message || 'Hujjat yaratishda xatolik yuz berdi');
+      alert(error.message || t.docCreateError);
       navigate('/');
     }
   };
@@ -213,7 +212,7 @@ export default function DocumentCreatePage() {
       if (attempts > maxAttempts) {
         clearInterval(poll);
         clearInterval(progressInterval);
-        alert('Hujjat yaratish uzoq davom etmoqda. Tayyor bo\'lganda Telegram\'ga yuboriladi.');
+        alert(t.docTakingLong);
         navigate('/');
         return;
       }
@@ -228,7 +227,7 @@ export default function DocumentCreatePage() {
         } else if (doc.status === 'failed') {
           clearInterval(poll);
           clearInterval(progressInterval);
-          alert('Hujjat yaratishda xatolik yuz berdi. Balansingiz qaytarildi.');
+          alert(t.docCreateFailedRefund);
           navigate('/');
         }
       } catch {
@@ -249,13 +248,13 @@ export default function DocumentCreatePage() {
             <Icon className={`w-5 h-5 ${meta.iconFg}`} />
           </div>
           <div>
-            <h1 className="text-lg font-bold text-gray-900">{meta.title}</h1>
+            <h1 className="text-lg font-bold text-gray-900">{t[meta.title]}</h1>
             <p className="text-sm text-gray-500">
-              {step === 'topic' && 'Mavzuni kiriting'}
-              {step === 'details' && "Ma'lumotlar"}
-              {step === 'settings' && 'Hajm va narx'}
-              {step === 'generating' && 'Yaratilmoqda...'}
-              {step === 'done' && 'Tayyor!'}
+              {step === 'topic' && t.enterTopic}
+              {step === 'details' && t.detailsStep}
+              {step === 'settings' && t.sizeAndPrice}
+              {step === 'generating' && t.creating}
+              {step === 'done' && t.ready}
             </p>
           </div>
         </div>
@@ -276,22 +275,22 @@ export default function DocumentCreatePage() {
           {step === 'topic' && (
             <motion.div key="topic" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="py-4 space-y-3">
               <div className="card p-4 bg-gradient-to-br from-gray-50 to-white">
-                <p className="text-sm text-gray-600">{meta.desc}. Tayyor hujjat: titul varaq, mundarija, kirish, boblar, xulosa, adabiyotlar va rasmlar bilan.</p>
+                <p className="text-sm text-gray-600">{t[meta.desc]}. {t.readyDocIncludes}</p>
               </div>
               <div className="card p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <FileText className="w-4 h-4 text-blue-600" />
-                  <h3 className="font-medium text-gray-900 text-sm">Mavzu</h3>
+                  <h3 className="font-medium text-gray-900 text-sm">{t.topic}</h3>
                 </div>
                 <textarea
                   value={topic}
                   onChange={(e) => setTopic(e.target.value)}
-                  placeholder="Masalan: Sun'iy intellektning zamonaviy jamiyatga ta'siri"
+                  placeholder={t.docTopicPlaceholder}
                   className="w-full h-28 px-3 py-2 text-sm border border-gray-200 rounded-xl resize-none focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
                 <div className="flex items-center justify-between mt-2">
-                  <span className="text-xs text-gray-500">{topic.length} belgi</span>
-                  {topic.trim().length >= 5 && <span className="text-xs text-green-600 font-medium">✓ Tayyor</span>}
+                  <span className="text-xs text-gray-500">{topic.length} {t.characters}</span>
+                  {topic.trim().length >= 5 && <span className="text-xs text-green-600 font-medium">✓ {t.readyShort}</span>}
                 </div>
               </div>
             </motion.div>
@@ -303,36 +302,36 @@ export default function DocumentCreatePage() {
               <div className="card p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <Building2 className="w-4 h-4 text-blue-600" />
-                  <h3 className="font-medium text-gray-900 text-sm">O'quv muassasasi <span className="text-gray-400 font-normal">(ixtiyoriy)</span></h3>
+                  <h3 className="font-medium text-gray-900 text-sm">{t.institution} <span className="text-gray-400 font-normal">{t.optional}</span></h3>
                 </div>
                 <input
                   value={institution}
                   onChange={(e) => setInstitution(e.target.value)}
-                  placeholder="Masalan: Toshkent davlat universiteti"
+                  placeholder={t.institutionPlaceholder}
                   className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="card p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <UserIcon className="w-4 h-4 text-blue-600" />
-                  <h3 className="font-medium text-gray-900 text-sm">Bajardi <span className="text-gray-400 font-normal">(ixtiyoriy)</span></h3>
+                  <h3 className="font-medium text-gray-900 text-sm">{t.preparedBy} <span className="text-gray-400 font-normal">{t.optional}</span></h3>
                 </div>
                 <input
                   value={studentName}
                   onChange={(e) => setStudentName(e.target.value)}
-                  placeholder="Ism Familiya"
+                  placeholder={t.fullNamePlaceholder}
                   className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
               <div className="card p-3">
                 <div className="flex items-center gap-2 mb-2">
                   <UserIcon className="w-4 h-4 text-blue-600" />
-                  <h3 className="font-medium text-gray-900 text-sm">Tekshirdi <span className="text-gray-400 font-normal">(ixtiyoriy)</span></h3>
+                  <h3 className="font-medium text-gray-900 text-sm">{t.checkedBy} <span className="text-gray-400 font-normal">{t.optional}</span></h3>
                 </div>
                 <input
                   value={teacherName}
                   onChange={(e) => setTeacherName(e.target.value)}
-                  placeholder="Ustoz F.I.Sh."
+                  placeholder={t.teacherNamePlaceholder}
                   className="w-full px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
                 />
               </div>
@@ -343,7 +342,7 @@ export default function DocumentCreatePage() {
           {step === 'settings' && (
             <motion.div key="settings" initial={{ opacity: 0, x: 20 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -20 }} className="py-4 space-y-3">
               <div className="card p-3">
-                <h3 className="font-medium text-gray-900 text-sm mb-3">Hajmni tanlang</h3>
+                <h3 className="font-medium text-gray-900 text-sm mb-3">{t.selectSize}</h3>
                 <div className="grid grid-cols-2 gap-2">
                   {meta.prices.map((p) => (
                     <button
@@ -353,8 +352,8 @@ export default function DocumentCreatePage() {
                         pageCount === p.pages ? 'border-blue-600 bg-blue-50' : 'border-gray-200 bg-white'
                       }`}
                     >
-                      <div className="text-sm font-semibold text-gray-900">{p.pages} bet</div>
-                      <div className="text-xs text-gray-500">{p.price.toLocaleString()} so'm</div>
+                      <div className="text-sm font-semibold text-gray-900">{p.pages} {t.pages}</div>
+                      <div className="text-xs text-gray-500">{p.price.toLocaleString()} {t.uzs}</div>
                     </button>
                   ))}
                 </div>
@@ -362,39 +361,39 @@ export default function DocumentCreatePage() {
 
               <div className="card p-4 bg-gradient-to-br from-blue-50 to-emerald-50 border-2 border-blue-200">
                 <div className="flex items-center justify-between">
-                  <h3 className="font-semibold text-gray-900">Jami narx</h3>
+                  <h3 className="font-semibold text-gray-900">{t.totalPrice}</h3>
                   <div className="text-right">
-                    <div className="text-2xl font-bold text-blue-600">{price.toLocaleString()} so'm</div>
-                    <div className="text-xs text-gray-500">~{pageCount} bet</div>
+                    <div className="text-2xl font-bold text-blue-600">{price.toLocaleString()} {t.uzs}</div>
+                    <div className="text-xs text-gray-500">~{pageCount} {t.pages}</div>
                   </div>
                 </div>
                 <div className="pt-3 mt-3 border-t border-blue-200 text-xs text-gray-600 space-y-1">
                   {docType === 'insho' ? (
                     <>
-                      <div>✓ Ravon, ta'sirchan insho matni</div>
-                      <div>✓ Kirish — asosiy qism — xulosa</div>
-                      <div>✓ Times New Roman 14, 1.5 interval — topshirishga tayyor</div>
+                      <div>✓ {t.featEssayText}</div>
+                      <div>✓ {t.featIntroBodyConclusion}</div>
+                      <div>✓ {t.featFontReady}</div>
                     </>
                   ) : docType === 'maqola' || docType === 'tezis' ? (
                     <>
-                      <div>✓ Annotatsiya va kalit so'zlar</div>
-                      <div>✓ Kirish, asosiy bo'limlar, xulosa</div>
-                      <div>✓ Adabiyotlar ro'yxati</div>
-                      <div>✓ Times New Roman 14, 1.5 interval — topshirishga tayyor</div>
+                      <div>✓ {t.featAbstractKeywords}</div>
+                      <div>✓ {t.featIntroSectionsConclusion}</div>
+                      <div>✓ {t.featReferences}</div>
+                      <div>✓ {t.featFontReady}</div>
                     </>
                   ) : (
                     <>
-                      <div>✓ Titul varaq va mundarija</div>
-                      <div>✓ Kirish, boblar, xulosa</div>
-                      <div>✓ Rasmlar va adabiyotlar ro'yxati</div>
-                      <div>✓ Times New Roman 14, 1.5 interval — topshirishga tayyor</div>
+                      <div>✓ {t.featTitleToc}</div>
+                      <div>✓ {t.featIntroChaptersConclusion}</div>
+                      <div>✓ {t.featImagesReferences}</div>
+                      <div>✓ {t.featFontReady}</div>
                     </>
                   )}
                 </div>
               </div>
 
               <p className="text-xs text-gray-500 text-center px-4">
-                Tayyor hujjat Word (.docx) formatida Telegram'ga yuboriladi.
+                {t.docSentAsWord}
               </p>
             </motion.div>
           )}
@@ -405,12 +404,12 @@ export default function DocumentCreatePage() {
               <div className="w-20 h-20 rounded-full bg-blue-100 flex items-center justify-center mb-6 animate-pulse">
                 <Icon className="w-10 h-10 text-blue-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">{meta.title} yaratilmoqda...</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{t[meta.title]} {t.beingCreated}</h3>
               <p className="text-gray-500 mb-6 text-center">
                 {docType === 'mustaqil_ish' || docType === 'referat' || docType === 'kurs_ishi'
-                  ? 'AI matn yozib, rasmlarni joylayapti.'
-                  : 'AI matn yozyapti.'}
-                <br />Bu 2-4 daqiqa vaqt olishi mumkin.
+                  ? t.aiWritingPlacingImages
+                  : t.aiWritingText}
+                <br />{t.mayTake2to4min}
               </p>
               <div className="w-full max-w-xs">
                 <div className="h-2 bg-gray-200 rounded-full overflow-hidden">
@@ -427,16 +426,16 @@ export default function DocumentCreatePage() {
               <div className="w-20 h-20 rounded-full bg-green-100 flex items-center justify-center mb-6">
                 <CheckCircle2 className="w-11 h-11 text-green-600" />
               </div>
-              <h3 className="text-xl font-bold text-gray-900 mb-2">Hujjat tayyor! 🎉</h3>
+              <h3 className="text-xl font-bold text-gray-900 mb-2">{t.documentReady}</h3>
               <div className="flex items-center gap-2 text-gray-500 mb-8">
                 <Send className="w-4 h-4" />
-                <p className="text-center">Word (.docx) fayli Telegram chatingizga yuborildi.</p>
+                <p className="text-center">{t.wordSentToChat}</p>
               </div>
               <button
                 onClick={() => { haptic('light'); navigate('/'); }}
                 className="w-full max-w-xs py-3 rounded-xl font-semibold bg-blue-600 text-white active:scale-[0.98] transition-all"
               >
-                Bosh sahifaga qaytish
+                {t.backToHome}
               </button>
             </motion.div>
           )}
@@ -456,11 +455,11 @@ export default function DocumentCreatePage() {
             {step === 'settings' ? (
               <>
                 <Sparkles className="w-5 h-5" />
-                {price.toLocaleString()} so'm — Yaratish
+                {price.toLocaleString()} {t.uzs} — {t.create}
               </>
             ) : (
               <>
-                Keyingisi
+                {t.next}
                 <ArrowRight className="w-5 h-5" />
               </>
             )}
