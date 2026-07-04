@@ -155,6 +155,64 @@ export class AdminService implements OnModuleInit {
     return { features, totals };
   }
 
+  /**
+   * Per-day (or per-week/month for long ranges) cash flow: income (top-ups),
+   * expense (real AI cost across every feature) and profit.
+   */
+  async getDailyStats(filter: DateFilter): Promise<
+    Array<{ date: string; income: number; aiCost: number; profit: number }>
+  > {
+    const { start, end } = this.getDateRange(filter);
+    const rate = AdminService.USD_TO_UZS;
+    let interval: 'day' | 'week' | 'month' = 'day';
+    if (filter === '1y' || filter === 'all') interval = 'month';
+    else if (filter === '2m') interval = 'week';
+
+    // Load everything once, then bucket in JS.
+    const range = Between(start, end);
+    const [topups, pres, docs, flash, gloss, cross, resume, quiz] =
+      await Promise.all([
+        this.transactionRepository.find({ where: { createdAt: range, status: 'approved', type: 'topup' } }),
+        this.presentationRepository.find({ where: { createdAt: range, status: 'completed' } }),
+        this.documentRepository.find({ where: { createdAt: range, status: 'completed' } }),
+        this.flashcardRepository.find({ where: { createdAt: range } }),
+        this.glossaryRepository.find({ where: { createdAt: range } }),
+        this.crosswordRepository.find({ where: { createdAt: range } }),
+        this.resumeRepository.find({ where: { createdAt: range } }),
+        this.quizRepository.find({ where: { createdAt: range, status: 'completed' as any } }),
+      ]);
+
+    const rows: Array<{ date: string; income: number; aiCost: number; profit: number }> = [];
+    const current = new Date(start);
+    while (current <= end) {
+      const dateStr = this.formatDate(current, interval);
+      const nextDate = this.getNextDate(current, interval);
+      const lo = current.getTime();
+      const hi = nextDate.getTime();
+      const inBucket = (d: any) => {
+        const t = new Date(d).getTime();
+        return t >= lo && t < hi;
+      };
+
+      let income = 0;
+      topups.forEach((t) => { if (inBucket(t.createdAt)) income += t.amount || 0; });
+
+      let aiUsd = 0;
+      pres.forEach((p) => { if (inBucket(p.createdAt)) aiUsd += Number(p.aiCost) || 0; });
+      docs.forEach((d) => { if (inBucket(d.createdAt)) aiUsd += Number(d.aiCost) || 0; });
+      [flash, gloss, cross, resume, quiz].forEach((arr) =>
+        arr.forEach((r: any) => { if (inBucket(r.createdAt)) aiUsd += Number(r.generationCost) || 0; }),
+      );
+      const aiCost = Math.round(aiUsd * rate);
+
+      rows.push({ date: dateStr, income, aiCost, profit: income - aiCost });
+      current.setTime(hi);
+    }
+
+    // Most recent first, drop empty buckets to keep the table tidy.
+    return rows.filter((r) => r.income > 0 || r.aiCost > 0).reverse();
+  }
+
   async onModuleInit() {
     // Create or update default admin from env
     const adminPhone = process.env.ADMIN_PHONE || '998901234567';

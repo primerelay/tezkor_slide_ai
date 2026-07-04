@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Users, FileText, DollarSign, TrendingUp, TrendingDown,
-  LogOut, BarChart3, Bot, RefreshCw, Brain, Zap, BookOpen, Layers
+  LogOut, BarChart3, Bot, RefreshCw, Brain, Zap, BookOpen, Layers, CalendarDays
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -10,7 +10,7 @@ import {
   BarChart, Bar, Legend
 } from 'recharts';
 import { useAuth } from '../contexts/AuthContext';
-import { api, type StatsResponse, type ChartData, type DateFilter, type RecentPresentation, type RecentUser, type FeatureStatsResponse } from '../api/api';
+import { api, type StatsResponse, type ChartData, type DateFilter, type RecentPresentation, type RecentUser, type FeatureStatsResponse, type DailyStat } from '../api/api';
 
 const filterOptions: { value: DateFilter; label: string }[] = [
   { value: '7d', label: '7 kun' },
@@ -27,6 +27,7 @@ export default function DashboardPage() {
   const [stats, setStats] = useState<StatsResponse | null>(null);
   const [chartData, setChartData] = useState<ChartData[]>([]);
   const [featureStats, setFeatureStats] = useState<FeatureStatsResponse | null>(null);
+  const [dailyStats, setDailyStats] = useState<DailyStat[]>([]);
   const [recentPresentations, setRecentPresentations] = useState<RecentPresentation[]>([]);
   const [recentUsers, setRecentUsers] = useState<RecentUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -34,16 +35,18 @@ export default function DashboardPage() {
 
   const fetchData = async () => {
     try {
-      const [statsData, chart, features, presentations, users] = await Promise.all([
+      const [statsData, chart, features, daily, presentations, users] = await Promise.all([
         api.getStats(filter),
         api.getChartData(filter),
         api.getFeatureStats(filter),
+        api.getDailyStats(filter),
         api.getRecentPresentations(5),
         api.getRecentUsers(5),
       ]);
       setStats(statsData);
       setChartData(chart);
       setFeatureStats(features);
+      setDailyStats(daily);
       setRecentPresentations(presentations);
       setRecentUsers(users);
     } catch (error) {
@@ -79,6 +82,11 @@ export default function DashboardPage() {
   };
 
   const maxRevenue = Math.max(1, ...(featureStats?.features.map((f) => f.revenue) || [1]));
+
+  const dailyTotals = dailyStats.reduce(
+    (a, d) => ({ income: a.income + d.income, aiCost: a.aiCost + d.aiCost, profit: a.profit + d.profit }),
+    { income: 0, aiCost: 0, profit: 0 },
+  );
 
   if (isLoading) {
     return (
@@ -165,7 +173,7 @@ export default function DashboardPage() {
           />
           <StatCard
             icon={DollarSign}
-            label="Daromad"
+            label="To'lovlar"
             value={formatCurrency(stats?.totalIncome || 0)}
             change={stats?.incomeGrowth || 0}
             color="green"
@@ -173,8 +181,8 @@ export default function DashboardPage() {
           <StatCard
             icon={Bot}
             label="AI xarajat"
-            value={formatCurrency(stats?.totalAiCost || 0)}
-            subtext={`Foyda: ${formatCurrency(stats?.profit || 0)}`}
+            value={formatCurrency(featureStats?.totals.aiCost || 0)}
+            subtext={`Foyda: ${formatCurrency((stats?.totalIncome || 0) - (featureStats?.totals.aiCost || 0))}`}
             color="orange"
           />
         </div>
@@ -190,7 +198,7 @@ export default function DashboardPage() {
           <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
             {[
               { label: 'Jami ishlatilgan', value: formatNumber(featureStats?.totals.count || 0) + ' ta', ring: 'ring-blue-100', text: 'text-blue-600' },
-              { label: 'Jami daromad', value: formatCurrency(featureStats?.totals.revenue || 0), ring: 'ring-emerald-100', text: 'text-emerald-600' },
+              { label: 'Sarflangan (feature)', value: formatCurrency(featureStats?.totals.revenue || 0), ring: 'ring-emerald-100', text: 'text-emerald-600' },
               { label: 'AI xarajat', value: formatCurrency(featureStats?.totals.aiCost || 0), ring: 'ring-orange-100', text: 'text-orange-500' },
               { label: 'Sof foyda', value: formatCurrency(featureStats?.totals.profit || 0), ring: 'ring-violet-100', text: 'text-violet-600' },
             ].map((s) => (
@@ -246,7 +254,62 @@ export default function DashboardPage() {
             ))}
           </div>
           <p className="text-xs text-gray-400 mt-3">
-            💡 Summalar so'mda. Slaydlar daromadi slayd soniga qarab, Tarjimon esa foydalanish tranzaksiyalaridan hisoblanadi.
+            💡 Bu yerdagi "Sarflangan" — foydalanuvchilar feature'larga ishlatgan kredit ({formatCurrency(featureStats?.totals.revenue || 0)}).
+            Yuqoridagi "To'lovlar" ({formatCurrency(stats?.totalIncome || 0)}) esa balansga kiritilgan umumiy pul — farqi hali balansda turibdi.
+            Slaydlar sarfi slayd soniga qarab, Tarjimon esa foydalanish tranzaksiyalaridan hisoblanadi.
+          </p>
+        </div>
+
+        {/* Daily cash flow table */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <CalendarDays className="w-6 h-6 text-primary-600" />
+            Kunlik hisobot
+          </h2>
+          <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
+            <div className="overflow-x-auto">
+              <table className="w-full text-sm">
+                <thead>
+                  <tr className="text-xs text-gray-500 border-b border-gray-100 bg-gray-50">
+                    <th className="px-4 py-3 font-medium text-left">Sana</th>
+                    <th className="px-4 py-3 font-medium text-right">Tushum</th>
+                    <th className="px-4 py-3 font-medium text-right">Chiqim (AI)</th>
+                    <th className="px-4 py-3 font-medium text-right">Foyda</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {dailyStats.length === 0 ? (
+                    <tr>
+                      <td colSpan={4} className="px-4 py-8 text-center text-gray-400">
+                        Bu davr uchun ma'lumot yo'q
+                      </td>
+                    </tr>
+                  ) : (
+                    dailyStats.map((d, i) => (
+                      <tr key={i} className="border-b border-gray-50 last:border-0 hover:bg-gray-50/60">
+                        <td className="px-4 py-3 font-medium text-gray-700 whitespace-nowrap">{d.date}</td>
+                        <td className="px-4 py-3 text-right text-emerald-600 font-semibold tabular-nums whitespace-nowrap">{formatNumber(d.income)}</td>
+                        <td className="px-4 py-3 text-right text-orange-500 tabular-nums whitespace-nowrap">{formatNumber(d.aiCost)}</td>
+                        <td className={`px-4 py-3 text-right font-semibold tabular-nums whitespace-nowrap ${d.profit >= 0 ? 'text-violet-600' : 'text-red-500'}`}>{formatNumber(d.profit)}</td>
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+                {dailyStats.length > 0 && (
+                  <tfoot>
+                    <tr className="bg-gray-50 font-bold text-gray-900 border-t border-gray-200">
+                      <td className="px-4 py-3 whitespace-nowrap">Jami</td>
+                      <td className="px-4 py-3 text-right text-emerald-600 tabular-nums whitespace-nowrap">{formatNumber(dailyTotals.income)}</td>
+                      <td className="px-4 py-3 text-right text-orange-500 tabular-nums whitespace-nowrap">{formatNumber(dailyTotals.aiCost)}</td>
+                      <td className="px-4 py-3 text-right text-violet-600 tabular-nums whitespace-nowrap">{formatNumber(dailyTotals.profit)}</td>
+                    </tr>
+                  </tfoot>
+                )}
+              </table>
+            </div>
+          </div>
+          <p className="text-xs text-gray-400 mt-2">
+            Summalar so'mda. Tushum — kunlik to'lovlar (balansga), Chiqim — AI xarajati. Uzoq davrda kunlar hafta/oyga birlashtiriladi.
           </p>
         </div>
 

@@ -54,6 +54,15 @@ export class AdminController {
     return this.adminService.getFeatureStats(filter);
   }
 
+  @Get('daily')
+  async getDailyStats(
+    @Headers('authorization') auth: string,
+    @Query('filter') filter: DateFilter = '1m',
+  ) {
+    await this.verifyAuth(auth);
+    return this.adminService.getDailyStats(filter);
+  }
+
   @Get('presentations/recent')
   async getRecentPresentations(
     @Headers('authorization') auth: string,

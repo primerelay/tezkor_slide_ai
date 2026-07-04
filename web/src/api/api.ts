@@ -46,6 +46,13 @@ export interface FeatureStatsResponse {
   totals: { count: number; revenue: number; aiCost: number; profit: number };
 }
 
+export interface DailyStat {
+  date: string;
+  income: number;
+  aiCost: number;
+  profit: number;
+}
+
 export interface ChartData {
   date: string;
   income: number;
@@ -114,6 +121,16 @@ export const api = {
     });
     if (!response.ok) {
       throw new Error('Failed to fetch feature stats');
+    }
+    return response.json();
+  },
+
+  async getDailyStats(filter: DateFilter = '1m'): Promise<DailyStat[]> {
+    const response = await fetch(`${API_BASE}/daily?filter=${filter}`, {
+      headers: getAuthHeaders(),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch daily stats');
     }
     return response.json();
   },
