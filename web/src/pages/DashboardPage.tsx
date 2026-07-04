@@ -97,25 +97,26 @@ export default function DashboardPage() {
       <header className="bg-white border-b border-gray-200 sticky top-0 z-40">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
-            <div className="flex items-center gap-3">
-              <img src="/logo.png" alt="SliderAI" className="w-10 h-10 rounded-xl" />
-              <div>
-                <h1 className="font-bold text-gray-900">Admin Panel</h1>
-                <p className="text-xs text-gray-500">{admin?.name}</p>
+            <div className="flex items-center gap-2.5 min-w-0">
+              <img src="/logo.png" alt="SliderAI" className="w-9 h-9 rounded-xl shrink-0" />
+              <div className="min-w-0">
+                <h1 className="font-bold text-gray-900 leading-tight truncate">Admin Panel</h1>
+                <p className="text-xs text-gray-500 truncate">{admin?.name}</p>
               </div>
             </div>
 
-            <div className="flex items-center gap-4">
+            <div className="flex items-center gap-1 sm:gap-2 shrink-0">
               <button
                 onClick={handleRefresh}
                 disabled={isRefreshing}
                 className="btn btn-ghost p-2"
+                aria-label="Yangilash"
               >
                 <RefreshCw className={`w-5 h-5 ${isRefreshing ? 'animate-spin' : ''}`} />
               </button>
-              <button onClick={logout} className="btn btn-ghost text-red-600 hover:bg-red-50">
+              <button onClick={logout} className="btn btn-ghost text-red-600 hover:bg-red-50 p-2" aria-label="Chiqish">
                 <LogOut className="w-5 h-5" />
-                Chiqish
+                <span className="hidden sm:inline">Chiqish</span>
               </button>
             </div>
           </div>
@@ -124,17 +125,17 @@ export default function DashboardPage() {
 
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         {/* Filter */}
-        <div className="flex items-center justify-between mb-8">
-          <h2 className="text-2xl font-bold text-gray-900 flex items-center gap-2">
-            <BarChart3 className="w-7 h-7 text-primary-600" />
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between mb-6 sm:mb-8">
+          <h2 className="text-xl sm:text-2xl font-bold text-gray-900 flex items-center gap-2">
+            <BarChart3 className="w-6 h-6 sm:w-7 sm:h-7 text-primary-600" />
             Statistika
           </h2>
-          <div className="flex items-center gap-2 bg-white rounded-xl p-1 border border-gray-200">
+          <div className="flex items-center gap-1 bg-white rounded-xl p-1 border border-gray-200 overflow-x-auto no-scrollbar -mx-1 sm:mx-0">
             {filterOptions.map((option) => (
               <button
                 key={option.value}
                 onClick={() => setFilter(option.value)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-all ${
+                className={`shrink-0 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-sm font-medium transition-all ${
                   filter === option.value
                     ? 'bg-primary-600 text-white'
                     : 'text-gray-600 hover:bg-gray-100'
@@ -147,7 +148,7 @@ export default function DashboardPage() {
         </div>
 
         {/* Stats Cards */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-6 sm:mb-8">
           <StatCard
             icon={Users}
             label="Foydalanuvchilar"
@@ -488,13 +489,13 @@ function StatCard({ icon: Icon, label, value, change, subtext, color }: StatCard
       animate={{ opacity: 1, y: 0 }}
       className="stat-card"
     >
-      <div className="flex items-center justify-between mb-4">
-        <div className={`w-12 h-12 rounded-xl ${colorClasses[color]} flex items-center justify-center`}>
-          <Icon className="w-6 h-6" />
+      <div className="flex items-center justify-between mb-2.5 sm:mb-4">
+        <div className={`w-10 h-10 sm:w-12 sm:h-12 rounded-xl ${colorClasses[color]} flex items-center justify-center shrink-0`}>
+          <Icon className="w-5 h-5 sm:w-6 sm:h-6" />
         </div>
         {change !== undefined && (
-          <div className={`flex items-center gap-1 text-sm font-medium ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-            {change >= 0 ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
+          <div className={`flex items-center gap-0.5 text-xs sm:text-sm font-medium ${change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+            {change >= 0 ? <TrendingUp className="w-3.5 h-3.5 sm:w-4 sm:h-4" /> : <TrendingDown className="w-3.5 h-3.5 sm:w-4 sm:h-4" />}
             {Math.abs(change)}%
           </div>
         )}

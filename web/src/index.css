@@ -103,26 +103,37 @@ body {
   background-clip: text;
 }
 
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
 .stat-card {
   background-color: white;
   border-radius: 1rem;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   border: 1px solid rgb(243 244 246);
-  padding: 1.5rem;
+  padding: 1rem;
   display: flex;
   flex-direction: column;
 }
 
 .stat-value {
-  font-size: 1.875rem;
+  font-size: 1.375rem;
   font-weight: 700;
   color: rgb(17 24 39);
+  line-height: 1.15;
+  word-break: break-word;
 }
 
 .stat-label {
-  font-size: 0.875rem;
+  font-size: 0.8125rem;
   color: rgb(107 114 128);
   margin-top: 0.25rem;
+}
+
+@media (min-width: 640px) {
+  .stat-card { padding: 1.5rem; }
+  .stat-value { font-size: 1.875rem; }
+  .stat-label { font-size: 0.875rem; }
 }
 
 @keyframes float {
