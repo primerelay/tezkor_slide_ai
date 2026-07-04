@@ -87,7 +87,10 @@
       "Bash(git -C /Users/Learning/tezkor_slide_ai push --dry-run)",
       "Bash(npx --yes esbuild mini-app/src/i18n/locales/ar.ts --bundle=false --loader:.ts=ts)",
       "Bash(awk '/async onLanguageSelect|Action.*lang_/{f=1} f{print NR\": \"$0} f&&/^  }$/{c++; if\\(c>=1\\)exit}' src/telegram/telegram.update.ts)",
-      "Bash(awk '/private async sendWelcome|async sendWelcome/{f=1} f{print NR\": \"$0} f&&/^  }$/{exit}' src/telegram/telegram.update.ts)"
+      "Bash(awk '/private async sendWelcome|async sendWelcome/{f=1} f{print NR\": \"$0} f&&/^  }$/{exit}' src/telegram/telegram.update.ts)",
+      "Bash(awk '/async getStats/{f=1} f{print NR\": \"$0} f&&/^  }$/{c++; if\\(c>=1\\)exit}' src/admin/admin.service.ts)",
+      "Bash(awk '/async getChartData/{f=1} f{print NR\": \"$0} f&&/^  }$/{c++; if\\(c>=1\\)exit}' src/admin/admin.service.ts)",
+      "Bash(awk '/QuizStatus/{f=1} f{print} f&&/;/{c++; if\\(c>=1&&/}/\\)exit}' src/database/entities/quiz.entity.ts)"
     ]
   }
 }
