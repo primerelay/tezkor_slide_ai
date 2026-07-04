@@ -168,14 +168,10 @@ export class InlineKeyboards {
     ]).reply_markup;
   }
 
-  static adminApprovePayment(userId: number, amount: number) {
+  static adminApprovePayment(requestId: string) {
     return Markup.inlineKeyboard([
-      [
-        Markup.button.callback(`✅ Tasdiqlash (+${amount} so'm)`, `approve_payment_${userId}_${amount}`),
-      ],
-      [
-        Markup.button.callback('❌ Rad etish', `reject_payment_${userId}`),
-      ],
+      [Markup.button.callback('✅ Tasdiqlash', `approve_payment_${requestId}`)],
+      [Markup.button.callback('❌ Rad etish', `reject_payment_${requestId}`)],
     ]).reply_markup;
   }
 

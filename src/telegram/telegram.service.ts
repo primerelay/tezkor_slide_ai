@@ -6,6 +6,7 @@ import { Telegraf, Context } from 'telegraf';
 import { User, UserLanguage } from '../database/entities/user.entity';
 import { Presentation } from '../database/entities/presentation.entity';
 import { Transaction } from '../database/entities/transaction.entity';
+import { PaymentRequest } from '../database/entities/payment-request.entity';
 import { I18nService, SupportedLanguage } from '../common/i18n/i18n.service';
 import { InlineKeyboards } from './keyboards/inline.keyboards';
 import { ConfigService } from '@nestjs/config';
@@ -44,6 +45,8 @@ export class TelegramService {
     private readonly presentationRepository: Repository<Presentation>,
     @InjectRepository(Transaction)
     private readonly transactionRepository: Repository<Transaction>,
+    @InjectRepository(PaymentRequest)
+    private readonly paymentRequestRepository: Repository<PaymentRequest>,
     private readonly configService: ConfigService,
     @Inject(forwardRef(() => QuizService))
     private readonly quizService: QuizService,
@@ -271,16 +274,83 @@ export class TelegramService {
     const photo = message.photo;
     const largestPhoto = photo[photo.length - 1];
 
+    // One tracked request shared by all admins so the first decision updates
+    // every admin's copy and blocks duplicate approvals.
+    const request = await this.paymentRequestRepository.save(
+      this.paymentRequestRepository.create({
+        userId: user.id,
+        telegramId: user.telegramId,
+        status: 'pending',
+        adminMessages: [],
+      }),
+    );
+
+    const caption = `💳 <b>Yangi to'lov</b>\n\n👤 User: ${user.firstName || 'Unknown'} (@${user.username || 'N/A'})\n🆔 ID: ${user.id}\n📱 Telegram ID: ${user.telegramId}\n💰 Hozirgi balans: ${user.credits} so'm\n\n⏰ ${new Date().toLocaleString('uz-UZ')}`;
+
+    const adminMessages: { adminId: number; messageId: number }[] = [];
     for (const adminId of this.adminTelegramIds) {
       try {
-        await this.bot.telegram.sendPhoto(adminId, largestPhoto.file_id, {
-          caption: `💳 <b>Yangi to'lov</b>\n\n👤 User: ${user.firstName || 'Unknown'} (@${user.username || 'N/A'})\n🆔 ID: ${user.id}\n📱 Telegram ID: ${user.telegramId}\n💰 Hozirgi balans: ${user.credits} so'm\n\n⏰ ${new Date().toLocaleString('uz-UZ')}`,
+        const sent = await this.bot.telegram.sendPhoto(adminId, largestPhoto.file_id, {
+          caption,
           parse_mode: 'HTML',
-          reply_markup: InlineKeyboards.adminApprovePayment(user.id, 0),
+          reply_markup: InlineKeyboards.adminApprovePayment(request.id),
         });
+        adminMessages.push({ adminId, messageId: sent.message_id });
       } catch (error) {
         this.logger.error(`Failed to forward payment to admin ${adminId}:`, error);
       }
+    }
+
+    request.adminMessages = adminMessages;
+    await this.paymentRequestRepository.save(request);
+  }
+
+  async findPaymentRequest(id: string): Promise<PaymentRequest | null> {
+    return this.paymentRequestRepository.findOne({ where: { id } });
+  }
+
+  /**
+   * Atomically move a request out of 'pending'. Returns the request if THIS
+   * call won the claim, or null if another admin already handled it.
+   */
+  async claimPaymentRequest(
+    id: string,
+    status: 'approved' | 'rejected',
+    patch: { amount?: number; rejectReason?: string; processedBy?: string },
+  ): Promise<PaymentRequest | null> {
+    const result = await this.paymentRequestRepository.update(
+      { id, status: 'pending' },
+      { status, ...patch },
+    );
+    if (!result.affected) return null;
+    return this.findPaymentRequest(id);
+  }
+
+  /** Update every admin's copy of the proof message and drop its buttons. */
+  async finalizeAdminMessages(request: PaymentRequest, caption: string): Promise<void> {
+    for (const m of request.adminMessages || []) {
+      try {
+        await this.bot.telegram.editMessageCaption(m.adminId, m.messageId, undefined, caption, {
+          parse_mode: 'HTML',
+        });
+      } catch (error) {
+        this.logger.warn(`Failed to update admin ${m.adminId} payment message:`, error);
+      }
+    }
+  }
+
+  /** Tell the paying user their payment was rejected, with the reason. */
+  async notifyPaymentRejected(telegramId: string, reason: string): Promise<void> {
+    try {
+      const user = await this.getUserByTelegramId(telegramId);
+      const i18n = this.getI18n(user?.language || 'uz');
+      await this.bot.telegram.sendMessage(
+        telegramId,
+        i18n.t('paymentRejected', { reason }),
+        { parse_mode: 'HTML' },
+      );
+    } catch (error) {
+      this.logger.error(`Failed to notify user ${telegramId} of rejection:`, error);
     }
   }
 

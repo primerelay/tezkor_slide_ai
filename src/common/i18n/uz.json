@@ -1,4 +1,5 @@
 {
+  "paymentRejected": "❌ <b>To'lovingiz tasdiqlanmadi</b>\\n\\n📝 Sabab: {reason}\\n\\nSavollaringiz bo'lsa admin bilan bog'laning.",
   "welcome": "Assalomu alaykum, {name}! 👋\n\n🎉 <b>SliderAI UZ</b> ga xush kelibsiz!\n\n🎁 Sizga <b>2,500 so'm</b> sovg'a balans berildi!\n\n✨ <b>Bot imkoniyatlari:</b>\n• 🎨 Professional prezentatsiyalar yaratish\n• 📊 30+ zamonaviy dizayn va tema\n• 🤖 Sun'iy intellekt yordamida kontent\n• ✏️ Real-time tahrirlash (Mini App)\n• 📥 PPTX/PDF formatda yuklab olish\n• ⚡ 2-3 daqiqada tayyor!\n\n💰 <b>Narxlar:</b>\n• 6 slayd - 1,000 so'm\n• 8 slayd - 1,500 so'm\n• 10 slayd - 1,700 so'm\n• 12 slayd - 2,000 so'm\n• 14 slayd - 2,200 so'm\n• 16 slayd - 2,400 so'm\n• 18 slayd - 2,500 so'm\n\n👇 Boshlash uchun quyidagi tugmalardan foydalaning:",
   "mainMenuText": "📋 Menyu",
   "selectLanguage": "Tilni tanlang / Выберите язык / Select language / Sprache wählen:",

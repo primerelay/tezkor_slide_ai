@@ -1,4 +1,5 @@
 {
+  "paymentRejected": "❌ <b>Ihre Zahlung wurde nicht bestätigt</b>\\n\\n📝 Grund: {reason}\\n\\nBei Fragen wenden Sie sich an den Admin.",
   "welcome": "Hallo, {name}! 👋\n\n🎉 Willkommen bei <b>SliderAI UZ</b>!\n\n🎁 Sie haben ein Geschenkguthaben von <b>2.500 UZS</b> erhalten!\n\n✨ <b>Bot-Funktionen:</b>\n• 🎨 Professionelle Präsentationen erstellen\n• 📊 30+ moderne Designs und Themen\n• 🤖 KI-gestützte Inhaltserstellung\n• ✏️ Echtzeit-Bearbeitung (Mini App)\n• 📥 Download als PPTX/PDF\n• ⚡ Fertig in 2-3 Minuten!\n\n💰 <b>Preise:</b>\n• 6 Folien - 1.000 UZS\n• 8 Folien - 1.500 UZS\n• 10 Folien - 1.700 UZS\n• 12 Folien - 2.000 UZS\n• 14 Folien - 2.200 UZS\n• 16 Folien - 2.400 UZS\n• 18 Folien - 2.500 UZS\n\n👇 Verwenden Sie die Schaltflächen unten, um zu beginnen:",
   "mainMenuText": "📋 Menü",
   "selectLanguage": "Tilni tanlang / Выберите язык / Select language / Sprache wählen:",

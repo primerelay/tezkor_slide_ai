@@ -8,6 +8,7 @@ import { Presentation } from '../database/entities/presentation.entity';
 import { GenerationJob } from '../database/entities/generation-job.entity';
 import { Transaction } from '../database/entities/transaction.entity';
 import { ChannelMembership } from '../database/entities/channel-membership.entity';
+import { PaymentRequest } from '../database/entities/payment-request.entity';
 import { TelegramService } from './telegram.service';
 import { TelegramUpdate } from './telegram.update';
 import { ReferralService } from './referral.service';
@@ -40,7 +41,7 @@ import { TranslatorModule } from '../translator/translator.module';
         include: [TelegramModule],
       }),
     }),
-    TypeOrmModule.forFeature([User, Presentation, GenerationJob, Transaction, ChannelMembership]),
+    TypeOrmModule.forFeature([User, Presentation, GenerationJob, Transaction, ChannelMembership, PaymentRequest]),
     forwardRef(() => QuizModule),
     DocumentModule,
     FlashcardModule,

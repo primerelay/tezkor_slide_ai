@@ -24,7 +24,8 @@ interface SessionData extends Scenes.SceneSession {
   userId?: number;
   step?: 'topic' | 'student_name' | 'teacher_name' | 'reja' | 'slides' | 'theme' | 'confirm';
   awaitingPaymentScreenshot?: boolean;
-  adminApprovingUserId?: number;
+  adminApprovingRequestId?: string;
+  adminRejectingRequestId?: string;
   // Quiz properties
   quizContent?: string;
   quizType?: string;
@@ -1192,12 +1193,11 @@ export class TelegramUpdate {
     ctx.session.step = undefined;
   }
 
-  @Action(/^approve_payment_(\d+)_(\d+)$/)
+  @Action(/^approve_payment_(.+)$/)
   async onApprovePayment(@Ctx() ctx: BotContext) {
     const telegramUser = ctx.from;
     if (!telegramUser) return;
 
-    // Check if admin
     if (!this.telegramService.isAdmin(telegramUser.id.toString())) {
       await ctx.answerCbQuery('Sizda ruxsat yo\'q!', { show_alert: true });
       return;
@@ -1205,24 +1205,30 @@ export class TelegramUpdate {
 
     const callbackQuery = ctx.callbackQuery;
     if (!callbackQuery || !('data' in callbackQuery)) return;
-
-    const match = callbackQuery.data.match(/^approve_payment_(\d+)_(\d+)$/);
+    const match = callbackQuery.data.match(/^approve_payment_(.+)$/);
     if (!match) return;
+    const requestId = match[1];
 
-    const userId = parseInt(match[1], 10);
+    const request = await this.telegramService.findPaymentRequest(requestId);
+    if (!request) {
+      await ctx.answerCbQuery('To\'lov topilmadi.', { show_alert: true });
+      return;
+    }
+    if (request.status !== 'pending') {
+      await ctx.answerCbQuery('⚠️ Bu to\'lov allaqachon ko\'rib chiqilgan.', { show_alert: true });
+      return;
+    }
 
-    // Ask for amount
     await ctx.answerCbQuery();
     await ctx.reply(
-      `💰 Qancha so'm qo'shmoqchisiz? (User ID: ${userId})\n\nMiqdorni yozing (masalan: 5000):`,
-      { parse_mode: 'HTML' }
+      `💰 Qancha so'm qo'shmoqchisiz? (User ID: ${request.userId})\n\nMiqdorni yozing (masalan: 5000):`,
+      { parse_mode: 'HTML' },
     );
-
-    // Store admin state
-    ctx.session.adminApprovingUserId = userId;
+    ctx.session.adminApprovingRequestId = requestId;
+    ctx.session.adminRejectingRequestId = undefined;
   }
 
-  @Action(/^reject_payment_(\d+)$/)
+  @Action(/^reject_payment_(.+)$/)
   async onRejectPayment(@Ctx() ctx: BotContext) {
     const telegramUser = ctx.from;
     if (!telegramUser) return;
@@ -1232,8 +1238,29 @@ export class TelegramUpdate {
       return;
     }
 
-    await ctx.answerCbQuery('❌ Rad etildi');
-    await ctx.editMessageCaption('❌ <b>Rad etildi</b>', { parse_mode: 'HTML' });
+    const callbackQuery = ctx.callbackQuery;
+    if (!callbackQuery || !('data' in callbackQuery)) return;
+    const match = callbackQuery.data.match(/^reject_payment_(.+)$/);
+    if (!match) return;
+    const requestId = match[1];
+
+    const request = await this.telegramService.findPaymentRequest(requestId);
+    if (!request) {
+      await ctx.answerCbQuery('To\'lov topilmadi.', { show_alert: true });
+      return;
+    }
+    if (request.status !== 'pending') {
+      await ctx.answerCbQuery('⚠️ Bu to\'lov allaqachon ko\'rib chiqilgan.', { show_alert: true });
+      return;
+    }
+
+    await ctx.answerCbQuery();
+    await ctx.reply(
+      '✍️ Rad etish sababini yozing (foydalanuvchiga yuboriladi):',
+      { parse_mode: 'HTML' },
+    );
+    ctx.session.adminRejectingRequestId = requestId;
+    ctx.session.adminApprovingRequestId = undefined;
   }
 
   @Action('cancel_generation')
@@ -1305,30 +1332,82 @@ export class TelegramUpdate {
 
     // Admin handling payment approval amount - check BEFORE user lookup
     // because admin might not be in users table
-    if (ctx.session.adminApprovingUserId && this.telegramService.isAdmin(telegramUser.id.toString())) {
+    if (ctx.session.adminApprovingRequestId && this.telegramService.isAdmin(telegramUser.id.toString())) {
       const amount = parseInt(text.replace(/\D/g, ''), 10);
       if (isNaN(amount) || amount <= 0) {
         await ctx.reply('❌ Noto\'g\'ri miqdor. Raqam kiriting.');
         return;
       }
 
-      const targetUserId = ctx.session.adminApprovingUserId;
-      const updatedUser = await this.telegramService.addCreditsById(targetUserId, amount);
+      const requestId = ctx.session.adminApprovingRequestId;
+      ctx.session.adminApprovingRequestId = undefined;
+
+      // Atomically claim the request so a second admin can't also credit.
+      const request = await this.telegramService.claimPaymentRequest(requestId, 'approved', {
+        amount,
+        processedBy: telegramUser.id.toString(),
+      });
+      if (!request) {
+        await ctx.reply('⚠️ Bu to\'lov allaqachon boshqa admin tomonidan ko\'rib chiqilgan.');
+        return;
+      }
+
+      const updatedUser = await this.telegramService.addCreditsById(request.userId, amount);
+
+      const adminName = telegramUser.username ? `@${telegramUser.username}` : telegramUser.first_name || 'admin';
+      const finalCaption =
+        `✅ <b>Tasdiqlandi</b>\n\n` +
+        `👤 User ID: ${request.userId}\n` +
+        `💰 Qo'shildi: +${amount.toLocaleString()} so'm\n` +
+        `👮 Admin: ${adminName}`;
+      await this.telegramService.finalizeAdminMessages(request, finalCaption);
 
       if (updatedUser) {
         await ctx.reply(
           `✅ <b>Balans to'ldirildi!</b>\n\n` +
           `👤 User: ${updatedUser.firstName || 'N/A'} (@${updatedUser.username || 'N/A'})\n` +
-          `🆔 ID: ${targetUserId}\n` +
           `💰 Qo'shildi: +${amount.toLocaleString()} so'm\n` +
           `💳 Yangi balans: ${updatedUser.credits.toLocaleString()} so'm`,
-          { parse_mode: 'HTML' }
+          { parse_mode: 'HTML' },
         );
       } else {
-        await ctx.reply(`❌ User topilmadi (ID: ${targetUserId})`);
+        await ctx.reply(`❌ User topilmadi (ID: ${request.userId})`);
+      }
+      return;
+    }
+
+    // Admin entering a rejection reason.
+    if (ctx.session.adminRejectingRequestId && this.telegramService.isAdmin(telegramUser.id.toString())) {
+      const reason = text.trim();
+      if (reason.length < 2) {
+        await ctx.reply('❌ Sabab juda qisqa. Iltimos, sababni yozing.');
+        return;
       }
 
-      ctx.session.adminApprovingUserId = undefined;
+      const requestId = ctx.session.adminRejectingRequestId;
+      ctx.session.adminRejectingRequestId = undefined;
+
+      const request = await this.telegramService.claimPaymentRequest(requestId, 'rejected', {
+        rejectReason: reason,
+        processedBy: telegramUser.id.toString(),
+      });
+      if (!request) {
+        await ctx.reply('⚠️ Bu to\'lov allaqachon boshqa admin tomonidan ko\'rib chiqilgan.');
+        return;
+      }
+
+      const adminName = telegramUser.username ? `@${telegramUser.username}` : telegramUser.first_name || 'admin';
+      const finalCaption =
+        `❌ <b>Rad etildi</b>\n\n` +
+        `👤 User ID: ${request.userId}\n` +
+        `📝 Sabab: ${reason}\n` +
+        `👮 Admin: ${adminName}`;
+      await this.telegramService.finalizeAdminMessages(request, finalCaption);
+
+      // Notify the paying user with the reason.
+      await this.telegramService.notifyPaymentRejected(request.telegramId, reason);
+
+      await ctx.reply('✅ Rad etildi va foydalanuvchiga sabab yuborildi.');
       return;
     }
 

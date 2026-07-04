@@ -1,4 +1,5 @@
 {
+  "paymentRejected": "❌ <b>결제가 승인되지 않았습니다</b>\\n\\n📝 사유: {reason}\\n\\n문의사항이 있으면 관리자에게 연락하세요.",
   "welcome": "안녕하세요, {name}님! 👋\n\n🎉 <b>SliderAI UZ</b>에 오신 것을 환영합니다!\n\n🎁 <b>2,500 UZS</b>의 선물 잔액을 받으셨습니다!\n\n✨ <b>봇 기능:</b>\n• 🎨 전문적인 프레젠테이션 제작\n• 📊 30개 이상의 현대적인 디자인과 테마\n• 🤖 AI 기반 콘텐츠 생성\n• ✏️ 실시간 편집 (미니 앱)\n• 📥 PPTX/PDF 형식으로 다운로드\n• ⚡ 2~3분 안에 완성!\n\n💰 <b>가격:</b>\n• 슬라이드 6장 - 1,000 UZS\n• 슬라이드 8장 - 1,500 UZS\n• 슬라이드 10장 - 1,700 UZS\n• 슬라이드 12장 - 2,000 UZS\n• 슬라이드 14장 - 2,200 UZS\n• 슬라이드 16장 - 2,400 UZS\n• 슬라이드 18장 - 2,500 UZS\n\n👇 아래 버튼을 사용하여 시작하세요:",
   "mainMenuText": "📋 메뉴",
   "selectLanguage": "Tilni tanlang / Выберите язык / Select language / Sprache wählen:",
