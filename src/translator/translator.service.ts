@@ -51,6 +51,17 @@ export class TranslatorService {
     try {
       const result = await this.agent.translate(trimmed, targetLang);
       this.logger.log(`Translation done for user ${userId} ($${result.cost.toFixed(5)})`);
+      // Log a usage transaction so the admin per-feature stats can count
+      // translator revenue (translator has no dedicated table).
+      await this.transactionRepository.save(
+        this.transactionRepository.create({
+          userId: user.id,
+          type: 'usage',
+          amount: price,
+          status: 'approved',
+          description: `feature:translator (${targetLang})`,
+        }),
+      );
       return result.text;
     } catch (error) {
       user.credits += price;

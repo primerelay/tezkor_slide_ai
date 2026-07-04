@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import {
   Users, FileText, DollarSign, TrendingUp, TrendingDown,
-  LogOut, BarChart3, Bot, RefreshCw, Brain, Zap, BookOpen
+  LogOut, BarChart3, Bot, RefreshCw, Brain, Zap, BookOpen, Layers
 } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import {
@@ -10,7 +10,7 @@ import {
   BarChart, Bar, Legend
 } from 'recharts';
 import { useAuth } from '../contexts/AuthContext';
-import { api, type StatsResponse, type ChartData, type DateFilter, type RecentPresentation, type RecentUser } from '../api/api';
+import { api, type StatsResponse, type ChartData, type DateFilter, type RecentPresentation, type RecentUser, type FeatureStatsResponse } from '../api/api';
 
 const filterOptions: { value: DateFilter; label: string }[] = [
   { value: '7d', label: '7 kun' },
@@ -26,6 +26,7 @@ export default function DashboardPage() {
   const [filter, setFilter] = useState<DateFilter>('1m');
   const [stats, setStats] = useState<StatsResponse | null>(null);
   const [chartData, setChartData] = useState<ChartData[]>([]);
+  const [featureStats, setFeatureStats] = useState<FeatureStatsResponse | null>(null);
   const [recentPresentations, setRecentPresentations] = useState<RecentPresentation[]>([]);
   const [recentUsers, setRecentUsers] = useState<RecentUser[]>([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -33,14 +34,16 @@ export default function DashboardPage() {
 
   const fetchData = async () => {
     try {
-      const [statsData, chart, presentations, users] = await Promise.all([
+      const [statsData, chart, features, presentations, users] = await Promise.all([
         api.getStats(filter),
         api.getChartData(filter),
+        api.getFeatureStats(filter),
         api.getRecentPresentations(5),
         api.getRecentUsers(5),
       ]);
       setStats(statsData);
       setChartData(chart);
+      setFeatureStats(features);
       setRecentPresentations(presentations);
       setRecentUsers(users);
     } catch (error) {
@@ -67,6 +70,15 @@ export default function DashboardPage() {
   const formatNumber = (value: number) => {
     return new Intl.NumberFormat('uz-UZ').format(value);
   };
+
+  // Compact money for tight metric cells: 1 200 000 → "1.2M", 850 000 → "850K".
+  const formatShort = (value: number) => {
+    if (value >= 1_000_000) return (value / 1_000_000).toFixed(1).replace(/\.0$/, '') + 'M';
+    if (value >= 1_000) return Math.round(value / 1000) + 'K';
+    return String(Math.round(value));
+  };
+
+  const maxRevenue = Math.max(1, ...(featureStats?.features.map((f) => f.revenue) || [1]));
 
   if (isLoading) {
     return (
@@ -164,6 +176,77 @@ export default function DashboardPage() {
             subtext={`Foyda: ${formatCurrency(stats?.profit || 0)}`}
             color="orange"
           />
+        </div>
+
+        {/* Feature breakdown */}
+        <div className="mb-8">
+          <h2 className="text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
+            <Layers className="w-6 h-6 text-primary-600" />
+            Feature bo'yicha statistika
+          </h2>
+
+          {/* Totals summary */}
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-5">
+            {[
+              { label: 'Jami ishlatilgan', value: formatNumber(featureStats?.totals.count || 0) + ' ta', ring: 'ring-blue-100', text: 'text-blue-600' },
+              { label: 'Jami daromad', value: formatCurrency(featureStats?.totals.revenue || 0), ring: 'ring-emerald-100', text: 'text-emerald-600' },
+              { label: 'AI xarajat', value: formatCurrency(featureStats?.totals.aiCost || 0), ring: 'ring-orange-100', text: 'text-orange-500' },
+              { label: 'Sof foyda', value: formatCurrency(featureStats?.totals.profit || 0), ring: 'ring-violet-100', text: 'text-violet-600' },
+            ].map((s) => (
+              <div key={s.label} className={`bg-white rounded-2xl border border-gray-100 ring-1 ${s.ring} p-4`}>
+                <p className="text-xs text-gray-500 mb-1">{s.label}</p>
+                <p className={`text-lg font-bold ${s.text} tabular-nums leading-tight break-words`}>{s.value}</p>
+              </div>
+            ))}
+          </div>
+
+          {/* Per-feature cards */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+            {(featureStats?.features || []).map((f) => (
+              <motion.div
+                key={f.key}
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                className="bg-white rounded-2xl border border-gray-100 p-4 hover:shadow-md transition-shadow"
+              >
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center gap-2 min-w-0">
+                    <span className="text-2xl leading-none">{f.emoji}</span>
+                    <span className="font-semibold text-gray-900 truncate">{f.label}</span>
+                  </div>
+                  <span className="shrink-0 text-xs font-semibold bg-gray-100 text-gray-600 px-2 py-1 rounded-lg tabular-nums">
+                    {formatNumber(f.count)}
+                  </span>
+                </div>
+
+                {/* revenue share bar */}
+                <div className="h-1.5 w-full bg-gray-100 rounded-full mb-3 overflow-hidden">
+                  <div
+                    className="h-full bg-gradient-to-r from-emerald-400 to-emerald-600 rounded-full"
+                    style={{ width: `${Math.round((f.revenue / maxRevenue) * 100)}%` }}
+                  />
+                </div>
+
+                <div className="grid grid-cols-3 gap-1 text-center">
+                  <div>
+                    <p className="text-[11px] text-gray-400 mb-0.5">Daromad</p>
+                    <p className="text-sm font-bold text-emerald-600 tabular-nums">{formatShort(f.revenue)}</p>
+                  </div>
+                  <div className="border-x border-gray-100">
+                    <p className="text-[11px] text-gray-400 mb-0.5">AI</p>
+                    <p className="text-sm font-bold text-orange-500 tabular-nums">{formatShort(f.aiCost)}</p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] text-gray-400 mb-0.5">Foyda</p>
+                    <p className="text-sm font-bold text-violet-600 tabular-nums">{formatShort(f.profit)}</p>
+                  </div>
+                </div>
+              </motion.div>
+            ))}
+          </div>
+          <p className="text-xs text-gray-400 mt-3">
+            💡 Summalar so'mda. Slaydlar daromadi slayd soniga qarab, Tarjimon esa foydalanish tranzaksiyalaridan hisoblanadi.
+          </p>
         </div>
 
         {/* Quick Actions */}

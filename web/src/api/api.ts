@@ -31,6 +31,21 @@ export interface StatsResponse {
   incomeGrowth: number;
 }
 
+export interface FeatureStat {
+  key: string;
+  label: string;
+  emoji: string;
+  count: number;
+  revenue: number;
+  aiCost: number;
+  profit: number;
+}
+
+export interface FeatureStatsResponse {
+  features: FeatureStat[];
+  totals: { count: number; revenue: number; aiCost: number; profit: number };
+}
+
 export interface ChartData {
   date: string;
   income: number;
@@ -89,6 +104,16 @@ export const api = {
     });
     if (!response.ok) {
       throw new Error('Failed to fetch stats');
+    }
+    return response.json();
+  },
+
+  async getFeatureStats(filter: DateFilter = '1m'): Promise<FeatureStatsResponse> {
+    const response = await fetch(`${API_BASE}/features?filter=${filter}`, {
+      headers: getAuthHeaders(),
+    });
+    if (!response.ok) {
+      throw new Error('Failed to fetch feature stats');
     }
     return response.json();
   },

@@ -1,14 +1,30 @@
 import { Injectable, UnauthorizedException, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, MoreThanOrEqual, Between } from 'typeorm';
+import { Repository, MoreThanOrEqual, Between, Like } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { Admin } from './admin.entity';
 import { User } from '../database/entities/user.entity';
 import { Presentation } from '../database/entities/presentation.entity';
 import { Transaction } from '../database/entities/transaction.entity';
+import { GeneratedDocument } from '../database/entities/document.entity';
+import { FlashcardSet } from '../database/entities/flashcard-set.entity';
+import { GlossarySet } from '../database/entities/glossary-set.entity';
+import { CrosswordSet } from '../database/entities/crossword-set.entity';
+import { Resume } from '../database/entities/resume.entity';
+import { Quiz } from '../database/entities/quiz.entity';
 
 export type DateFilter = '7d' | '1m' | '2m' | '1y' | 'all';
+
+export interface FeatureStat {
+  key: string;
+  label: string;
+  emoji: string;
+  count: number;
+  revenue: number; // so'm
+  aiCost: number; // so'm
+  profit: number; // so'm
+}
 
 @Injectable()
 export class AdminService implements OnModuleInit {
@@ -21,7 +37,123 @@ export class AdminService implements OnModuleInit {
     private presentationRepository: Repository<Presentation>,
     @InjectRepository(Transaction)
     private transactionRepository: Repository<Transaction>,
+    @InjectRepository(GeneratedDocument)
+    private documentRepository: Repository<GeneratedDocument>,
+    @InjectRepository(FlashcardSet)
+    private flashcardRepository: Repository<FlashcardSet>,
+    @InjectRepository(GlossarySet)
+    private glossaryRepository: Repository<GlossarySet>,
+    @InjectRepository(CrosswordSet)
+    private crosswordRepository: Repository<CrosswordSet>,
+    @InjectRepository(Resume)
+    private resumeRepository: Repository<Resume>,
+    @InjectRepository(Quiz)
+    private quizRepository: Repository<Quiz>,
   ) {}
+
+  private static readonly USD_TO_UZS = 12500;
+
+  // Presentation pricing by slide count (so'm) — presentations don't store a
+  // price column, so revenue is derived from the selected slide count.
+  private static readonly SLIDE_PRICES: Record<number, number> = {
+    6: 1000, 8: 1500, 10: 1700, 12: 2000, 14: 2200, 16: 2400, 18: 2500,
+  };
+
+  /**
+   * Per-feature breakdown: usage count, revenue (so'm), AI cost (so'm) and
+   * profit for every content feature, within the selected date range.
+   */
+  async getFeatureStats(filter: DateFilter): Promise<{
+    features: FeatureStat[];
+    totals: { count: number; revenue: number; aiCost: number; profit: number };
+  }> {
+    const { start } = this.getDateRange(filter);
+    const rate = AdminService.USD_TO_UZS;
+
+    // Generic aggregate: count + sum(revenue col) + sum(AI cost col, USD→so'm).
+    // Uses find()+JS (like getStats) to avoid raw-SQL camelCase column pitfalls.
+    const agg = async (
+      repo: Repository<any>,
+      revenueCol: string | null,
+      aiCol: string | null,
+      hasStatus = false,
+    ) => {
+      const where: any = { createdAt: MoreThanOrEqual(start) };
+      // Queue-based features keep failed (refunded) rows — exclude them so
+      // revenue only counts successful generations.
+      if (hasStatus) where.status = 'completed';
+      const rows = await repo.find({ where });
+      let revenue = 0;
+      let aiUsd = 0;
+      rows.forEach((r: any) => {
+        if (revenueCol) revenue += Number(r[revenueCol]) || 0;
+        if (aiCol) aiUsd += Number(r[aiCol]) || 0;
+      });
+      return {
+        count: rows.length,
+        revenue: Math.round(revenue),
+        aiCost: Math.round(aiUsd * rate),
+      };
+    };
+
+    // Presentations: revenue derived from slide count in JS (completed only).
+    const presRows = await this.presentationRepository.find({
+      where: { createdAt: MoreThanOrEqual(start), status: 'completed' },
+    });
+    let presRevenue = 0;
+    let presAiUsd = 0;
+    presRows.forEach((p) => {
+      presRevenue +=
+        AdminService.SLIDE_PRICES[p.slideCount] ??
+        Math.round((p.slideCount || 8) * 150);
+      presAiUsd += Number(p.aiCost) || 0;
+    });
+
+    // Translator: no entity — counted from its usage transactions.
+    const trRows = await this.transactionRepository.find({
+      where: {
+        createdAt: MoreThanOrEqual(start),
+        type: 'usage',
+        description: Like('feature:translator%'),
+      },
+    });
+    const trCount = trRows.length;
+    const trRevenue = trRows.reduce((s, t) => s + (Number(t.amount) || 0), 0);
+
+    const [doc, flash, gloss, cross, resume, quiz] = await Promise.all([
+      agg(this.documentRepository, 'price', 'aiCost', true),
+      agg(this.flashcardRepository, 'price', 'generationCost', true),
+      agg(this.glossaryRepository, 'price', 'generationCost'),
+      agg(this.crosswordRepository, 'price', 'generationCost'),
+      agg(this.resumeRepository, 'price', 'generationCost'),
+      agg(this.quizRepository, null, 'generationCost', true),
+    ]);
+
+    const features: FeatureStat[] = [
+      { key: 'presentation', label: 'Slaydlar', emoji: '📊', count: presRows.length, revenue: presRevenue, aiCost: Math.round(presAiUsd * rate), profit: 0 },
+      { key: 'document', label: 'Hujjatlar', emoji: '📄', count: doc.count, revenue: doc.revenue, aiCost: doc.aiCost, profit: 0 },
+      { key: 'flashcard', label: 'Flesh kartalar', emoji: '🎴', count: flash.count, revenue: flash.revenue, aiCost: flash.aiCost, profit: 0 },
+      { key: 'glossary', label: 'Glossary', emoji: '📖', count: gloss.count, revenue: gloss.revenue, aiCost: gloss.aiCost, profit: 0 },
+      { key: 'crossword', label: 'Krossvord', emoji: '🧩', count: cross.count, revenue: cross.revenue, aiCost: cross.aiCost, profit: 0 },
+      { key: 'resume', label: 'Rezyume', emoji: '📇', count: resume.count, revenue: resume.revenue, aiCost: resume.aiCost, profit: 0 },
+      { key: 'quiz', label: 'Quiz', emoji: '🧠', count: quiz.count, revenue: quiz.revenue, aiCost: quiz.aiCost, profit: 0 },
+      { key: 'translator', label: 'Tarjimon', emoji: '🌍', count: trCount, revenue: Math.round(trRevenue), aiCost: 0, profit: 0 },
+    ];
+    features.forEach((f) => (f.profit = f.revenue - f.aiCost));
+    features.sort((a, b) => b.revenue - a.revenue);
+
+    const totals = features.reduce(
+      (acc, f) => ({
+        count: acc.count + f.count,
+        revenue: acc.revenue + f.revenue,
+        aiCost: acc.aiCost + f.aiCost,
+        profit: acc.profit + f.profit,
+      }),
+      { count: 0, revenue: 0, aiCost: 0, profit: 0 },
+    );
+
+    return { features, totals };
+  }
 
   async onModuleInit() {
     // Create or update default admin from env
