@@ -289,12 +289,11 @@ export class TelegramService {
 
     const caption = `💳 <b>Yangi to'lov</b>\n\n👤 User: ${user.firstName || 'Unknown'} (@${user.username || 'N/A'})\n🆔 ID: ${user.id}\n📱 Telegram ID: ${user.telegramId}\n💰 Hozirgi balans: ${user.credits} so'm\n\n⏰ ${new Date().toLocaleString('uz-UZ')}`;
 
-    // If a payment group is configured, send ONE proof message to the group;
-    // otherwise fall back to a private copy per admin. Either way we store the
-    // resulting messages so the first decision updates every copy.
-    const targets = this.paymentGroupId
-      ? [this.paymentGroupId]
-      : this.adminTelegramIds;
+    // Send the proof to the group (if configured) AND to every admin's DM as a
+    // backup. The first decision (from any copy) atomically claims the request
+    // and updates all copies, so duplicates can't double-credit.
+    const targets: (number | string)[] = [...this.adminTelegramIds];
+    if (this.paymentGroupId) targets.unshift(this.paymentGroupId);
 
     const adminMessages: { adminId: number | string; messageId: number }[] = [];
     for (const target of targets) {
