@@ -9,7 +9,9 @@ export type PaymentRequestStatus = 'pending' | 'approved' | 'rejected';
 
 /** One admin's copy of the payment-proof message (so we can update all of them). */
 export interface AdminMessageRef {
-  adminId: number;
+  // Chat the proof was sent to: an admin's user id (number) or a group id
+  // (negative number / string like "-100...").
+  adminId: number | string;
   messageId: number;
 }
 

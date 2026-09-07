@@ -1411,6 +1411,11 @@ export class TelegramUpdate {
       return;
     }
 
+    // The presentation/document wizard is DM-only. In group chats (e.g. the
+    // admin payments group) ignore any other text so the bot doesn't spam the
+    // group with wizard prompts. Admin approve/reject text is handled above.
+    if (ctx.chat?.type !== 'private') return;
+
     const user = await this.telegramService.getUserByTelegramId(
       telegramUser.id.toString(),
     );

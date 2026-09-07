@@ -64,5 +64,9 @@ export default () => ({
   payment: {
     cardNumber: process.env.PAYMENT_CARD_NUMBER || '8600 1234 5678 9012',
     cardOwner: process.env.PAYMENT_CARD_OWNER || 'SliderAI UZ',
+    // Optional: send payment proofs to ONE group chat instead of each admin's
+    // DM. Add the bot to the group and put the group's numeric id here
+    // (negative, e.g. -1001234567890). Empty = fall back to per-admin DMs.
+    groupId: process.env.PAYMENT_GROUP_ID || '',
   },
 });

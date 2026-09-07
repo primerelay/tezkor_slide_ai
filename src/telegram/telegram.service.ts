@@ -29,6 +29,7 @@ const SLIDE_PRICES: Record<number, number> = {
 export class TelegramService {
   private readonly logger = new Logger(TelegramService.name);
   private readonly adminTelegramIds: number[];
+  private readonly paymentGroupId: string;
   private readonly requiredChannelUsername: string;
   private readonly requiredChannelUrl: string;
   // Short-lived cache so tapping several buttons doesn't hit the Telegram API
@@ -52,6 +53,7 @@ export class TelegramService {
     private readonly quizService: QuizService,
   ) {
     this.adminTelegramIds = this.configService.get<number[]>('admin.telegramIds') || [];
+    this.paymentGroupId = this.configService.get<string>('payment.groupId') || '';
     this.requiredChannelUsername = this.configService.get<string>('requiredChannel.username') || '';
     this.requiredChannelUrl = this.configService.get<string>('requiredChannel.url') || '';
   }
@@ -287,17 +289,24 @@ export class TelegramService {
 
     const caption = `💳 <b>Yangi to'lov</b>\n\n👤 User: ${user.firstName || 'Unknown'} (@${user.username || 'N/A'})\n🆔 ID: ${user.id}\n📱 Telegram ID: ${user.telegramId}\n💰 Hozirgi balans: ${user.credits} so'm\n\n⏰ ${new Date().toLocaleString('uz-UZ')}`;
 
-    const adminMessages: { adminId: number; messageId: number }[] = [];
-    for (const adminId of this.adminTelegramIds) {
+    // If a payment group is configured, send ONE proof message to the group;
+    // otherwise fall back to a private copy per admin. Either way we store the
+    // resulting messages so the first decision updates every copy.
+    const targets = this.paymentGroupId
+      ? [this.paymentGroupId]
+      : this.adminTelegramIds;
+
+    const adminMessages: { adminId: number | string; messageId: number }[] = [];
+    for (const target of targets) {
       try {
-        const sent = await this.bot.telegram.sendPhoto(adminId, largestPhoto.file_id, {
+        const sent = await this.bot.telegram.sendPhoto(target, largestPhoto.file_id, {
           caption,
           parse_mode: 'HTML',
           reply_markup: InlineKeyboards.adminApprovePayment(request.id),
         });
-        adminMessages.push({ adminId, messageId: sent.message_id });
+        adminMessages.push({ adminId: target, messageId: sent.message_id });
       } catch (error) {
-        this.logger.error(`Failed to forward payment to admin ${adminId}:`, error);
+        this.logger.error(`Failed to forward payment to ${target}:`, error);
       }
     }
 
