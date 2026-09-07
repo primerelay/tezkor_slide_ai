@@ -24,7 +24,7 @@ APP_DIR="/var/www/tezkor_slide_ai"
 PG_CONTAINER="tezkor-postgres"
 DB_USER="tezkor"
 DB_NAME="tezkor_slide_ai"
-REMOTE_PATH="backup:tezkor-backups"   # rclone remote nomi : papka
+REMOTE_PATH="slideraibackup:tezkor-backups"   # rclone remote nomi : papka
 KEEP_LOCAL_DAYS=3                      # serverda vaqtincha nusxa (yuklab bo'lgach o'chadi)
 RETENTION_DAYS=30                      # off-site'da qancha kun saqlash
 # -----------------------------------------------------------------------------
