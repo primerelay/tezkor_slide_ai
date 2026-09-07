@@ -1,4 +1,4 @@
-name: Deploy to DigitalOcean
+name: Deploy to Contabo
 
 # `main` branchga push qilinganda avtomatik deploy.
 # Qo'lda ham ishga tushirish mumkin (Actions tab -> Run workflow).
