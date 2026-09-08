@@ -242,3 +242,5 @@ ufw enable
 - [ ] DNS Contabo IP'ga yo'naltirildi (domen bo'lsa)
 - [ ] Off-site backup + cron sozlandi
 - [ ] GitHub Secrets yangilandi
+
+<!-- CI/CD auto-deploy faol: main push -> Contabo -->
