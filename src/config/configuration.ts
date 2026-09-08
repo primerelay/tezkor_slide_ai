@@ -5,6 +5,9 @@ export default () => ({
   telegram: {
     botToken: process.env.TELEGRAM_BOT_TOKEN,
     botUsername: process.env.TELEGRAM_BOT_USERNAME || '',
+    // Group chat that receives runtime error notifications. Add the bot to the
+    // group and put its numeric id here. Empty = error reporting disabled.
+    errorGroupId: process.env.ERROR_LOG_GROUP_ID || '',
   },
 
   database: {

@@ -21,6 +21,7 @@ import { FlashcardModule } from './flashcard/flashcard.module';
 import { StudyModule } from './study/study.module';
 import { ResumeModule } from './resume/resume.module';
 import { TranslatorModule } from './translator/translator.module';
+import { ErrorReporterModule } from './common/error-reporter/error-reporter.module';
 import { SpaController } from './spa.controller';
 
 @Module({
@@ -71,6 +72,7 @@ import { SpaController } from './spa.controller';
         fallthrough: true,
       },
     }),
+    ErrorReporterModule,
     DatabaseModule,
     StorageModule,
     AiModule,
