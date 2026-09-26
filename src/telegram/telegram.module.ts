@@ -12,6 +12,7 @@ import { PaymentRequest } from '../database/entities/payment-request.entity';
 import { TelegramService } from './telegram.service';
 import { TelegramUpdate } from './telegram.update';
 import { ReferralService } from './referral.service';
+import { BroadcastService } from './broadcast.service';
 import { StartScene } from './scenes/start.scene';
 import { LanguageScene } from './scenes/language.scene';
 import { TopicScene } from './scenes/topic.scene';
@@ -55,6 +56,7 @@ import { ReportsModule } from '../reports/reports.module';
     TelegramService,
     TelegramUpdate,
     ReferralService,
+    BroadcastService,
     StartScene,
     LanguageScene,
     TopicScene,

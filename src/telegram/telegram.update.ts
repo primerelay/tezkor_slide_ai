@@ -13,6 +13,7 @@ import {
 import { FlashcardService } from '../flashcard/flashcard.service';
 import { renderFlashcard } from './keyboards/flashcard.view';
 import { DailyReportService } from '../reports/daily-report.service';
+import { BroadcastService } from './broadcast.service';
 
 interface SessionData extends Scenes.SceneSession {
   language?: SupportedLanguage;
@@ -57,6 +58,10 @@ interface SessionData extends Scenes.SceneSession {
   resumeTemplate?: string;
   // Translator
   translateTarget?: string;
+  // Broadcast (admin /elon)
+  awaitingBroadcast?: boolean;
+  broadcastFromChatId?: number;
+  broadcastMessageId?: number;
 }
 
 export interface BotContext extends Context {
@@ -75,6 +80,7 @@ export class TelegramUpdate {
     private readonly configService: ConfigService,
     private readonly flashcardService: FlashcardService,
     private readonly dailyReportService: DailyReportService,
+    private readonly broadcastService: BroadcastService,
   ) {
     this.miniAppUrl = this.configService.get<string>('MINI_APP_URL');
   }
@@ -745,6 +751,37 @@ export class TelegramUpdate {
     }
   }
 
+  @Command('elon')
+  async onBroadcastCommand(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    if (!this.telegramService.isAdmin(telegramUser.id.toString())) {
+      await ctx.reply('❌ Sizda ruxsat yo\'q!');
+      return;
+    }
+
+    ctx.session.awaitingBroadcast = true;
+    ctx.session.broadcastFromChatId = undefined;
+    ctx.session.broadcastMessageId = undefined;
+    await ctx.reply(
+      '📢 <b>E\'lon yuborish</b>\n\n' +
+        'Endi tarqatmoqchi bo\'lgan xabaringizni yuboring — matn yoki rasm (izoh bilan).\n\n' +
+        'Bekor qilish uchun /bekor',
+      { parse_mode: 'HTML' },
+    );
+  }
+
+  @Command('bekor')
+  async onBroadcastCancelCommand(@Ctx() ctx: BotContext) {
+    if (ctx.session.awaitingBroadcast || ctx.session.broadcastMessageId) {
+      ctx.session.awaitingBroadcast = false;
+      ctx.session.broadcastFromChatId = undefined;
+      ctx.session.broadcastMessageId = undefined;
+      await ctx.reply('❌ E\'lon bekor qilindi.');
+    }
+  }
+
   @Command('add_balance')
   async onAddBalanceCommand(@Ctx() ctx: BotContext) {
     const telegramUser = ctx.from;
@@ -1353,6 +1390,12 @@ export class TelegramUpdate {
     const telegramUser = ctx.from;
     if (!telegramUser) return;
 
+    // Admin capturing a broadcast message (text) - check BEFORE user lookup.
+    if (ctx.session.awaitingBroadcast && this.telegramService.isAdmin(telegramUser.id.toString())) {
+      await this.captureBroadcast(ctx);
+      return;
+    }
+
     // Admin handling payment approval amount - check BEFORE user lookup
     // because admin might not be in users table
     if (ctx.session.adminApprovingRequestId && this.telegramService.isAdmin(telegramUser.id.toString())) {
@@ -1517,6 +1560,12 @@ export class TelegramUpdate {
     const telegramUser = ctx.from;
     if (!telegramUser) return;
 
+    // Admin capturing a broadcast message (photo) - check BEFORE user lookup.
+    if (ctx.session.awaitingBroadcast && this.telegramService.isAdmin(telegramUser.id.toString())) {
+      await this.captureBroadcast(ctx);
+      return;
+    }
+
     const user = await this.telegramService.getUserByTelegramId(
       telegramUser.id.toString(),
     );
@@ -1531,5 +1580,73 @@ export class TelegramUpdate {
 
       await ctx.reply(i18n.t('paymentReceived'), { parse_mode: 'HTML' });
     }
+  }
+
+  /**
+   * Store the message the admin wants to broadcast (by chat + message id, so
+   * copyMessage can reproduce it exactly) and ask for confirmation.
+   */
+  private async captureBroadcast(ctx: BotContext): Promise<void> {
+    const chatId = ctx.chat?.id;
+    const messageId = ctx.message?.message_id;
+    if (!chatId || !messageId) return;
+
+    ctx.session.awaitingBroadcast = false;
+    ctx.session.broadcastFromChatId = chatId;
+    ctx.session.broadcastMessageId = messageId;
+
+    const total = await this.broadcastService.countRecipients();
+    await ctx.reply(
+      `📢 Yuqoridagi xabar <b>${total.toLocaleString('en-US').replace(/,/g, ' ')}</b> ta foydalanuvchiga yuborilsinmi?`,
+      {
+        parse_mode: 'HTML',
+        reply_markup: {
+          inline_keyboard: [
+            [
+              { text: '✅ Ha, yuborish', callback_data: 'broadcast_confirm' },
+              { text: '❌ Yo\'q', callback_data: 'broadcast_cancel' },
+            ],
+          ],
+        },
+      },
+    );
+  }
+
+  @Action('broadcast_cancel')
+  async onBroadcastCancel(@Ctx() ctx: BotContext) {
+    ctx.session.awaitingBroadcast = false;
+    ctx.session.broadcastFromChatId = undefined;
+    ctx.session.broadcastMessageId = undefined;
+    await ctx.answerCbQuery('Bekor qilindi');
+    await ctx.editMessageText('❌ E\'lon bekor qilindi.').catch(() => undefined);
+  }
+
+  @Action('broadcast_confirm')
+  async onBroadcastConfirm(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser || !this.telegramService.isAdmin(telegramUser.id.toString())) {
+      await ctx.answerCbQuery('Ruxsat yo\'q');
+      return;
+    }
+
+    const fromChatId = ctx.session.broadcastFromChatId;
+    const messageId = ctx.session.broadcastMessageId;
+    if (!fromChatId || !messageId) {
+      await ctx.answerCbQuery('Xabar topilmadi, /elon dan qayta boshlang');
+      return;
+    }
+
+    ctx.session.broadcastFromChatId = undefined;
+    ctx.session.broadcastMessageId = undefined;
+
+    await ctx.answerCbQuery('Boshlandi');
+    await ctx.editMessageText('📤 E\'lon tarqatilmoqda...').catch(() => undefined);
+
+    const adminChatId = ctx.chat?.id;
+    // Run in the background so the callback returns immediately; the service
+    // messages the admin with the final summary when it finishes.
+    void this.broadcastService
+      .broadcast(fromChatId, messageId, adminChatId)
+      .catch(() => undefined);
   }
 }
