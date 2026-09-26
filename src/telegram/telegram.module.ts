@@ -30,6 +30,7 @@ import { FlashcardModule } from '../flashcard/flashcard.module';
 import { StudyModule } from '../study/study.module';
 import { ResumeModule } from '../resume/resume.module';
 import { TranslatorModule } from '../translator/translator.module';
+import { ReportsModule } from '../reports/reports.module';
 
 @Module({
   imports: [
@@ -48,6 +49,7 @@ import { TranslatorModule } from '../translator/translator.module';
     StudyModule,
     ResumeModule,
     TranslatorModule,
+    ReportsModule,
   ],
   providers: [
     TelegramService,

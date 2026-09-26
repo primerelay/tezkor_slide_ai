@@ -12,6 +12,7 @@ import {
 } from '../renderer/themes/theme-registry';
 import { FlashcardService } from '../flashcard/flashcard.service';
 import { renderFlashcard } from './keyboards/flashcard.view';
+import { DailyReportService } from '../reports/daily-report.service';
 
 interface SessionData extends Scenes.SceneSession {
   language?: SupportedLanguage;
@@ -73,6 +74,7 @@ export class TelegramUpdate {
     private readonly jobEventsService: JobEventsService,
     private readonly configService: ConfigService,
     private readonly flashcardService: FlashcardService,
+    private readonly dailyReportService: DailyReportService,
   ) {
     this.miniAppUrl = this.configService.get<string>('MINI_APP_URL');
   }
@@ -720,6 +722,27 @@ export class TelegramUpdate {
     await ctx.reply(i18n.t('selectLanguage'), {
       reply_markup: InlineKeyboards.languageSelection(),
     });
+  }
+
+  @Command('kunlik')
+  async onDailyReportCommand(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+
+    if (!this.telegramService.isAdmin(telegramUser.id.toString())) {
+      await ctx.reply('❌ Sizda ruxsat yo\'q!');
+      return;
+    }
+
+    await ctx.reply('⏳ Kunlik hisobot tayyorlanmoqda...');
+    try {
+      const summary = await this.dailyReportService.sendDailyReport();
+      await ctx.reply(`✅ Hisobot guruhga yuborildi.\n${summary}`);
+    } catch (error) {
+      await ctx.reply(
+        `❌ Xatolik: ${error instanceof Error ? error.message : 'nomaʼlum'}`,
+      );
+    }
   }
 
   @Command('add_balance')

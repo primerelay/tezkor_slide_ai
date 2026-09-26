@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { BullModule } from '@nestjs/bullmq';
+import { ScheduleModule } from '@nestjs/schedule';
 import { ServeStaticModule } from '@nestjs/serve-static';
 import { join } from 'path';
 import configuration from './config/configuration';
@@ -22,6 +23,7 @@ import { StudyModule } from './study/study.module';
 import { ResumeModule } from './resume/resume.module';
 import { TranslatorModule } from './translator/translator.module';
 import { ErrorReporterModule } from './common/error-reporter/error-reporter.module';
+import { ReportsModule } from './reports/reports.module';
 import { SpaController } from './spa.controller';
 
 @Module({
@@ -31,6 +33,7 @@ import { SpaController } from './spa.controller';
       isGlobal: true,
       load: [configuration],
     }),
+    ScheduleModule.forRoot(),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DATABASE_HOST || 'localhost',
@@ -73,6 +76,7 @@ import { SpaController } from './spa.controller';
       },
     }),
     ErrorReporterModule,
+    ReportsModule,
     DatabaseModule,
     StorageModule,
     AiModule,

@@ -8,6 +8,11 @@ export default () => ({
     // Group chat that receives runtime error notifications. Add the bot to the
     // group and put its numeric id here. Empty = error reporting disabled.
     errorGroupId: process.env.ERROR_LOG_GROUP_ID || '',
+    // Group chat that receives the daily 09:00 (Asia/Tashkent) usage report.
+    // Falls back to the payment group when unset. Empty (and no payment group)
+    // = daily report disabled.
+    dailyReportGroupId:
+      process.env.DAILY_REPORT_GROUP_ID || process.env.PAYMENT_GROUP_ID || '',
   },
 
   database: {
