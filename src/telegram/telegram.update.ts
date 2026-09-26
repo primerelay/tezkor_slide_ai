@@ -843,8 +843,30 @@ export class TelegramUpdate {
 
   @Command('help')
   async onHelp(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    // Admins get the admin command list (also works inside a group). Regular
+    // users get the normal help, so admin commands stay hidden from them.
+    if (telegramUser && this.telegramService.isAdmin(telegramUser.id.toString())) {
+      await ctx.reply(this.adminHelpText(), { parse_mode: 'HTML' });
+      return;
+    }
     const i18n = this.telegramService.getI18n(ctx.session.language || 'uz');
     await ctx.reply(i18n.t('help'), { parse_mode: 'HTML' });
+  }
+
+  /** Admin-only command reference (not shown to regular users). */
+  private adminHelpText(): string {
+    return (
+      '🛠 <b>Admin buyruqlari</b>\n\n' +
+      '📢 <code>/elon</code> — ommaviy e\'lon. Buyruqdan keyin matn yoki rasm (izoh bilan) yuboring, tasdiqlang — barcha foydalanuvchilarga tarqaladi.\n' +
+      '❌ <code>/bekor</code> — boshlangan e\'lonni bekor qilish.\n\n' +
+      '📊 <code>/kunlik</code> — kunlik hisobotni (kecha nechta odam ishlatgan, qancha pul tushgan, top 50) hoziroq guruhga yuborish.\n\n' +
+      '💰 <code>/add_balance @username 5000</code> — foydalanuvchiga balans qo\'shish.\n' +
+      '   Yoki ID bilan: <code>/add_balance 123456789 5000</code>\n\n' +
+      '❓ <code>/help</code> — shu ro\'yxat.\n\n' +
+      'ℹ️ To\'lovlarni tasdiqlash — chek kelganda tugmalar orqali.\n' +
+      'Kunlik hisobot avtomatik har kuni soat 09:00 (Toshkent) da yuboriladi.'
+    );
   }
 
   @Command('balance')
