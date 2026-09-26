@@ -36,15 +36,6 @@ export class AdminController {
     return this.adminService.getStats(filter);
   }
 
-  @Get('chart')
-  async getChartData(
-    @Headers('authorization') auth: string,
-    @Query('filter') filter: DateFilter = '1m',
-  ) {
-    await this.verifyAuth(auth);
-    return this.adminService.getChartData(filter);
-  }
-
   @Get('features')
   async getFeatureStats(
     @Headers('authorization') auth: string,
@@ -52,15 +43,6 @@ export class AdminController {
   ) {
     await this.verifyAuth(auth);
     return this.adminService.getFeatureStats(filter);
-  }
-
-  @Get('daily')
-  async getDailyStats(
-    @Headers('authorization') auth: string,
-    @Query('filter') filter: DateFilter = '1m',
-  ) {
-    await this.verifyAuth(auth);
-    return this.adminService.getDailyStats(filter);
   }
 
   @Get('presentations/recent')
@@ -72,13 +54,14 @@ export class AdminController {
     return this.adminService.getRecentPresentations(parseInt(limit, 10));
   }
 
-  @Get('users/recent')
-  async getRecentUsers(
+  @Get('users')
+  async getUsers(
     @Headers('authorization') auth: string,
-    @Query('limit') limit: string = '10',
+    @Query('search') search?: string,
+    @Query('limit') limit: string = '50',
   ) {
     await this.verifyAuth(auth);
-    return this.adminService.getRecentUsers(parseInt(limit, 10));
+    return this.adminService.getUsers(search, parseInt(limit, 10) || 50);
   }
 
   private async verifyAuth(auth: string) {

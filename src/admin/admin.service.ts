@@ -1,6 +1,6 @@
 import { Injectable, UnauthorizedException, OnModuleInit } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository, MoreThanOrEqual, Between, Like } from 'typeorm';
+import { Repository, MoreThanOrEqual, Like } from 'typeorm';
 import * as bcrypt from 'bcrypt';
 import * as jwt from 'jsonwebtoken';
 import { Admin } from './admin.entity';
@@ -59,6 +59,127 @@ export class AdminService implements OnModuleInit {
     6: 1000, 8: 1500, 10: 1700, 12: 2000, 14: 2200, 16: 2400, 18: 2500,
   };
 
+  // ---------------------------------------------------------------------------
+  // Auth
+  // ---------------------------------------------------------------------------
+
+  async onModuleInit() {
+    // Create or update default admin from env
+    const adminPhone = process.env.ADMIN_PHONE || '998901234567';
+    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
+    const adminName = process.env.ADMIN_NAME || 'Admin';
+
+    const existingAdmin = await this.adminRepository.findOne({ where: { phone: adminPhone } });
+
+    if (!existingAdmin) {
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+      await this.adminRepository.save({
+        phone: adminPhone,
+        password: hashedPassword,
+        name: adminName,
+      });
+      console.log(`Default admin created: phone=${adminPhone}`);
+    } else if (process.env.ADMIN_PASSWORD) {
+      // Update password if ADMIN_PASSWORD is set in env (not default)
+      const hashedPassword = await bcrypt.hash(adminPassword, 10);
+      await this.adminRepository.update(existingAdmin.id, {
+        password: hashedPassword,
+        name: adminName,
+      });
+      console.log(`Admin password updated for phone=${adminPhone}`);
+    }
+  }
+
+  private getJwtSecret(): string {
+    return process.env.JWT_SECRET || 'tezkor-slide-secret-key-change-in-production';
+  }
+
+  async login(phone: string, password: string): Promise<{ token: string; admin: Partial<Admin> }> {
+    const cleanPhone = phone.replace(/\D/g, '');
+    const admin = await this.adminRepository.findOne({ where: { phone: cleanPhone } });
+
+    if (!admin || !admin.isActive) {
+      throw new UnauthorizedException('Telefon raqam yoki parol noto\'g\'ri');
+    }
+
+    const isPasswordValid = await bcrypt.compare(password, admin.password);
+    if (!isPasswordValid) {
+      throw new UnauthorizedException('Telefon raqam yoki parol noto\'g\'ri');
+    }
+
+    const token = jwt.sign(
+      { id: admin.id, phone: admin.phone },
+      this.getJwtSecret(),
+      { expiresIn: '7d' },
+    );
+
+    return {
+      token,
+      admin: { id: admin.id, phone: admin.phone, name: admin.name },
+    };
+  }
+
+  async verifyToken(token: string): Promise<{ admin: Partial<Admin> }> {
+    try {
+      const decoded = jwt.verify(token, this.getJwtSecret()) as { id: number };
+      const admin = await this.adminRepository.findOne({ where: { id: decoded.id } });
+
+      if (!admin || !admin.isActive) {
+        throw new UnauthorizedException('Invalid token');
+      }
+
+      return { admin: { id: admin.id, phone: admin.phone, name: admin.name } };
+    } catch {
+      throw new UnauthorizedException('Invalid token');
+    }
+  }
+
+  // ---------------------------------------------------------------------------
+  // Stats
+  // ---------------------------------------------------------------------------
+
+  private getDateRange(filter: DateFilter): { start: Date; end: Date } {
+    const end = new Date();
+    let start = new Date();
+
+    switch (filter) {
+      case '7d':
+        start.setDate(start.getDate() - 7);
+        break;
+      case '1m':
+        start.setMonth(start.getMonth() - 1);
+        break;
+      case '2m':
+        start.setMonth(start.getMonth() - 2);
+        break;
+      case '1y':
+        start.setFullYear(start.getFullYear() - 1);
+        break;
+      case 'all':
+        start = new Date('2020-01-01');
+        break;
+    }
+
+    return { start, end };
+  }
+
+  /** Headline totals for the selected period: users, presentations, income. */
+  async getStats(filter: DateFilter) {
+    const { start } = this.getDateRange(filter);
+
+    const [totalUsers, totalPresentations, topups] = await Promise.all([
+      this.userRepository.count({ where: { createdAt: MoreThanOrEqual(start) } }),
+      this.presentationRepository.count({ where: { createdAt: MoreThanOrEqual(start) } }),
+      this.transactionRepository.find({
+        where: { createdAt: MoreThanOrEqual(start), status: 'approved', type: 'topup' },
+      }),
+    ]);
+
+    const totalIncome = topups.reduce((sum, t) => sum + (t.amount || 0), 0);
+
+    return { totalUsers, totalPresentations, totalIncome };
+  }
+
   /**
    * Per-feature breakdown: usage count, revenue (so'm), AI cost (so'm) and
    * profit for every content feature, within the selected date range.
@@ -71,7 +192,6 @@ export class AdminService implements OnModuleInit {
     const rate = AdminService.USD_TO_UZS;
 
     // Generic aggregate: count + sum(revenue col) + sum(AI cost col, USD→so'm).
-    // Uses find()+JS (like getStats) to avoid raw-SQL camelCase column pitfalls.
     const agg = async (
       repo: Repository<any>,
       revenueCol: string | null,
@@ -155,338 +275,102 @@ export class AdminService implements OnModuleInit {
     return { features, totals };
   }
 
+  // ---------------------------------------------------------------------------
+  // Users
+  // ---------------------------------------------------------------------------
+
   /**
-   * Per-day (or per-week/month for long ranges) cash flow: income (top-ups),
-   * expense (real AI cost across every feature) and profit.
+   * Searchable user list with per-feature creation counts. Search matches
+   * first/last name, @username or Telegram id. `created` holds how many of each
+   * feature the user has made.
    */
-  async getDailyStats(filter: DateFilter): Promise<
-    Array<{ date: string; income: number; aiCost: number; profit: number }>
-  > {
-    const { start, end } = this.getDateRange(filter);
-    const rate = AdminService.USD_TO_UZS;
-    let interval: 'day' | 'week' | 'month' = 'day';
-    if (filter === '1y' || filter === 'all') interval = 'month';
-    else if (filter === '2m') interval = 'week';
+  async getUsers(search: string | undefined, limit: number) {
+    const take = Math.min(Math.max(limit || 50, 1), 200);
 
-    // Load everything once, then bucket in JS.
-    const range = Between(start, end);
-    const [topups, pres, docs, flash, gloss, cross, resume, quiz] =
-      await Promise.all([
-        this.transactionRepository.find({ where: { createdAt: range, status: 'approved', type: 'topup' } }),
-        this.presentationRepository.find({ where: { createdAt: range, status: 'completed' } }),
-        this.documentRepository.find({ where: { createdAt: range, status: 'completed' } }),
-        this.flashcardRepository.find({ where: { createdAt: range } }),
-        this.glossaryRepository.find({ where: { createdAt: range } }),
-        this.crosswordRepository.find({ where: { createdAt: range } }),
-        this.resumeRepository.find({ where: { createdAt: range } }),
-        this.quizRepository.find({ where: { createdAt: range, status: 'completed' as any } }),
-      ]);
+    const qb = this.userRepository
+      .createQueryBuilder('u')
+      .orderBy('u.createdAt', 'DESC')
+      .take(take);
 
-    const rows: Array<{ date: string; income: number; aiCost: number; profit: number }> = [];
-    const current = new Date(start);
-    while (current <= end) {
-      const dateStr = this.formatDate(current, interval);
-      const nextDate = this.getNextDate(current, interval);
-      const lo = current.getTime();
-      const hi = nextDate.getTime();
-      const inBucket = (d: any) => {
-        const t = new Date(d).getTime();
-        return t >= lo && t < hi;
-      };
-
-      let income = 0;
-      topups.forEach((t) => { if (inBucket(t.createdAt)) income += t.amount || 0; });
-
-      let aiUsd = 0;
-      pres.forEach((p) => { if (inBucket(p.createdAt)) aiUsd += Number(p.aiCost) || 0; });
-      docs.forEach((d) => { if (inBucket(d.createdAt)) aiUsd += Number(d.aiCost) || 0; });
-      [flash, gloss, cross, resume, quiz].forEach((arr) =>
-        arr.forEach((r: any) => { if (inBucket(r.createdAt)) aiUsd += Number(r.generationCost) || 0; }),
+    if (search && search.trim()) {
+      const s = `%${search.trim()}%`;
+      qb.where(
+        '(u.firstName ILIKE :s OR u.lastName ILIKE :s OR u.username ILIKE :s OR CAST(u.telegramId AS TEXT) ILIKE :s)',
+        { s },
       );
-      const aiCost = Math.round(aiUsd * rate);
-
-      rows.push({ date: dateStr, income, aiCost, profit: income - aiCost });
-      current.setTime(hi);
     }
 
-    // Most recent first, drop empty buckets to keep the table tidy.
-    return rows.filter((r) => r.income > 0 || r.aiCost > 0).reverse();
-  }
+    const users = await qb.getMany();
+    const ids = users.map((u) => u.id);
 
-  async onModuleInit() {
-    // Create or update default admin from env
-    const adminPhone = process.env.ADMIN_PHONE || '998901234567';
-    const adminPassword = process.env.ADMIN_PASSWORD || 'admin123';
-    const adminName = process.env.ADMIN_NAME || 'Admin';
-
-    const existingAdmin = await this.adminRepository.findOne({ where: { phone: adminPhone } });
-
-    if (!existingAdmin) {
-      // Create new admin
-      const hashedPassword = await bcrypt.hash(adminPassword, 10);
-      await this.adminRepository.save({
-        phone: adminPhone,
-        password: hashedPassword,
-        name: adminName,
-      });
-      console.log(`Default admin created: phone=${adminPhone}`);
-    } else {
-      // Update password if ADMIN_PASSWORD is set in env (not default)
-      if (process.env.ADMIN_PASSWORD) {
-        const hashedPassword = await bcrypt.hash(adminPassword, 10);
-        await this.adminRepository.update(existingAdmin.id, {
-          password: hashedPassword,
-          name: adminName,
-        });
-        console.log(`Admin password updated for phone=${adminPhone}`);
-      }
-    }
-  }
-
-  private getJwtSecret(): string {
-    return process.env.JWT_SECRET || 'tezkor-slide-secret-key-change-in-production';
-  }
-
-  async login(phone: string, password: string): Promise<{ token: string; admin: Partial<Admin> }> {
-    const cleanPhone = phone.replace(/\D/g, '');
-    const admin = await this.adminRepository.findOne({ where: { phone: cleanPhone } });
-
-    if (!admin || !admin.isActive) {
-      throw new UnauthorizedException('Telefon raqam yoki parol noto\'g\'ri');
-    }
-
-    const isPasswordValid = await bcrypt.compare(password, admin.password);
-    if (!isPasswordValid) {
-      throw new UnauthorizedException('Telefon raqam yoki parol noto\'g\'ri');
-    }
-
-    const token = jwt.sign(
-      { id: admin.id, phone: admin.phone },
-      this.getJwtSecret(),
-      { expiresIn: '7d' },
-    );
-
-    return {
-      token,
-      admin: { id: admin.id, phone: admin.phone, name: admin.name },
+    // One grouped query per feature — counts by userId for just this page.
+    const countMap = async (repo: Repository<any>): Promise<Map<number, number>> => {
+      const map = new Map<number, number>();
+      if (!ids.length) return map;
+      const rows = await repo
+        .createQueryBuilder('e')
+        .select('e.userId', 'userId')
+        .addSelect('COUNT(*)', 'cnt')
+        .where('e.userId IN (:...ids)', { ids })
+        .groupBy('e.userId')
+        .getRawMany();
+      rows.forEach((r) => map.set(Number(r.userId), Number(r.cnt)));
+      return map;
     };
-  }
 
-  async verifyToken(token: string): Promise<{ admin: Partial<Admin> }> {
-    try {
-      const decoded = jwt.verify(token, this.getJwtSecret()) as { id: number };
-      const admin = await this.adminRepository.findOne({ where: { id: decoded.id } });
-
-      if (!admin || !admin.isActive) {
-        throw new UnauthorizedException('Invalid token');
-      }
-
-      return { admin: { id: admin.id, phone: admin.phone, name: admin.name } };
-    } catch {
-      throw new UnauthorizedException('Invalid token');
-    }
-  }
-
-  private getDateRange(filter: DateFilter): { start: Date; end: Date } {
-    const end = new Date();
-    let start = new Date();
-
-    switch (filter) {
-      case '7d':
-        start.setDate(start.getDate() - 7);
-        break;
-      case '1m':
-        start.setMonth(start.getMonth() - 1);
-        break;
-      case '2m':
-        start.setMonth(start.getMonth() - 2);
-        break;
-      case '1y':
-        start.setFullYear(start.getFullYear() - 1);
-        break;
-      case 'all':
-        start = new Date('2020-01-01');
-        break;
-    }
-
-    return { start, end };
-  }
-
-  private getPreviousDateRange(filter: DateFilter): { start: Date; end: Date } {
-    const current = this.getDateRange(filter);
-    const diff = current.end.getTime() - current.start.getTime();
-
-    return {
-      start: new Date(current.start.getTime() - diff),
-      end: current.start,
-    };
-  }
-
-  async getStats(filter: DateFilter) {
-    const { start, end } = this.getDateRange(filter);
-    const previous = this.getPreviousDateRange(filter);
-
-    // Current period stats
-    const [totalUsers, totalPresentations, presentations, transactions] = await Promise.all([
-      this.userRepository.count({ where: { createdAt: MoreThanOrEqual(start) } }),
-      this.presentationRepository.count({ where: { createdAt: MoreThanOrEqual(start) } }),
-      this.presentationRepository.find({ where: { createdAt: MoreThanOrEqual(start) } }),
-      this.transactionRepository.find({
-        where: {
-          createdAt: MoreThanOrEqual(start),
-          status: 'approved',
-          type: 'topup'
-        }
-      }),
+    const [pres, docs, flash, gloss, cross, resume, quiz] = await Promise.all([
+      countMap(this.presentationRepository),
+      countMap(this.documentRepository),
+      countMap(this.flashcardRepository),
+      countMap(this.glossaryRepository),
+      countMap(this.crosswordRepository),
+      countMap(this.resumeRepository),
+      countMap(this.quizRepository),
     ]);
 
-    // Previous period stats for comparison
-    const [prevUsers, prevPresentations, prevTransactions] = await Promise.all([
-      this.userRepository.count({ where: { createdAt: Between(previous.start, previous.end) } }),
-      this.presentationRepository.count({ where: { createdAt: Between(previous.start, previous.end) } }),
-      this.transactionRepository.find({
-        where: {
-          createdAt: Between(previous.start, previous.end),
-          status: 'approved',
-          type: 'topup'
-        }
-      }),
-    ]);
+    // Translator has no entity — count its usage transactions.
+    const trMap = new Map<number, number>();
+    if (ids.length) {
+      const trRows = await this.transactionRepository
+        .createQueryBuilder('t')
+        .select('t.userId', 'userId')
+        .addSelect('COUNT(*)', 'cnt')
+        .where('t.userId IN (:...ids)', { ids })
+        .andWhere('t.type = :type', { type: 'usage' })
+        .andWhere('t.description LIKE :d', { d: 'feature:translator%' })
+        .groupBy('t.userId')
+        .getRawMany();
+      trRows.forEach((r) => trMap.set(Number(r.userId), Number(r.cnt)));
+    }
 
-    // Calculate real income from approved topup transactions
-    let totalIncome = 0;
-    transactions.forEach((t) => {
-      totalIncome += t.amount || 0;
+    return users.map((u) => {
+      const created = {
+        presentation: pres.get(u.id) || 0,
+        document: docs.get(u.id) || 0,
+        flashcard: flash.get(u.id) || 0,
+        glossary: gloss.get(u.id) || 0,
+        crossword: cross.get(u.id) || 0,
+        resume: resume.get(u.id) || 0,
+        quiz: quiz.get(u.id) || 0,
+        translator: trMap.get(u.id) || 0,
+      };
+      const totalCreated = Object.values(created).reduce((a, b) => a + b, 0);
+
+      return {
+        id: u.id,
+        telegramId: u.telegramId.toString(),
+        username: u.username || null,
+        firstName: u.firstName || null,
+        lastName: u.lastName || null,
+        language: u.language,
+        credits: u.credits,
+        referralCount: u.referralCount,
+        createdAt: u.createdAt,
+        createdAgo: this.formatRelativeTime(u.createdAt),
+        created,
+        totalCreated,
+      };
     });
-
-    let prevIncome = 0;
-    prevTransactions.forEach((t) => {
-      prevIncome += t.amount || 0;
-    });
-
-    // Calculate real AI costs from presentations
-    let totalAiCost = 0;
-    let totalSlides = 0;
-    presentations.forEach((p) => {
-      // aiCost is stored as decimal, convert to number
-      totalAiCost += Number(p.aiCost) || 0;
-      totalSlides += p.slideCount || 0;
-    });
-
-    // Convert AI cost from dollars to so'm (approximate rate)
-    const usdToUzs = 12500; // 1 USD ≈ 12,500 so'm
-    const totalAiCostUzs = Math.round(totalAiCost * usdToUzs);
-
-    const profit = totalIncome - totalAiCostUzs;
-
-    // Calculate growth percentages
-    const userGrowth = prevUsers > 0 ? Math.round(((totalUsers - prevUsers) / prevUsers) * 100) : (totalUsers > 0 ? 100 : 0);
-    const presentationGrowth = prevPresentations > 0 ? Math.round(((totalPresentations - prevPresentations) / prevPresentations) * 100) : (totalPresentations > 0 ? 100 : 0);
-    const incomeGrowth = prevIncome > 0 ? Math.round(((totalIncome - prevIncome) / prevIncome) * 100) : (totalIncome > 0 ? 100 : 0);
-
-    // Get total counts (all time)
-    const [allUsers, allPresentations] = await Promise.all([
-      this.userRepository.count(),
-      this.presentationRepository.count(),
-    ]);
-
-    return {
-      totalUsers: filter === 'all' ? allUsers : totalUsers,
-      totalPresentations: filter === 'all' ? allPresentations : totalPresentations,
-      totalSlides,
-      totalIncome,
-      totalAiCost: totalAiCostUzs,
-      profit,
-      userGrowth,
-      presentationGrowth,
-      incomeGrowth,
-    };
-  }
-
-  async getChartData(filter: DateFilter) {
-    const { start, end } = this.getDateRange(filter);
-    const data: any[] = [];
-
-    let interval: 'day' | 'week' | 'month' = 'day';
-    if (filter === '1y' || filter === 'all') {
-      interval = 'month';
-    } else if (filter === '2m') {
-      interval = 'week';
-    }
-
-    const usdToUzs = 12500;
-    const current = new Date(start);
-
-    while (current <= end) {
-      const dateStr = this.formatDate(current, interval);
-      const nextDate = this.getNextDate(current, interval);
-
-      // Get real data for this period
-      const [users, presentations, transactions] = await Promise.all([
-        this.userRepository.count({
-          where: { createdAt: Between(current, nextDate) },
-        }),
-        this.presentationRepository.find({
-          where: { createdAt: Between(current, nextDate) },
-        }),
-        this.transactionRepository.find({
-          where: {
-            createdAt: Between(current, nextDate),
-            status: 'approved',
-            type: 'topup'
-          },
-        }),
-      ]);
-
-      // Calculate real income
-      let income = 0;
-      transactions.forEach((t) => {
-        income += t.amount || 0;
-      });
-
-      // Calculate real AI cost
-      let aiCost = 0;
-      presentations.forEach((p) => {
-        aiCost += Number(p.aiCost) || 0;
-      });
-      const aiCostUzs = Math.round(aiCost * usdToUzs);
-
-      data.push({
-        date: dateStr,
-        income,
-        presentations: presentations.length,
-        users,
-        aiCost: aiCostUzs,
-      });
-
-      current.setTime(nextDate.getTime());
-    }
-
-    return data;
-  }
-
-  private formatDate(date: Date, interval: 'day' | 'week' | 'month'): string {
-    const months = ['Yan', 'Fev', 'Mar', 'Apr', 'May', 'Iyn', 'Iyl', 'Avg', 'Sen', 'Okt', 'Noy', 'Dek'];
-
-    if (interval === 'month') {
-      return `${months[date.getMonth()]} ${date.getFullYear()}`;
-    } else if (interval === 'week') {
-      return `${date.getDate()} ${months[date.getMonth()]}`;
-    } else {
-      return `${date.getDate()} ${months[date.getMonth()]}`;
-    }
-  }
-
-  private getNextDate(date: Date, interval: 'day' | 'week' | 'month'): Date {
-    const next = new Date(date);
-    if (interval === 'month') {
-      next.setMonth(next.getMonth() + 1);
-    } else if (interval === 'week') {
-      next.setDate(next.getDate() + 7);
-    } else {
-      next.setDate(next.getDate() + 1);
-    }
-    return next;
   }
 
   async getRecentPresentations(limit: number) {
@@ -505,33 +389,6 @@ export class AdminService implements OnModuleInit {
     }));
   }
 
-  async getRecentUsers(limit: number) {
-    const users = await this.userRepository.find({
-      order: { createdAt: 'DESC' },
-      take: limit,
-    });
-
-    // Get presentation counts
-    const result = await Promise.all(
-      users.map(async (user) => {
-        const count = await this.presentationRepository.count({
-          where: { user: { id: user.id } },
-        });
-        return {
-          id: user.id,
-          firstName: user.firstName,
-          telegramId: user.telegramId.toString(),
-          language: user.language,
-          credits: user.credits,
-          createdAt: this.formatRelativeTime(user.createdAt),
-          presentationsCount: count,
-        };
-      }),
-    );
-
-    return result;
-  }
-
   private formatRelativeTime(date: Date): string {
     const now = new Date();
     const diff = now.getTime() - date.getTime();
@@ -543,43 +400,5 @@ export class AdminService implements OnModuleInit {
     if (hours < 24) return `${hours} soat oldin`;
     if (days < 7) return `${days} kun oldin`;
     return date.toLocaleDateString('uz-UZ');
-  }
-
-  // Admin management methods
-  async createAdmin(phone: string, password: string, name: string): Promise<Admin> {
-    const cleanPhone = phone.replace(/\D/g, '');
-    const existing = await this.adminRepository.findOne({ where: { phone: cleanPhone } });
-
-    if (existing) {
-      throw new Error('Bu telefon raqam bilan admin mavjud');
-    }
-
-    const hashedPassword = await bcrypt.hash(password, 10);
-    const admin = this.adminRepository.create({
-      phone: cleanPhone,
-      password: hashedPassword,
-      name,
-    });
-
-    return this.adminRepository.save(admin);
-  }
-
-  async getAllAdmins(): Promise<Partial<Admin>[]> {
-    const admins = await this.adminRepository.find();
-    return admins.map(a => ({
-      id: a.id,
-      phone: a.phone,
-      name: a.name,
-      isActive: a.isActive,
-      createdAt: a.createdAt,
-    }));
-  }
-
-  async deactivateAdmin(adminId: number): Promise<void> {
-    await this.adminRepository.update(adminId, { isActive: false });
-  }
-
-  async activateAdmin(adminId: number): Promise<void> {
-    await this.adminRepository.update(adminId, { isActive: true });
   }
 }

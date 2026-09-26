@@ -22,13 +22,7 @@ export interface LoginResponse {
 export interface StatsResponse {
   totalUsers: number;
   totalPresentations: number;
-  totalSlides: number;
   totalIncome: number;
-  totalAiCost: number;
-  profit: number;
-  userGrowth: number;
-  presentationGrowth: number;
-  incomeGrowth: number;
 }
 
 export interface FeatureStat {
@@ -46,21 +40,6 @@ export interface FeatureStatsResponse {
   totals: { count: number; revenue: number; aiCost: number; profit: number };
 }
 
-export interface DailyStat {
-  date: string;
-  income: number;
-  aiCost: number;
-  profit: number;
-}
-
-export interface ChartData {
-  date: string;
-  income: number;
-  presentations: number;
-  users: number;
-  aiCost: number;
-}
-
 export interface RecentPresentation {
   id: string;
   title: string;
@@ -69,14 +48,30 @@ export interface RecentPresentation {
   slidesCount: number;
 }
 
-export interface RecentUser {
+export interface UserCreated {
+  presentation: number;
+  document: number;
+  flashcard: number;
+  glossary: number;
+  crossword: number;
+  resume: number;
+  quiz: number;
+  translator: number;
+}
+
+export interface AdminUser {
   id: number;
-  firstName: string;
   telegramId: string;
+  username: string | null;
+  firstName: string | null;
+  lastName: string | null;
   language: string;
   credits: number;
+  referralCount: number;
   createdAt: string;
-  presentationsCount: number;
+  createdAgo: string;
+  created: UserCreated;
+  totalCreated: number;
 }
 
 export type DateFilter = '7d' | '1m' | '2m' | '1y' | 'all';
@@ -125,26 +120,6 @@ export const api = {
     return response.json();
   },
 
-  async getDailyStats(filter: DateFilter = '1m'): Promise<DailyStat[]> {
-    const response = await fetch(`${API_BASE}/daily?filter=${filter}`, {
-      headers: getAuthHeaders(),
-    });
-    if (!response.ok) {
-      throw new Error('Failed to fetch daily stats');
-    }
-    return response.json();
-  },
-
-  async getChartData(filter: DateFilter = '1m'): Promise<ChartData[]> {
-    const response = await fetch(`${API_BASE}/chart?filter=${filter}`, {
-      headers: getAuthHeaders(),
-    });
-    if (!response.ok) {
-      throw new Error('Failed to fetch chart data');
-    }
-    return response.json();
-  },
-
   async getRecentPresentations(limit = 10): Promise<RecentPresentation[]> {
     const response = await fetch(`${API_BASE}/presentations/recent?limit=${limit}`, {
       headers: getAuthHeaders(),
@@ -155,8 +130,10 @@ export const api = {
     return response.json();
   },
 
-  async getRecentUsers(limit = 10): Promise<RecentUser[]> {
-    const response = await fetch(`${API_BASE}/users/recent?limit=${limit}`, {
+  async getUsers(search = '', limit = 50): Promise<AdminUser[]> {
+    const params = new URLSearchParams({ limit: String(limit) });
+    if (search.trim()) params.set('search', search.trim());
+    const response = await fetch(`${API_BASE}/users?${params.toString()}`, {
       headers: getAuthHeaders(),
     });
     if (!response.ok) {
