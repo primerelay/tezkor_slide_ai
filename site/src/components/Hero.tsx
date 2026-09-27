@@ -59,7 +59,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.05 }}
-            className="mt-5 text-4xl sm:text-5xl lg:text-6xl font-extrabold leading-[1.08] tracking-tight text-slate-900"
+            className="mt-5 text-3xl sm:text-4xl lg:text-5xl xl:text-6xl font-extrabold leading-[1.1] tracking-tight text-slate-900 break-words"
           >
             {t.hero.title}
           </motion.h1>
@@ -68,7 +68,7 @@ export default function Hero() {
             initial={{ opacity: 0, y: 18 }}
             animate={{ opacity: 1, y: 0 }}
             transition={{ duration: 0.6, delay: 0.12 }}
-            className="mt-5 text-lg text-slate-600 max-w-xl mx-auto lg:mx-0"
+            className="mt-5 text-base sm:text-lg text-slate-600 max-w-xl mx-auto lg:mx-0"
           >
             {t.hero.subtitle}
           </motion.p>
@@ -93,12 +93,12 @@ export default function Hero() {
         </div>
 
         {/* Right: logo centerpiece + orbit */}
-        <div className="relative flex justify-center items-center min-h-[22rem] sm:min-h-[26rem]">
+        <div className="relative flex justify-center items-center min-h-[18rem] sm:min-h-[24rem] lg:min-h-[26rem]">
           {/* glow */}
-          <div className="absolute w-[22rem] h-[22rem] rounded-full bg-gradient-to-br from-indigo-400/25 via-violet-400/25 to-sky-400/25 blur-3xl" />
+          <div className="absolute w-[15rem] h-[15rem] sm:w-[20rem] sm:h-[20rem] rounded-full bg-gradient-to-br from-indigo-400/25 via-violet-400/25 to-sky-400/25 blur-3xl" />
 
           {/* orbit ring */}
-          <div className="absolute w-[24rem] h-[24rem] sm:w-[28rem] sm:h-[28rem] animate-spin-slow">
+          <div className="absolute w-[17rem] h-[17rem] sm:w-[24rem] sm:h-[24rem] lg:w-[28rem] lg:h-[28rem] animate-spin-slow">
             <svg viewBox="0 0 400 400" className="w-full h-full opacity-40">
               <circle cx="200" cy="200" r="190" fill="none" stroke="url(#og)" strokeWidth="2" strokeDasharray="6 10" />
               <defs>
@@ -111,10 +111,10 @@ export default function Hero() {
           </div>
 
           {/* orbiting chips (counter-rotate so emojis stay upright) */}
-          <div className="absolute w-[24rem] h-[24rem] sm:w-[28rem] sm:h-[28rem] animate-spin-slow">
+          <div className="absolute w-[17rem] h-[17rem] sm:w-[24rem] sm:h-[24rem] lg:w-[28rem] lg:h-[28rem] animate-spin-slow">
             {orbitChips.map((c, i) => {
               const angle = (i / orbitChips.length) * 2 * Math.PI;
-              const r = 47; // percent radius
+              const r = 45; // percent radius
               const x = 50 + r * Math.cos(angle);
               const y = 50 + r * Math.sin(angle);
               return (
@@ -123,7 +123,7 @@ export default function Hero() {
                   className="absolute -translate-x-1/2 -translate-y-1/2"
                   style={{ left: `${x}%`, top: `${y}%` }}
                 >
-                  <div className="animate-spin-slow-rev glass rounded-2xl w-11 h-11 flex items-center justify-center text-xl shadow-lg">
+                  <div className="animate-spin-slow-rev glass rounded-xl sm:rounded-2xl w-8 h-8 text-base sm:w-11 sm:h-11 sm:text-xl flex items-center justify-center shadow-lg">
                     {c}
                   </div>
                 </div>
@@ -138,17 +138,17 @@ export default function Hero() {
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
             transition={{ duration: 0.7 }}
-            className="relative z-10 w-56 sm:w-72 rounded-3xl shadow-2xl animate-float"
+            className="relative z-10 w-40 sm:w-60 lg:w-72 rounded-3xl shadow-2xl animate-float"
           />
 
           {/* paper plane */}
           <motion.div
-            className="absolute z-20 top-6 right-6 sm:top-4 sm:right-10 text-sky-500 animate-float-slow"
+            className="absolute z-20 top-2 right-4 sm:top-4 sm:right-10 text-sky-500 animate-float-slow"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ delay: 0.6 }}
           >
-            <Send className="w-8 h-8 rotate-12 drop-shadow" />
+            <Send className="w-6 h-6 sm:w-8 sm:h-8 rotate-12 drop-shadow" />
           </motion.div>
         </div>
       </div>
