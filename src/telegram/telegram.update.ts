@@ -66,6 +66,17 @@ interface SessionData extends Scenes.SceneSession {
   awaitingBroadcast?: boolean;
   broadcastFromChatId?: number;
   broadcastMessageId?: number;
+  // Title page wizard
+  titul?: {
+    step: 'workTypeCustom' | 'topic' | 'author' | 'group' | 'university' | 'advisor' | 'city';
+    workType?: string;
+    topic?: string;
+    author?: string;
+    group?: string;
+    university?: string;
+    advisor?: string;
+    city?: string;
+  };
 }
 
 export interface BotContext extends Context {
@@ -968,6 +979,18 @@ export class TelegramUpdate {
         [Markup.button.callback(`➕ ${T.topUp}`, 'add_balance')],
       ]).reply_markup,
     });
+  }
+
+  // ── Title page (Titul varag'i) ─────────────────────────────────────────────
+  @Command('titul')
+  async onTitulCommand(@Ctx() ctx: BotContext) {
+    await ctx.scene.enter('title-page');
+  }
+
+  @Action('open_title_page')
+  async onOpenTitlePage(@Ctx() ctx: BotContext) {
+    await ctx.answerCbQuery();
+    await ctx.scene.enter('title-page');
   }
 
   // ── Guide (Yo'riqnoma) ─────────────────────────────────────────────────────

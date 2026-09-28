@@ -191,16 +191,16 @@ export class TelegramService {
     return true;
   }
 
-  /** Send a generated presentation file to a user's Telegram chat. */
+  /** Send a generated file (path or buffer) to a user's Telegram chat. */
   async sendDocumentToUser(
-    telegramId: string,
-    filePath: string,
+    telegramId: string | number,
+    source: string | Buffer,
     caption: string,
     filename: string,
   ): Promise<void> {
     await this.bot.telegram.sendDocument(
       telegramId,
-      { source: filePath, filename },
+      { source: source as Buffer, filename },
       { caption, parse_mode: 'HTML' },
     );
   }

@@ -18,6 +18,7 @@ import TranslatorPage from './pages/TranslatorPage';
 import DailyGiftPage from './pages/DailyGiftPage';
 import PricesPage from './pages/PricesPage';
 import GuidePage from './pages/GuidePage';
+import TitlePage from './pages/TitlePage';
 
 function App() {
   const { webApp, ready } = useTelegram();
@@ -69,6 +70,7 @@ function App() {
         <Route path="/daily-gift" element={<DailyGiftPage />} />
         <Route path="/prices" element={<PricesPage />} />
         <Route path="/guide" element={<GuidePage />} />
+        <Route path="/title-page" element={<TitlePage />} />
         <Route path="/editor/:id" element={<EditorPage />} />
         <Route path="/preview/:id" element={<PreviewPage />} />
       </Routes>

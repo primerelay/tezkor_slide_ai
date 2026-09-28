@@ -11,6 +11,8 @@ import {
 } from '@nestjs/common';
 import { MiniAppService } from './mini-app.service';
 import { DailyGiftService } from '../daily-gift/daily-gift.service';
+import { TitlePageService, TitlePageFields } from '../title-page/title-page.service';
+import { TelegramService } from '../telegram/telegram.service';
 import { PRICE_CATALOG, PRICE_TEXT } from '../pricing/price-catalog';
 import { GUIDE_SECTIONS, GUIDE_TEXT } from '../guide/guide-content';
 import {
@@ -25,7 +27,34 @@ export class MiniAppController {
   constructor(
     private readonly miniAppService: MiniAppService,
     private readonly dailyGiftService: DailyGiftService,
+    private readonly titlePageService: TitlePageService,
+    private readonly telegramService: TelegramService,
   ) {}
+
+  @Post('title-page')
+  async createTitlePage(
+    @Body() body: { telegramId: string; fields: TitlePageFields },
+  ) {
+    if (!body?.telegramId || !body?.fields) {
+      throw new HttpException('Missing data', HttpStatus.BAD_REQUEST);
+    }
+    try {
+      const buffer = await this.titlePageService.renderDocx(body.fields);
+      await this.telegramService.sendDocumentToUser(
+        body.telegramId,
+        buffer,
+        "📄 Titul varag'i · SliderAI.uz",
+        'titul.docx',
+      );
+      return { ok: true };
+    } catch (error) {
+      this.logger.error('Failed to create title page', error);
+      throw new HttpException(
+        error.message || 'Failed to create title page',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 
   @Get('daily-gift/:telegramId')
   async getDailyGift(@Param('telegramId') telegramId: string) {

@@ -3,6 +3,7 @@ import { BullModule } from '@nestjs/bullmq';
 import { MiniAppController } from './mini-app.controller';
 import { MiniAppService } from './mini-app.service';
 import { DailyGiftModule } from '../daily-gift/daily-gift.module';
+import { TitlePageModule } from '../title-page/title-page.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from '../database/entities/user.entity';
 import { Presentation } from '../database/entities/presentation.entity';
@@ -26,6 +27,7 @@ import { DocumentModule } from '../document/document.module';
     AiModule,
     DocumentModule,
     DailyGiftModule,
+    TitlePageModule,
   ],
   controllers: [MiniAppController],
   providers: [MiniAppService],

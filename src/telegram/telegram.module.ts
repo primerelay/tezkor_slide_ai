@@ -33,6 +33,8 @@ import { ResumeModule } from '../resume/resume.module';
 import { TranslatorModule } from '../translator/translator.module';
 import { ReportsModule } from '../reports/reports.module';
 import { DailyGiftModule } from '../daily-gift/daily-gift.module';
+import { TitlePageModule } from '../title-page/title-page.module';
+import { TitlePageScene } from './scenes/title-page.scene';
 
 @Module({
   imports: [
@@ -53,6 +55,7 @@ import { DailyGiftModule } from '../daily-gift/daily-gift.module';
     TranslatorModule,
     ReportsModule,
     DailyGiftModule,
+    TitlePageModule,
   ],
   providers: [
     TelegramService,
@@ -71,6 +74,7 @@ import { DailyGiftModule } from '../daily-gift/daily-gift.module';
     CrosswordCreateScene,
     ResumeCreateScene,
     TranslatorCreateScene,
+    TitlePageScene,
   ],
   exports: [TelegramService],
 })
