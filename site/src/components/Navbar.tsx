@@ -49,7 +49,7 @@ export default function Navbar() {
 
         <div className="flex items-center gap-2 sm:gap-3">
           <LanguageSwitcher />
-          <a href={BOT_URL} target="_blank" rel="noreferrer" className="btn btn-primary hidden sm:inline-flex text-sm py-2">
+          <a href={BOT_URL} target="_blank" rel="noreferrer" className="btn btn-primary hidden md:inline-flex text-sm py-2">
             <Send className="w-4 h-4" />
             {t.nav.openBot}
           </a>
