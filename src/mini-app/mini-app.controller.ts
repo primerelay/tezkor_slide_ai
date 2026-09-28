@@ -10,7 +10,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { MiniAppService } from './mini-app.service';
-import { DailyGiftService } from './daily-gift.service';
+import { DailyGiftService } from '../daily-gift/daily-gift.service';
 import {
   CreatePresentationDto,
   CreateDocumentDto,

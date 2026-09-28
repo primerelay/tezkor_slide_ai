@@ -32,6 +32,7 @@ import { StudyModule } from '../study/study.module';
 import { ResumeModule } from '../resume/resume.module';
 import { TranslatorModule } from '../translator/translator.module';
 import { ReportsModule } from '../reports/reports.module';
+import { DailyGiftModule } from '../daily-gift/daily-gift.module';
 
 @Module({
   imports: [
@@ -51,6 +52,7 @@ import { ReportsModule } from '../reports/reports.module';
     ResumeModule,
     TranslatorModule,
     ReportsModule,
+    DailyGiftModule,
   ],
   providers: [
     TelegramService,

@@ -14,6 +14,8 @@ import { FlashcardService } from '../flashcard/flashcard.service';
 import { renderFlashcard } from './keyboards/flashcard.view';
 import { DailyReportService } from '../reports/daily-report.service';
 import { BroadcastService } from './broadcast.service';
+import { DailyGiftService } from '../daily-gift/daily-gift.service';
+import { getBotGift } from '../daily-gift/bot-messages';
 
 interface SessionData extends Scenes.SceneSession {
   language?: SupportedLanguage;
@@ -81,6 +83,7 @@ export class TelegramUpdate {
     private readonly flashcardService: FlashcardService,
     private readonly dailyReportService: DailyReportService,
     private readonly broadcastService: BroadcastService,
+    private readonly dailyGiftService: DailyGiftService,
   ) {
     this.miniAppUrl = this.configService.get<string>('MINI_APP_URL');
   }
@@ -879,9 +882,78 @@ export class TelegramUpdate {
     );
     if (!user) return;
 
+    const m = getBotGift(user.language);
     const i18n = this.telegramService.getI18n(user.language);
     await ctx.reply(i18n.t('balance', { credits: user.credits }), {
       parse_mode: 'HTML',
+      reply_markup: Markup.inlineKeyboard([
+        [Markup.button.callback(m.button, 'open_daily_gift')],
+      ]).reply_markup,
+    });
+  }
+
+  // ── Daily gift (also available in the Mini App) ──────────────────────────
+  @Command('bonus')
+  async onBonusCommand(@Ctx() ctx: BotContext) {
+    await this.showDailyGift(ctx);
+  }
+
+  @Action('open_daily_gift')
+  async onOpenDailyGift(@Ctx() ctx: BotContext) {
+    await ctx.answerCbQuery();
+    await this.showDailyGift(ctx);
+  }
+
+  @Action(/^dgift_(\d)$/)
+  async onDailyGiftClaim(@Ctx() ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+    const cq = ctx.callbackQuery;
+    if (!cq || !('data' in cq)) return;
+
+    const idx = parseInt(cq.data.replace('dgift_', ''), 10) || 0;
+    const user = await this.telegramService.getUserByTelegramId(telegramUser.id.toString());
+    const m = getBotGift(user?.language || 'uz');
+
+    try {
+      const res = await this.dailyGiftService.claim(telegramUser.id.toString(), idx);
+      await ctx.answerCbQuery(m.openToast);
+      const text = res.isJackpot
+        ? m.jackpot(res.reward, res.balance)
+        : m.won(res.reward, res.balance);
+      await ctx.editMessageText(text, { parse_mode: 'HTML' });
+    } catch {
+      await ctx.answerCbQuery(m.claimedToast);
+      await ctx.editMessageText(m.claimed, { parse_mode: 'HTML' }).catch(() => undefined);
+    }
+  }
+
+  /** Show the daily gift prompt (3 boxes) or the "already claimed" message. */
+  private async showDailyGift(ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    if (!user) return;
+
+    const m = getBotGift(user.language);
+    const status = await this.dailyGiftService.getStatus(telegramUser.id.toString());
+
+    if (!status.claimable) {
+      await ctx.reply(m.claimed, { parse_mode: 'HTML' });
+      return;
+    }
+
+    await ctx.reply(m.prompt(status.day, status.min, status.max, status.jackpot), {
+      parse_mode: 'HTML',
+      reply_markup: Markup.inlineKeyboard([
+        [
+          Markup.button.callback(m.boxLabel(0), 'dgift_0'),
+          Markup.button.callback(m.boxLabel(1), 'dgift_1'),
+          Markup.button.callback(m.boxLabel(2), 'dgift_2'),
+        ],
+      ]).reply_markup,
     });
   }
 
