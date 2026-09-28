@@ -12,6 +12,7 @@ import {
 import { MiniAppService } from './mini-app.service';
 import { DailyGiftService } from '../daily-gift/daily-gift.service';
 import { PRICE_CATALOG, PRICE_TEXT } from '../pricing/price-catalog';
+import { GUIDE_SECTIONS, GUIDE_TEXT } from '../guide/guide-content';
 import {
   CreatePresentationDto,
   CreateDocumentDto,
@@ -53,6 +54,11 @@ export class MiniAppController {
   @Get('prices')
   getPrices() {
     return { catalog: PRICE_CATALOG, text: PRICE_TEXT };
+  }
+
+  @Get('guide')
+  getGuide() {
+    return { sections: GUIDE_SECTIONS, text: GUIDE_TEXT };
   }
 
   @Get('user/:telegramId')

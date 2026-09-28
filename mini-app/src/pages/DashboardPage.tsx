@@ -9,7 +9,7 @@ import { getTelegramUserId } from '../utils/telegram';
 import {
   FileText, ChevronRight, Sparkles, Gift, Brain, BookOpen, PenLine, Layers,
   GraduationCap, Newspaper, ScrollText, BookMarked, Puzzle, IdCard, Languages,
-  Clock, Plus, Tag, type LucideIcon,
+  Clock, Plus, Tag, HelpCircle, type LucideIcon,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import TopBar from '../components/TopBar';
@@ -209,6 +209,7 @@ export default function DashboardPage() {
             <div className="card divide-y divide-slate-100 dark:divide-slate-700 overflow-hidden">
               {[
                 { icon: Tag, tile: 'bg-orange-100 text-orange-600', title: g.pricesTitle, sub: g.pricesSub, route: '/prices' },
+                { icon: HelpCircle, tile: 'bg-violet-100 text-violet-600', title: g.guideTitle, sub: g.guideSub, route: '/guide' },
               ].map((o) => {
                 const Icon = o.icon;
                 return (

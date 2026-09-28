@@ -17,6 +17,7 @@ import { BroadcastService } from './broadcast.service';
 import { DailyGiftService } from '../daily-gift/daily-gift.service';
 import { getBotGift } from '../daily-gift/bot-messages';
 import { PRICE_CATALOG, PRICE_TEXT, priceLang, formatSom } from '../pricing/price-catalog';
+import { GUIDE_SECTIONS, GUIDE_TEXT, guideLang } from '../guide/guide-content';
 
 interface SessionData extends Scenes.SceneSession {
   language?: SupportedLanguage;
@@ -967,6 +968,37 @@ export class TelegramUpdate {
         [Markup.button.callback(`➕ ${T.topUp}`, 'add_balance')],
       ]).reply_markup,
     });
+  }
+
+  // ── Guide (Yo'riqnoma) ─────────────────────────────────────────────────────
+  @Command('yoriqnoma')
+  async onGuideCommand(@Ctx() ctx: BotContext) {
+    await this.showGuide(ctx);
+  }
+
+  @Action('open_guide')
+  async onOpenGuide(@Ctx() ctx: BotContext) {
+    await ctx.answerCbQuery();
+    await this.showGuide(ctx);
+  }
+
+  private async showGuide(ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    const lang = guideLang(user?.language || 'uz');
+    const T = GUIDE_TEXT[lang];
+
+    const body = GUIDE_SECTIONS.map(
+      (s) => `${s.icon} <b>${s.title[lang]}</b>\n${s.body[lang]}`,
+    ).join('\n\n');
+    const text =
+      `❓ <b>${T.title}</b>\n${T.subtitle}\n\n${body}\n\n` +
+      `💬 ${T.support}: ${T.supportHandle}`;
+
+    await ctx.reply(text, { parse_mode: 'HTML' });
   }
 
   /** Show the daily gift prompt (3 boxes) or the "already claimed" message. */
