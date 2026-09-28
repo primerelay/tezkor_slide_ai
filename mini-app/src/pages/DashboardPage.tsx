@@ -9,7 +9,7 @@ import { getTelegramUserId } from '../utils/telegram';
 import {
   FileText, ChevronRight, Sparkles, Gift, Brain, BookOpen, PenLine, Layers,
   GraduationCap, Newspaper, ScrollText, BookMarked, Puzzle, IdCard, Languages,
-  Clock, Plus, Tag, HelpCircle, FileType, type LucideIcon,
+  Clock, Plus, Tag, HelpCircle, FileType, Wrench, type LucideIcon,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import TopBar from '../components/TopBar';
@@ -74,6 +74,14 @@ export default function DashboardPage() {
     const w = webApp as unknown as { openTelegramLink?: (u: string) => void } | null;
     if (w?.openTelegramLink) w.openTelegramLink(BOT_URL);
     else window.open(BOT_URL, '_blank');
+  };
+
+  const openBot = (startParam: string) => {
+    haptic('light');
+    const url = `${BOT_URL}?start=${startParam}`;
+    const w = webApp as unknown as { openTelegramLink?: (u: string) => void } | null;
+    if (w?.openTelegramLink) w.openTelegramLink(url);
+    else window.open(url, '_blank');
   };
 
   const formatTime = (iso: string) => {
@@ -208,15 +216,16 @@ export default function DashboardPage() {
             </h2>
             <div className="card divide-y divide-slate-100 dark:divide-slate-700 overflow-hidden">
               {[
-                { icon: FileType, tile: 'bg-emerald-100 text-emerald-600', title: g.titlePageTitle, sub: g.titlePageSub, route: '/title-page' },
-                { icon: Tag, tile: 'bg-orange-100 text-orange-600', title: g.pricesTitle, sub: g.pricesSub, route: '/prices' },
-                { icon: HelpCircle, tile: 'bg-violet-100 text-violet-600', title: g.guideTitle, sub: g.guideSub, route: '/guide' },
+                { icon: Wrench, tile: 'bg-sky-100 text-sky-600', title: g.fileToolsTitle, sub: g.fileToolsSub, route: '', bot: 'fayl' },
+                { icon: FileType, tile: 'bg-emerald-100 text-emerald-600', title: g.titlePageTitle, sub: g.titlePageSub, route: '/title-page', bot: '' },
+                { icon: Tag, tile: 'bg-orange-100 text-orange-600', title: g.pricesTitle, sub: g.pricesSub, route: '/prices', bot: '' },
+                { icon: HelpCircle, tile: 'bg-violet-100 text-violet-600', title: g.guideTitle, sub: g.guideSub, route: '/guide', bot: '' },
               ].map((o) => {
                 const Icon = o.icon;
                 return (
                   <button
-                    key={o.route}
-                    onClick={() => go(o.route)}
+                    key={o.title}
+                    onClick={() => (o.bot ? openBot(o.bot) : go(o.route))}
                     className="w-full flex items-center gap-3 p-4 active:opacity-80 transition-opacity"
                   >
                     <div className={`w-11 h-11 rounded-xl ${o.tile} flex items-center justify-center shrink-0`}>

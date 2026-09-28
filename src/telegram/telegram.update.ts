@@ -66,6 +66,14 @@ interface SessionData extends Scenes.SceneSession {
   awaitingBroadcast?: boolean;
   broadcastFromChatId?: number;
   broadcastMessageId?: number;
+  // File tools
+  fileTool?: {
+    op?: string;
+    files?: { fileId: string; name: string }[];
+    awaiting?: 'pages_extract' | 'pages_delete';
+    pdfFileId?: string;
+    pdfPageCount?: number;
+  };
   // Title page wizard
   titul?: {
     step: 'workTypeCustom' | 'topic' | 'author' | 'group' | 'university' | 'advisor' | 'city';
@@ -110,6 +118,7 @@ export class TelegramUpdate {
     let referrerId: number | undefined;
     let referrerName: string | undefined;
     let sharedFlashcardId: number | undefined;
+    let deepLinkScene: string | undefined;
 
     if ('message' in ctx.update && 'text' in ctx.update.message) {
       const text = ctx.update.message.text;
@@ -125,6 +134,10 @@ export class TelegramUpdate {
         } else if (startPayload && startPayload.startsWith('fc_')) {
           const id = parseInt(startPayload.slice(3), 10);
           if (!isNaN(id)) sharedFlashcardId = id;
+        } else if (startPayload === 'fayl') {
+          deepLinkScene = 'file-tools';
+        } else if (startPayload === 'titul') {
+          deepLinkScene = 'title-page';
         }
       }
     }
@@ -175,6 +188,11 @@ export class TelegramUpdate {
       } catch {
         await ctx.reply(i18n.t('flashcard.sharedNotFound'));
       }
+    }
+
+    // Opened via a deep link to a specific tool (e.g. from the Mini App).
+    if (deepLinkScene) {
+      await ctx.scene.enter(deepLinkScene);
     }
   }
 
@@ -979,6 +997,18 @@ export class TelegramUpdate {
         [Markup.button.callback(`➕ ${T.topUp}`, 'add_balance')],
       ]).reply_markup,
     });
+  }
+
+  // ── File tools (Fayl vositalari) ───────────────────────────────────────────
+  @Command('fayl')
+  async onFileToolsCommand(@Ctx() ctx: BotContext) {
+    await ctx.scene.enter('file-tools');
+  }
+
+  @Action('open_file_tools')
+  async onOpenFileTools(@Ctx() ctx: BotContext) {
+    await ctx.answerCbQuery();
+    await ctx.scene.enter('file-tools');
   }
 
   // ── Title page (Titul varag'i) ─────────────────────────────────────────────

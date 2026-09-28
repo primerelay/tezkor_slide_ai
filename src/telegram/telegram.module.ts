@@ -35,6 +35,8 @@ import { ReportsModule } from '../reports/reports.module';
 import { DailyGiftModule } from '../daily-gift/daily-gift.module';
 import { TitlePageModule } from '../title-page/title-page.module';
 import { TitlePageScene } from './scenes/title-page.scene';
+import { FileToolsModule } from '../file-tools/file-tools.module';
+import { FileToolsScene } from './scenes/file-tools.scene';
 
 @Module({
   imports: [
@@ -56,6 +58,7 @@ import { TitlePageScene } from './scenes/title-page.scene';
     ReportsModule,
     DailyGiftModule,
     TitlePageModule,
+    FileToolsModule,
   ],
   providers: [
     TelegramService,
@@ -75,6 +78,7 @@ import { TitlePageScene } from './scenes/title-page.scene';
     ResumeCreateScene,
     TranslatorCreateScene,
     TitlePageScene,
+    FileToolsScene,
   ],
   exports: [TelegramService],
 })
