@@ -16,6 +16,7 @@ import { DailyReportService } from '../reports/daily-report.service';
 import { BroadcastService } from './broadcast.service';
 import { DailyGiftService } from '../daily-gift/daily-gift.service';
 import { getBotGift } from '../daily-gift/bot-messages';
+import { PRICE_CATALOG, PRICE_TEXT, priceLang, formatSom } from '../pricing/price-catalog';
 
 interface SessionData extends Scenes.SceneSession {
   language?: SupportedLanguage;
@@ -926,6 +927,46 @@ export class TelegramUpdate {
       await ctx.answerCbQuery(m.claimedToast);
       await ctx.editMessageText(m.claimed, { parse_mode: 'HTML' }).catch(() => undefined);
     }
+  }
+
+  // ── Prices (Narxlar) ─────────────────────────────────────────────────────
+  @Command('narxlar')
+  async onPricesCommand(@Ctx() ctx: BotContext) {
+    await this.showPrices(ctx);
+  }
+
+  @Action('open_prices')
+  async onOpenPrices(@Ctx() ctx: BotContext) {
+    await ctx.answerCbQuery();
+    await this.showPrices(ctx);
+  }
+
+  private async showPrices(ctx: BotContext) {
+    const telegramUser = ctx.from;
+    if (!telegramUser) return;
+    const user = await this.telegramService.getUserByTelegramId(
+      telegramUser.id.toString(),
+    );
+    const lang = priceLang(user?.language || 'uz');
+    const T = PRICE_TEXT[lang];
+
+    const lines = PRICE_CATALOG.map((p) => {
+      const price =
+        p.min === p.max ? formatSom(p.min) : `${formatSom(p.min)}–${formatSom(p.max)}`;
+      return `${p.icon} <b>${p.name[lang]}</b> · ${p.detail[lang]} — ${price} ${T.som}`;
+    }).join('\n');
+
+    const balance = user
+      ? `\n\n💰 <b>${T.balance}:</b> ${formatSom(user.credits)} ${T.som}`
+      : '';
+    const text = `🏷 <b>${T.title}</b>\n${T.subtitle}\n\n${lines}${balance}`;
+
+    await ctx.reply(text, {
+      parse_mode: 'HTML',
+      reply_markup: Markup.inlineKeyboard([
+        [Markup.button.callback(`➕ ${T.topUp}`, 'add_balance')],
+      ]).reply_markup,
+    });
   }
 
   /** Show the daily gift prompt (3 boxes) or the "already claimed" message. */

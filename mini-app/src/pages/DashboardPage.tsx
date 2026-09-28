@@ -9,7 +9,7 @@ import { getTelegramUserId } from '../utils/telegram';
 import {
   FileText, ChevronRight, Sparkles, Gift, Brain, BookOpen, PenLine, Layers,
   GraduationCap, Newspaper, ScrollText, BookMarked, Puzzle, IdCard, Languages,
-  Clock, Plus, type LucideIcon,
+  Clock, Plus, Tag, type LucideIcon,
 } from 'lucide-react';
 import { motion } from 'framer-motion';
 import TopBar from '../components/TopBar';
@@ -195,6 +195,36 @@ export default function DashboardPage() {
                     <div className="text-xs text-slate-500 dark:text-slate-400">
                       {tr[s.subKey]}
                     </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Other section */}
+          <div className="mt-6">
+            <h2 className="font-semibold mb-3 text-slate-800 dark:text-slate-200 uppercase text-xs tracking-wider">
+              {g.other}
+            </h2>
+            <div className="card divide-y divide-slate-100 dark:divide-slate-700 overflow-hidden">
+              {[
+                { icon: Tag, tile: 'bg-orange-100 text-orange-600', title: g.pricesTitle, sub: g.pricesSub, route: '/prices' },
+              ].map((o) => {
+                const Icon = o.icon;
+                return (
+                  <button
+                    key={o.route}
+                    onClick={() => go(o.route)}
+                    className="w-full flex items-center gap-3 p-4 active:opacity-80 transition-opacity"
+                  >
+                    <div className={`w-11 h-11 rounded-xl ${o.tile} flex items-center justify-center shrink-0`}>
+                      <Icon className="w-5 h-5" />
+                    </div>
+                    <div className="flex-1 min-w-0 text-left">
+                      <div className="font-semibold text-slate-900 dark:text-slate-100">{o.title}</div>
+                    </div>
+                    <span className="text-xs text-slate-400 mr-1">{o.sub}</span>
+                    <ChevronRight className="w-5 h-5 text-slate-300 dark:text-slate-600" />
                   </button>
                 );
               })}

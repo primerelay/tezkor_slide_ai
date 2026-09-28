@@ -217,6 +217,7 @@ export class InlineKeyboards {
         Markup.button.callback(i18n.t('buttons.language'), 'change_language'),
       ],
       [Markup.button.callback(i18n.t('buttons.dailyGift'), 'open_daily_gift')],
+      [Markup.button.callback(i18n.t('buttons.prices'), 'open_prices')],
     );
 
     // Then all the features.

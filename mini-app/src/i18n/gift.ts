@@ -23,6 +23,16 @@ export interface GiftStrings {
   youWon: string;
   jackpotWon: string;
   great: string;
+  // "Other" section on the home
+  other: string;
+  pricesTitle: string;
+  pricesSub: string;
+  guideTitle: string;
+  guideSub: string;
+  titlePageTitle: string;
+  titlePageSub: string;
+  fileToolsTitle: string;
+  fileToolsSub: string;
 }
 
 const uz: GiftStrings = {
@@ -45,6 +55,15 @@ const uz: GiftStrings = {
   youWon: 'Siz yutdingiz!',
   jackpotWon: 'JACKPOT! 🎉',
   great: 'Ajoyib!',
+  other: 'Boshqa',
+  pricesTitle: 'Narxlar',
+  pricesSub: 'Barcha xizmatlar narxi',
+  guideTitle: "Yo'riqnoma",
+  guideSub: 'Qanday ishlatish',
+  titlePageTitle: "Titul varag'i",
+  titlePageSub: 'Bepul',
+  fileToolsTitle: 'Fayl vositalari',
+  fileToolsSub: 'PDF · Word · rasm',
 };
 
 const ru: GiftStrings = {
@@ -67,6 +86,15 @@ const ru: GiftStrings = {
   youWon: 'Вы выиграли!',
   jackpotWon: 'ДЖЕКПОТ! 🎉',
   great: 'Отлично!',
+  other: 'Другое',
+  pricesTitle: 'Цены',
+  pricesSub: 'Цены на все сервисы',
+  guideTitle: 'Инструкция',
+  guideSub: 'Как пользоваться',
+  titlePageTitle: 'Титульный лист',
+  titlePageSub: 'Бесплатно',
+  fileToolsTitle: 'Файл-инструменты',
+  fileToolsSub: 'PDF · Word · фото',
 };
 
 const en: GiftStrings = {
@@ -89,6 +117,15 @@ const en: GiftStrings = {
   youWon: 'You won!',
   jackpotWon: 'JACKPOT! 🎉',
   great: 'Great!',
+  other: 'Other',
+  pricesTitle: 'Pricing',
+  pricesSub: 'All service prices',
+  guideTitle: 'Guide',
+  guideSub: 'How to use',
+  titlePageTitle: 'Title page',
+  titlePageSub: 'Free',
+  fileToolsTitle: 'File tools',
+  fileToolsSub: 'PDF · Word · image',
 };
 
 const DICT: Record<string, GiftStrings> = { uz, ru, en };

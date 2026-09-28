@@ -11,6 +11,7 @@ import {
 } from '@nestjs/common';
 import { MiniAppService } from './mini-app.service';
 import { DailyGiftService } from '../daily-gift/daily-gift.service';
+import { PRICE_CATALOG, PRICE_TEXT } from '../pricing/price-catalog';
 import {
   CreatePresentationDto,
   CreateDocumentDto,
@@ -47,6 +48,11 @@ export class MiniAppController {
   @Get('templates')
   async getTemplates() {
     return this.miniAppService.getTemplates();
+  }
+
+  @Get('prices')
+  getPrices() {
+    return { catalog: PRICE_CATALOG, text: PRICE_TEXT };
   }
 
   @Get('user/:telegramId')
