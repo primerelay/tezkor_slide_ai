@@ -14,18 +14,41 @@ interface LanguageContextType {
 const LanguageContext = createContext<LanguageContextType | null>(null);
 
 export function LanguageProvider({ children }: { children: ReactNode }) {
-  const [language, setLanguage] = useState<SupportedLanguage>('uz');
+  const [language, setLanguageState] = useState<SupportedLanguage>('uz');
   const [isLoading, setIsLoading] = useState(true);
+
+  // Persist the user's explicit in-app choice so it survives reloads and wins
+  // over auto-detection.
+  const setLanguage = (lang: SupportedLanguage) => {
+    setLanguageState(lang);
+    try {
+      localStorage.setItem('mini_lang', lang);
+    } catch {
+      /* ignore */
+    }
+  };
 
   useEffect(() => {
     const fetchUserLanguage = async () => {
       try {
+        // 0. Explicit in-app choice always wins.
+        try {
+          const stored = localStorage.getItem('mini_lang');
+          if (stored && SUPPORTED.includes(stored as SupportedLanguage)) {
+            setLanguageState(stored as SupportedLanguage);
+            setIsLoading(false);
+            return;
+          }
+        } catch {
+          /* ignore */
+        }
+
         // 1. Language passed in the web-app URL by the bot (?lang=xx). Most
         //    reliable and instant — reflects the user's current bot language
         //    and changes the URL when they switch, forcing a fresh load.
         const urlLang = new URLSearchParams(window.location.search).get('lang');
         if (urlLang && SUPPORTED.includes(urlLang as SupportedLanguage)) {
-          setLanguage(urlLang as SupportedLanguage);
+          setLanguageState(urlLang as SupportedLanguage);
           setIsLoading(false);
           return;
         }
@@ -45,7 +68,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
             if (response.ok) {
               const user = await response.json();
               if (user.language && SUPPORTED.includes(user.language)) {
-                setLanguage(user.language as SupportedLanguage);
+                setLanguageState(user.language as SupportedLanguage);
               }
             }
           } catch (fetchError) {
@@ -61,7 +84,7 @@ export function LanguageProvider({ children }: { children: ReactNode }) {
             uk: 'ru', // Ukrainian users often prefer Russian
           };
           if (langCode && langMap[langCode]) {
-            setLanguage(langMap[langCode]);
+            setLanguageState(langMap[langCode]);
           }
         }
       } catch (error) {

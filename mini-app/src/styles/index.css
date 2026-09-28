@@ -84,9 +84,10 @@ body {
   @apply bg-transparent text-gray-600 hover:bg-gray-100;
 }
 
-/* Card styles */
+/* Card styles — dark: variants only take effect under a `.dark` ancestor,
+   which only the Home and Daily-Gift screens set, so other pages stay light. */
 .card {
-  @apply bg-white rounded-2xl border border-gray-100 shadow-sm;
+  @apply bg-white dark:bg-slate-800 rounded-2xl border border-gray-100 dark:border-slate-700 shadow-sm;
 }
 
 /* Input styles */

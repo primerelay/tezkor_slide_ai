@@ -49,6 +49,13 @@ export class User {
   @Column({ nullable: true, unique: true })
   referralCode?: string; // Unique referral code for sharing
 
+  // Daily gift gamification
+  @Column({ default: 0 })
+  dailyStreak: number; // consecutive-day claim streak (0 = never claimed)
+
+  @Column({ type: 'timestamptz', nullable: true })
+  lastDailyClaimAt?: Date | null; // when the last daily gift was claimed
+
   @OneToMany(() => Presentation, (presentation) => presentation.user)
   presentations: Presentation[];
 

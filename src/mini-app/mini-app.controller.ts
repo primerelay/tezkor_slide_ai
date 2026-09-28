@@ -10,6 +10,7 @@ import {
   Logger,
 } from '@nestjs/common';
 import { MiniAppService } from './mini-app.service';
+import { DailyGiftService } from './daily-gift.service';
 import {
   CreatePresentationDto,
   CreateDocumentDto,
@@ -19,7 +20,29 @@ import {
 export class MiniAppController {
   private readonly logger = new Logger(MiniAppController.name);
 
-  constructor(private readonly miniAppService: MiniAppService) {}
+  constructor(
+    private readonly miniAppService: MiniAppService,
+    private readonly dailyGiftService: DailyGiftService,
+  ) {}
+
+  @Get('daily-gift/:telegramId')
+  async getDailyGift(@Param('telegramId') telegramId: string) {
+    return this.dailyGiftService.getStatus(telegramId);
+  }
+
+  @Post('daily-gift/claim')
+  async claimDailyGift(
+    @Body() body: { telegramId: string; boxIndex: number },
+  ) {
+    try {
+      return await this.dailyGiftService.claim(body.telegramId, body.boxIndex ?? 0);
+    } catch (error) {
+      throw new HttpException(
+        error.message || 'Failed to claim daily gift',
+        HttpStatus.BAD_REQUEST,
+      );
+    }
+  }
 
   @Get('templates')
   async getTemplates() {
